@@ -1,33 +1,17 @@
 from ply import lex
 
-def t_NUMBER(t):
-    r'[0-9]+'
-    t.value = int(t.value)
-    return t
-
 def t_COMMENT(t):
     r'comment[^;]*;'
 
-def t_ID(t):
-    r'[a-zA-Z]+'
-    t.type = reserved.get(t.value,'ID')
-    return t
-
-def t_ASSIGN(t):
-    r':='
-    return t
-
 def t_STRING(t):
-    r'"(.*?(\")?)*"'
-    t.value = t.value[1:-1] # remove "" around string
+    r'"([^\n"]|\")*"'
+    t.value = t.value[1:-1]
     return t
 
-def t_NEWLINE(t):
-    r'\n+'
-    t.lexer.lineno += len(t.value)
-
-def t_error(t):
-    print("Illegal character '%s' in line %d" % (t.value[0], t.lineno))
+def t_NUMBER(t):
+    r'-?(0x|0b)?[0-9][ _0-9]*'
+    t.value = int(t.value)
+    return t
 
 reserved = {
     'begin' : 'BEGIN',
@@ -38,6 +22,22 @@ reserved = {
     'until' : 'UNTIL',
     'do' : 'DO',
 }
+
+def t_ID(t):
+    r'[_a-zA-Z][_a-zA-Z0-9]*'
+    t.type = reserved.get(t.value,'ID')
+    return t
+
+def t_ASSIGN(t):
+    r':='
+    return t
+
+def t_ANY_NEWLINE(t):
+    r'\n+'
+    t.lexer.lineno += len(t.value)
+
+def t_error(t):
+    print("Illegal character '%s' in line %d" % (t.value[0], t.lineno))
 
 literals = ';+-*/,()'
 t_ignore = ' \t'
