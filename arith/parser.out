@@ -9,55 +9,55 @@ Rule 3     arith_expression -> arith_expression PLUS arith_expression
 Rule 4     arith_expression -> arith_expression MINUS arith_expression
 Rule 5     arith_expression -> arith_expression TIMES arith_expression
 Rule 6     arith_expression -> arith_expression DIVIDE arith_expression
-Rule 7     arith_expression -> NUMBER
-Rule 8     bool_expression -> BOOL_LIT
-Rule 9     arith_expression -> LPAREN arith_expression RPAREN
-Rule 10    bool_expression -> LPAREN bool_expression RPAREN
-Rule 11    arith_expression -> arith_expression EQ arith_expression
-Rule 12    bool_expression -> bool_expression EQ bool_expression
-Rule 13    arith_expression -> arith_expression NEQ arith_expression
-Rule 14    bool_expression -> bool_expression NEQ bool_expression
-Rule 15    bool_expression -> bool_expression XOR bool_expression
-Rule 16    bool_expression -> arith_expression LT arith_expression
-Rule 17    bool_expression -> arith_expression GT arith_expression
-Rule 18    bool_expression -> arith_expression LE arith_expression
-Rule 19    bool_expression -> arith_expression GE arith_expression
+Rule 7     bool_expression -> arith_expression LT arith_expression
+Rule 8     bool_expression -> arith_expression GT arith_expression
+Rule 9     bool_expression -> arith_expression LE arith_expression
+Rule 10    bool_expression -> arith_expression GE arith_expression
+Rule 11    bool_expression -> arith_expression EQ arith_expression
+Rule 12    bool_expression -> arith_expression NEQ arith_expression
+Rule 13    bool_expression -> bool_expression BEQ bool_expression
+Rule 14    bool_expression -> bool_expression BNEQ bool_expression
+Rule 15    bool_expression -> bool_expression AND bool_expression
+Rule 16    bool_expression -> bool_expression OR bool_expression
+Rule 17    bool_expression -> bool_expression NAND bool_expression
+Rule 18    bool_expression -> bool_expression NOR bool_expression
+Rule 19    bool_expression -> bool_expression IMP bool_expression
 Rule 20    bool_expression -> NOT bool_expression
-Rule 21    bool_expression -> bool_expression AND bool_expression
-Rule 22    bool_expression -> bool_expression OR bool_expression
-Rule 23    bool_expression -> bool_expression NAND bool_expression
-Rule 24    bool_expression -> bool_expression NOR bool_expression
-Rule 25    bool_expression -> bool_expression IMP bool_expression
+Rule 21    arith_expression -> NUMBER
+Rule 22    bool_expression -> BOOL_LIT
+Rule 23    arith_expression -> LPAREN arith_expression RPAREN
+Rule 24    bool_expression -> LPAREN bool_expression RPAREN
 
 Terminals, with rules where they appear
 
-AND                  : 21
-BOOL_LIT             : 8
+AND                  : 15
+BEQ                  : 13
+BNEQ                 : 14
+BOOL_LIT             : 22
 DIVIDE               : 6
-EQ                   : 11 12
-GE                   : 19
-GT                   : 17
-IMP                  : 25
-LE                   : 18
-LPAREN               : 9 10
-LT                   : 16
+EQ                   : 11
+GE                   : 10
+GT                   : 8
+IMP                  : 19
+LE                   : 9
+LPAREN               : 23 24
+LT                   : 7
 MINUS                : 4
-NAND                 : 23
-NEQ                  : 13 14
-NOR                  : 24
+NAND                 : 17
+NEQ                  : 12
+NOR                  : 18
 NOT                  : 20
-NUMBER               : 7
-OR                   : 22
+NUMBER               : 21
+OR                   : 16
 PLUS                 : 3
-RPAREN               : 9 10
+RPAREN               : 23 24
 TIMES                : 5
-XOR                  : 15
 error                : 
 
 Nonterminals, with rules where they appear
 
-arith_expression     : 1 3 3 4 4 5 5 6 6 9 11 11 13 13 16 16 17 17 18 18 19 19
-bool_expression      : 2 10 12 12 14 14 15 15 20 21 21 22 22 23 23 24 24 25 25
+arith_expression     : 1 3 3 4 4 5 5 6 6 7 7 8 8 9 9 10 10 11 11 12 12 23
+bool_expression      : 2 13 13 14 14 15 15 16 16 17 17 18 18 19 19 20 24
 expression           : 0
 
 Parsing method: LALR
@@ -71,30 +71,29 @@ state 0
     (4) arith_expression -> . arith_expression MINUS arith_expression
     (5) arith_expression -> . arith_expression TIMES arith_expression
     (6) arith_expression -> . arith_expression DIVIDE arith_expression
-    (7) arith_expression -> . NUMBER
-    (9) arith_expression -> . LPAREN arith_expression RPAREN
-    (11) arith_expression -> . arith_expression EQ arith_expression
-    (13) arith_expression -> . arith_expression NEQ arith_expression
-    (8) bool_expression -> . BOOL_LIT
-    (10) bool_expression -> . LPAREN bool_expression RPAREN
-    (12) bool_expression -> . bool_expression EQ bool_expression
-    (14) bool_expression -> . bool_expression NEQ bool_expression
-    (15) bool_expression -> . bool_expression XOR bool_expression
-    (16) bool_expression -> . arith_expression LT arith_expression
-    (17) bool_expression -> . arith_expression GT arith_expression
-    (18) bool_expression -> . arith_expression LE arith_expression
-    (19) bool_expression -> . arith_expression GE arith_expression
+    (21) arith_expression -> . NUMBER
+    (23) arith_expression -> . LPAREN arith_expression RPAREN
+    (7) bool_expression -> . arith_expression LT arith_expression
+    (8) bool_expression -> . arith_expression GT arith_expression
+    (9) bool_expression -> . arith_expression LE arith_expression
+    (10) bool_expression -> . arith_expression GE arith_expression
+    (11) bool_expression -> . arith_expression EQ arith_expression
+    (12) bool_expression -> . arith_expression NEQ arith_expression
+    (13) bool_expression -> . bool_expression BEQ bool_expression
+    (14) bool_expression -> . bool_expression BNEQ bool_expression
+    (15) bool_expression -> . bool_expression AND bool_expression
+    (16) bool_expression -> . bool_expression OR bool_expression
+    (17) bool_expression -> . bool_expression NAND bool_expression
+    (18) bool_expression -> . bool_expression NOR bool_expression
+    (19) bool_expression -> . bool_expression IMP bool_expression
     (20) bool_expression -> . NOT bool_expression
-    (21) bool_expression -> . bool_expression AND bool_expression
-    (22) bool_expression -> . bool_expression OR bool_expression
-    (23) bool_expression -> . bool_expression NAND bool_expression
-    (24) bool_expression -> . bool_expression NOR bool_expression
-    (25) bool_expression -> . bool_expression IMP bool_expression
+    (22) bool_expression -> . BOOL_LIT
+    (24) bool_expression -> . LPAREN bool_expression RPAREN
 
     NUMBER          shift and go to state 4
     LPAREN          shift and go to state 5
-    BOOL_LIT        shift and go to state 6
-    NOT             shift and go to state 7
+    NOT             shift and go to state 6
+    BOOL_LIT        shift and go to state 7
 
     expression                     shift and go to state 1
     arith_expression               shift and go to state 2
@@ -113,159 +112,155 @@ state 2
     (4) arith_expression -> arith_expression . MINUS arith_expression
     (5) arith_expression -> arith_expression . TIMES arith_expression
     (6) arith_expression -> arith_expression . DIVIDE arith_expression
-    (11) arith_expression -> arith_expression . EQ arith_expression
-    (13) arith_expression -> arith_expression . NEQ arith_expression
-    (16) bool_expression -> arith_expression . LT arith_expression
-    (17) bool_expression -> arith_expression . GT arith_expression
-    (18) bool_expression -> arith_expression . LE arith_expression
-    (19) bool_expression -> arith_expression . GE arith_expression
+    (7) bool_expression -> arith_expression . LT arith_expression
+    (8) bool_expression -> arith_expression . GT arith_expression
+    (9) bool_expression -> arith_expression . LE arith_expression
+    (10) bool_expression -> arith_expression . GE arith_expression
+    (11) bool_expression -> arith_expression . EQ arith_expression
+    (12) bool_expression -> arith_expression . NEQ arith_expression
 
     $end            reduce using rule 1 (expression -> arith_expression .)
     PLUS            shift and go to state 8
     MINUS           shift and go to state 9
     TIMES           shift and go to state 10
     DIVIDE          shift and go to state 11
-    EQ              shift and go to state 12
-    NEQ             shift and go to state 13
-    LT              shift and go to state 14
-    GT              shift and go to state 15
-    LE              shift and go to state 16
-    GE              shift and go to state 17
+    LT              shift and go to state 12
+    GT              shift and go to state 13
+    LE              shift and go to state 14
+    GE              shift and go to state 15
+    EQ              shift and go to state 16
+    NEQ             shift and go to state 17
 
 
 state 3
 
     (2) expression -> bool_expression .
-    (12) bool_expression -> bool_expression . EQ bool_expression
-    (14) bool_expression -> bool_expression . NEQ bool_expression
-    (15) bool_expression -> bool_expression . XOR bool_expression
-    (21) bool_expression -> bool_expression . AND bool_expression
-    (22) bool_expression -> bool_expression . OR bool_expression
-    (23) bool_expression -> bool_expression . NAND bool_expression
-    (24) bool_expression -> bool_expression . NOR bool_expression
-    (25) bool_expression -> bool_expression . IMP bool_expression
+    (13) bool_expression -> bool_expression . BEQ bool_expression
+    (14) bool_expression -> bool_expression . BNEQ bool_expression
+    (15) bool_expression -> bool_expression . AND bool_expression
+    (16) bool_expression -> bool_expression . OR bool_expression
+    (17) bool_expression -> bool_expression . NAND bool_expression
+    (18) bool_expression -> bool_expression . NOR bool_expression
+    (19) bool_expression -> bool_expression . IMP bool_expression
 
     $end            reduce using rule 2 (expression -> bool_expression .)
-    EQ              shift and go to state 18
-    NEQ             shift and go to state 19
-    XOR             shift and go to state 20
-    AND             shift and go to state 21
-    OR              shift and go to state 22
-    NAND            shift and go to state 23
-    NOR             shift and go to state 24
-    IMP             shift and go to state 25
+    BEQ             shift and go to state 18
+    BNEQ            shift and go to state 19
+    AND             shift and go to state 20
+    OR              shift and go to state 21
+    NAND            shift and go to state 22
+    NOR             shift and go to state 23
+    IMP             shift and go to state 24
 
 
 state 4
 
-    (7) arith_expression -> NUMBER .
+    (21) arith_expression -> NUMBER .
 
-    PLUS            reduce using rule 7 (arith_expression -> NUMBER .)
-    MINUS           reduce using rule 7 (arith_expression -> NUMBER .)
-    TIMES           reduce using rule 7 (arith_expression -> NUMBER .)
-    DIVIDE          reduce using rule 7 (arith_expression -> NUMBER .)
-    EQ              reduce using rule 7 (arith_expression -> NUMBER .)
-    NEQ             reduce using rule 7 (arith_expression -> NUMBER .)
-    LT              reduce using rule 7 (arith_expression -> NUMBER .)
-    GT              reduce using rule 7 (arith_expression -> NUMBER .)
-    LE              reduce using rule 7 (arith_expression -> NUMBER .)
-    GE              reduce using rule 7 (arith_expression -> NUMBER .)
-    $end            reduce using rule 7 (arith_expression -> NUMBER .)
-    RPAREN          reduce using rule 7 (arith_expression -> NUMBER .)
-    XOR             reduce using rule 7 (arith_expression -> NUMBER .)
-    AND             reduce using rule 7 (arith_expression -> NUMBER .)
-    OR              reduce using rule 7 (arith_expression -> NUMBER .)
-    NAND            reduce using rule 7 (arith_expression -> NUMBER .)
-    NOR             reduce using rule 7 (arith_expression -> NUMBER .)
-    IMP             reduce using rule 7 (arith_expression -> NUMBER .)
+    PLUS            reduce using rule 21 (arith_expression -> NUMBER .)
+    MINUS           reduce using rule 21 (arith_expression -> NUMBER .)
+    TIMES           reduce using rule 21 (arith_expression -> NUMBER .)
+    DIVIDE          reduce using rule 21 (arith_expression -> NUMBER .)
+    LT              reduce using rule 21 (arith_expression -> NUMBER .)
+    GT              reduce using rule 21 (arith_expression -> NUMBER .)
+    LE              reduce using rule 21 (arith_expression -> NUMBER .)
+    GE              reduce using rule 21 (arith_expression -> NUMBER .)
+    EQ              reduce using rule 21 (arith_expression -> NUMBER .)
+    NEQ             reduce using rule 21 (arith_expression -> NUMBER .)
+    $end            reduce using rule 21 (arith_expression -> NUMBER .)
+    RPAREN          reduce using rule 21 (arith_expression -> NUMBER .)
+    BEQ             reduce using rule 21 (arith_expression -> NUMBER .)
+    BNEQ            reduce using rule 21 (arith_expression -> NUMBER .)
+    AND             reduce using rule 21 (arith_expression -> NUMBER .)
+    OR              reduce using rule 21 (arith_expression -> NUMBER .)
+    NAND            reduce using rule 21 (arith_expression -> NUMBER .)
+    NOR             reduce using rule 21 (arith_expression -> NUMBER .)
+    IMP             reduce using rule 21 (arith_expression -> NUMBER .)
 
 
 state 5
 
-    (9) arith_expression -> LPAREN . arith_expression RPAREN
-    (10) bool_expression -> LPAREN . bool_expression RPAREN
+    (23) arith_expression -> LPAREN . arith_expression RPAREN
+    (24) bool_expression -> LPAREN . bool_expression RPAREN
     (3) arith_expression -> . arith_expression PLUS arith_expression
     (4) arith_expression -> . arith_expression MINUS arith_expression
     (5) arith_expression -> . arith_expression TIMES arith_expression
     (6) arith_expression -> . arith_expression DIVIDE arith_expression
-    (7) arith_expression -> . NUMBER
-    (9) arith_expression -> . LPAREN arith_expression RPAREN
-    (11) arith_expression -> . arith_expression EQ arith_expression
-    (13) arith_expression -> . arith_expression NEQ arith_expression
-    (8) bool_expression -> . BOOL_LIT
-    (10) bool_expression -> . LPAREN bool_expression RPAREN
-    (12) bool_expression -> . bool_expression EQ bool_expression
-    (14) bool_expression -> . bool_expression NEQ bool_expression
-    (15) bool_expression -> . bool_expression XOR bool_expression
-    (16) bool_expression -> . arith_expression LT arith_expression
-    (17) bool_expression -> . arith_expression GT arith_expression
-    (18) bool_expression -> . arith_expression LE arith_expression
-    (19) bool_expression -> . arith_expression GE arith_expression
+    (21) arith_expression -> . NUMBER
+    (23) arith_expression -> . LPAREN arith_expression RPAREN
+    (7) bool_expression -> . arith_expression LT arith_expression
+    (8) bool_expression -> . arith_expression GT arith_expression
+    (9) bool_expression -> . arith_expression LE arith_expression
+    (10) bool_expression -> . arith_expression GE arith_expression
+    (11) bool_expression -> . arith_expression EQ arith_expression
+    (12) bool_expression -> . arith_expression NEQ arith_expression
+    (13) bool_expression -> . bool_expression BEQ bool_expression
+    (14) bool_expression -> . bool_expression BNEQ bool_expression
+    (15) bool_expression -> . bool_expression AND bool_expression
+    (16) bool_expression -> . bool_expression OR bool_expression
+    (17) bool_expression -> . bool_expression NAND bool_expression
+    (18) bool_expression -> . bool_expression NOR bool_expression
+    (19) bool_expression -> . bool_expression IMP bool_expression
     (20) bool_expression -> . NOT bool_expression
-    (21) bool_expression -> . bool_expression AND bool_expression
-    (22) bool_expression -> . bool_expression OR bool_expression
-    (23) bool_expression -> . bool_expression NAND bool_expression
-    (24) bool_expression -> . bool_expression NOR bool_expression
-    (25) bool_expression -> . bool_expression IMP bool_expression
+    (22) bool_expression -> . BOOL_LIT
+    (24) bool_expression -> . LPAREN bool_expression RPAREN
 
     NUMBER          shift and go to state 4
     LPAREN          shift and go to state 5
-    BOOL_LIT        shift and go to state 6
-    NOT             shift and go to state 7
+    NOT             shift and go to state 6
+    BOOL_LIT        shift and go to state 7
 
-    arith_expression               shift and go to state 26
-    bool_expression                shift and go to state 27
+    arith_expression               shift and go to state 25
+    bool_expression                shift and go to state 26
 
 state 6
 
-    (8) bool_expression -> BOOL_LIT .
-
-    EQ              reduce using rule 8 (bool_expression -> BOOL_LIT .)
-    NEQ             reduce using rule 8 (bool_expression -> BOOL_LIT .)
-    XOR             reduce using rule 8 (bool_expression -> BOOL_LIT .)
-    AND             reduce using rule 8 (bool_expression -> BOOL_LIT .)
-    OR              reduce using rule 8 (bool_expression -> BOOL_LIT .)
-    NAND            reduce using rule 8 (bool_expression -> BOOL_LIT .)
-    NOR             reduce using rule 8 (bool_expression -> BOOL_LIT .)
-    IMP             reduce using rule 8 (bool_expression -> BOOL_LIT .)
-    $end            reduce using rule 8 (bool_expression -> BOOL_LIT .)
-    RPAREN          reduce using rule 8 (bool_expression -> BOOL_LIT .)
-
-
-state 7
-
     (20) bool_expression -> NOT . bool_expression
-    (8) bool_expression -> . BOOL_LIT
-    (10) bool_expression -> . LPAREN bool_expression RPAREN
-    (12) bool_expression -> . bool_expression EQ bool_expression
-    (14) bool_expression -> . bool_expression NEQ bool_expression
-    (15) bool_expression -> . bool_expression XOR bool_expression
-    (16) bool_expression -> . arith_expression LT arith_expression
-    (17) bool_expression -> . arith_expression GT arith_expression
-    (18) bool_expression -> . arith_expression LE arith_expression
-    (19) bool_expression -> . arith_expression GE arith_expression
+    (7) bool_expression -> . arith_expression LT arith_expression
+    (8) bool_expression -> . arith_expression GT arith_expression
+    (9) bool_expression -> . arith_expression LE arith_expression
+    (10) bool_expression -> . arith_expression GE arith_expression
+    (11) bool_expression -> . arith_expression EQ arith_expression
+    (12) bool_expression -> . arith_expression NEQ arith_expression
+    (13) bool_expression -> . bool_expression BEQ bool_expression
+    (14) bool_expression -> . bool_expression BNEQ bool_expression
+    (15) bool_expression -> . bool_expression AND bool_expression
+    (16) bool_expression -> . bool_expression OR bool_expression
+    (17) bool_expression -> . bool_expression NAND bool_expression
+    (18) bool_expression -> . bool_expression NOR bool_expression
+    (19) bool_expression -> . bool_expression IMP bool_expression
     (20) bool_expression -> . NOT bool_expression
-    (21) bool_expression -> . bool_expression AND bool_expression
-    (22) bool_expression -> . bool_expression OR bool_expression
-    (23) bool_expression -> . bool_expression NAND bool_expression
-    (24) bool_expression -> . bool_expression NOR bool_expression
-    (25) bool_expression -> . bool_expression IMP bool_expression
+    (22) bool_expression -> . BOOL_LIT
+    (24) bool_expression -> . LPAREN bool_expression RPAREN
     (3) arith_expression -> . arith_expression PLUS arith_expression
     (4) arith_expression -> . arith_expression MINUS arith_expression
     (5) arith_expression -> . arith_expression TIMES arith_expression
     (6) arith_expression -> . arith_expression DIVIDE arith_expression
-    (7) arith_expression -> . NUMBER
-    (9) arith_expression -> . LPAREN arith_expression RPAREN
-    (11) arith_expression -> . arith_expression EQ arith_expression
-    (13) arith_expression -> . arith_expression NEQ arith_expression
+    (21) arith_expression -> . NUMBER
+    (23) arith_expression -> . LPAREN arith_expression RPAREN
 
-    BOOL_LIT        shift and go to state 6
+    NOT             shift and go to state 6
+    BOOL_LIT        shift and go to state 7
     LPAREN          shift and go to state 29
-    NOT             shift and go to state 7
     NUMBER          shift and go to state 4
 
-    bool_expression                shift and go to state 28
-    arith_expression               shift and go to state 30
+    bool_expression                shift and go to state 27
+    arith_expression               shift and go to state 28
+
+state 7
+
+    (22) bool_expression -> BOOL_LIT .
+
+    BEQ             reduce using rule 22 (bool_expression -> BOOL_LIT .)
+    BNEQ            reduce using rule 22 (bool_expression -> BOOL_LIT .)
+    AND             reduce using rule 22 (bool_expression -> BOOL_LIT .)
+    OR              reduce using rule 22 (bool_expression -> BOOL_LIT .)
+    NAND            reduce using rule 22 (bool_expression -> BOOL_LIT .)
+    NOR             reduce using rule 22 (bool_expression -> BOOL_LIT .)
+    IMP             reduce using rule 22 (bool_expression -> BOOL_LIT .)
+    $end            reduce using rule 22 (bool_expression -> BOOL_LIT .)
+    RPAREN          reduce using rule 22 (bool_expression -> BOOL_LIT .)
+
 
 state 8
 
@@ -274,15 +269,13 @@ state 8
     (4) arith_expression -> . arith_expression MINUS arith_expression
     (5) arith_expression -> . arith_expression TIMES arith_expression
     (6) arith_expression -> . arith_expression DIVIDE arith_expression
-    (7) arith_expression -> . NUMBER
-    (9) arith_expression -> . LPAREN arith_expression RPAREN
-    (11) arith_expression -> . arith_expression EQ arith_expression
-    (13) arith_expression -> . arith_expression NEQ arith_expression
+    (21) arith_expression -> . NUMBER
+    (23) arith_expression -> . LPAREN arith_expression RPAREN
 
     NUMBER          shift and go to state 4
-    LPAREN          shift and go to state 32
+    LPAREN          shift and go to state 31
 
-    arith_expression               shift and go to state 31
+    arith_expression               shift and go to state 30
 
 state 9
 
@@ -291,15 +284,13 @@ state 9
     (4) arith_expression -> . arith_expression MINUS arith_expression
     (5) arith_expression -> . arith_expression TIMES arith_expression
     (6) arith_expression -> . arith_expression DIVIDE arith_expression
-    (7) arith_expression -> . NUMBER
-    (9) arith_expression -> . LPAREN arith_expression RPAREN
-    (11) arith_expression -> . arith_expression EQ arith_expression
-    (13) arith_expression -> . arith_expression NEQ arith_expression
+    (21) arith_expression -> . NUMBER
+    (23) arith_expression -> . LPAREN arith_expression RPAREN
 
     NUMBER          shift and go to state 4
-    LPAREN          shift and go to state 32
+    LPAREN          shift and go to state 31
 
-    arith_expression               shift and go to state 33
+    arith_expression               shift and go to state 32
 
 state 10
 
@@ -308,15 +299,13 @@ state 10
     (4) arith_expression -> . arith_expression MINUS arith_expression
     (5) arith_expression -> . arith_expression TIMES arith_expression
     (6) arith_expression -> . arith_expression DIVIDE arith_expression
-    (7) arith_expression -> . NUMBER
-    (9) arith_expression -> . LPAREN arith_expression RPAREN
-    (11) arith_expression -> . arith_expression EQ arith_expression
-    (13) arith_expression -> . arith_expression NEQ arith_expression
+    (21) arith_expression -> . NUMBER
+    (23) arith_expression -> . LPAREN arith_expression RPAREN
 
     NUMBER          shift and go to state 4
-    LPAREN          shift and go to state 32
+    LPAREN          shift and go to state 31
 
-    arith_expression               shift and go to state 34
+    arith_expression               shift and go to state 33
 
 state 11
 
@@ -325,463 +314,403 @@ state 11
     (4) arith_expression -> . arith_expression MINUS arith_expression
     (5) arith_expression -> . arith_expression TIMES arith_expression
     (6) arith_expression -> . arith_expression DIVIDE arith_expression
-    (7) arith_expression -> . NUMBER
-    (9) arith_expression -> . LPAREN arith_expression RPAREN
-    (11) arith_expression -> . arith_expression EQ arith_expression
-    (13) arith_expression -> . arith_expression NEQ arith_expression
+    (21) arith_expression -> . NUMBER
+    (23) arith_expression -> . LPAREN arith_expression RPAREN
 
     NUMBER          shift and go to state 4
-    LPAREN          shift and go to state 32
+    LPAREN          shift and go to state 31
 
-    arith_expression               shift and go to state 35
+    arith_expression               shift and go to state 34
 
 state 12
 
-    (11) arith_expression -> arith_expression EQ . arith_expression
+    (7) bool_expression -> arith_expression LT . arith_expression
     (3) arith_expression -> . arith_expression PLUS arith_expression
     (4) arith_expression -> . arith_expression MINUS arith_expression
     (5) arith_expression -> . arith_expression TIMES arith_expression
     (6) arith_expression -> . arith_expression DIVIDE arith_expression
-    (7) arith_expression -> . NUMBER
-    (9) arith_expression -> . LPAREN arith_expression RPAREN
-    (11) arith_expression -> . arith_expression EQ arith_expression
-    (13) arith_expression -> . arith_expression NEQ arith_expression
+    (21) arith_expression -> . NUMBER
+    (23) arith_expression -> . LPAREN arith_expression RPAREN
 
     NUMBER          shift and go to state 4
-    LPAREN          shift and go to state 32
+    LPAREN          shift and go to state 31
 
-    arith_expression               shift and go to state 36
+    arith_expression               shift and go to state 35
 
 state 13
 
-    (13) arith_expression -> arith_expression NEQ . arith_expression
+    (8) bool_expression -> arith_expression GT . arith_expression
     (3) arith_expression -> . arith_expression PLUS arith_expression
     (4) arith_expression -> . arith_expression MINUS arith_expression
     (5) arith_expression -> . arith_expression TIMES arith_expression
     (6) arith_expression -> . arith_expression DIVIDE arith_expression
-    (7) arith_expression -> . NUMBER
-    (9) arith_expression -> . LPAREN arith_expression RPAREN
-    (11) arith_expression -> . arith_expression EQ arith_expression
-    (13) arith_expression -> . arith_expression NEQ arith_expression
+    (21) arith_expression -> . NUMBER
+    (23) arith_expression -> . LPAREN arith_expression RPAREN
 
     NUMBER          shift and go to state 4
-    LPAREN          shift and go to state 32
+    LPAREN          shift and go to state 31
 
-    arith_expression               shift and go to state 37
+    arith_expression               shift and go to state 36
 
 state 14
 
-    (16) bool_expression -> arith_expression LT . arith_expression
+    (9) bool_expression -> arith_expression LE . arith_expression
     (3) arith_expression -> . arith_expression PLUS arith_expression
     (4) arith_expression -> . arith_expression MINUS arith_expression
     (5) arith_expression -> . arith_expression TIMES arith_expression
     (6) arith_expression -> . arith_expression DIVIDE arith_expression
-    (7) arith_expression -> . NUMBER
-    (9) arith_expression -> . LPAREN arith_expression RPAREN
-    (11) arith_expression -> . arith_expression EQ arith_expression
-    (13) arith_expression -> . arith_expression NEQ arith_expression
+    (21) arith_expression -> . NUMBER
+    (23) arith_expression -> . LPAREN arith_expression RPAREN
 
     NUMBER          shift and go to state 4
-    LPAREN          shift and go to state 32
+    LPAREN          shift and go to state 31
 
-    arith_expression               shift and go to state 38
+    arith_expression               shift and go to state 37
 
 state 15
 
-    (17) bool_expression -> arith_expression GT . arith_expression
+    (10) bool_expression -> arith_expression GE . arith_expression
     (3) arith_expression -> . arith_expression PLUS arith_expression
     (4) arith_expression -> . arith_expression MINUS arith_expression
     (5) arith_expression -> . arith_expression TIMES arith_expression
     (6) arith_expression -> . arith_expression DIVIDE arith_expression
-    (7) arith_expression -> . NUMBER
-    (9) arith_expression -> . LPAREN arith_expression RPAREN
-    (11) arith_expression -> . arith_expression EQ arith_expression
-    (13) arith_expression -> . arith_expression NEQ arith_expression
+    (21) arith_expression -> . NUMBER
+    (23) arith_expression -> . LPAREN arith_expression RPAREN
 
     NUMBER          shift and go to state 4
-    LPAREN          shift and go to state 32
+    LPAREN          shift and go to state 31
 
-    arith_expression               shift and go to state 39
+    arith_expression               shift and go to state 38
 
 state 16
 
-    (18) bool_expression -> arith_expression LE . arith_expression
+    (11) bool_expression -> arith_expression EQ . arith_expression
     (3) arith_expression -> . arith_expression PLUS arith_expression
     (4) arith_expression -> . arith_expression MINUS arith_expression
     (5) arith_expression -> . arith_expression TIMES arith_expression
     (6) arith_expression -> . arith_expression DIVIDE arith_expression
-    (7) arith_expression -> . NUMBER
-    (9) arith_expression -> . LPAREN arith_expression RPAREN
-    (11) arith_expression -> . arith_expression EQ arith_expression
-    (13) arith_expression -> . arith_expression NEQ arith_expression
+    (21) arith_expression -> . NUMBER
+    (23) arith_expression -> . LPAREN arith_expression RPAREN
 
     NUMBER          shift and go to state 4
-    LPAREN          shift and go to state 32
+    LPAREN          shift and go to state 31
 
-    arith_expression               shift and go to state 40
+    arith_expression               shift and go to state 39
 
 state 17
 
-    (19) bool_expression -> arith_expression GE . arith_expression
+    (12) bool_expression -> arith_expression NEQ . arith_expression
     (3) arith_expression -> . arith_expression PLUS arith_expression
     (4) arith_expression -> . arith_expression MINUS arith_expression
     (5) arith_expression -> . arith_expression TIMES arith_expression
     (6) arith_expression -> . arith_expression DIVIDE arith_expression
-    (7) arith_expression -> . NUMBER
-    (9) arith_expression -> . LPAREN arith_expression RPAREN
-    (11) arith_expression -> . arith_expression EQ arith_expression
-    (13) arith_expression -> . arith_expression NEQ arith_expression
+    (21) arith_expression -> . NUMBER
+    (23) arith_expression -> . LPAREN arith_expression RPAREN
 
     NUMBER          shift and go to state 4
-    LPAREN          shift and go to state 32
+    LPAREN          shift and go to state 31
 
-    arith_expression               shift and go to state 41
+    arith_expression               shift and go to state 40
 
 state 18
 
-    (12) bool_expression -> bool_expression EQ . bool_expression
-    (8) bool_expression -> . BOOL_LIT
-    (10) bool_expression -> . LPAREN bool_expression RPAREN
-    (12) bool_expression -> . bool_expression EQ bool_expression
-    (14) bool_expression -> . bool_expression NEQ bool_expression
-    (15) bool_expression -> . bool_expression XOR bool_expression
-    (16) bool_expression -> . arith_expression LT arith_expression
-    (17) bool_expression -> . arith_expression GT arith_expression
-    (18) bool_expression -> . arith_expression LE arith_expression
-    (19) bool_expression -> . arith_expression GE arith_expression
+    (13) bool_expression -> bool_expression BEQ . bool_expression
+    (7) bool_expression -> . arith_expression LT arith_expression
+    (8) bool_expression -> . arith_expression GT arith_expression
+    (9) bool_expression -> . arith_expression LE arith_expression
+    (10) bool_expression -> . arith_expression GE arith_expression
+    (11) bool_expression -> . arith_expression EQ arith_expression
+    (12) bool_expression -> . arith_expression NEQ arith_expression
+    (13) bool_expression -> . bool_expression BEQ bool_expression
+    (14) bool_expression -> . bool_expression BNEQ bool_expression
+    (15) bool_expression -> . bool_expression AND bool_expression
+    (16) bool_expression -> . bool_expression OR bool_expression
+    (17) bool_expression -> . bool_expression NAND bool_expression
+    (18) bool_expression -> . bool_expression NOR bool_expression
+    (19) bool_expression -> . bool_expression IMP bool_expression
     (20) bool_expression -> . NOT bool_expression
-    (21) bool_expression -> . bool_expression AND bool_expression
-    (22) bool_expression -> . bool_expression OR bool_expression
-    (23) bool_expression -> . bool_expression NAND bool_expression
-    (24) bool_expression -> . bool_expression NOR bool_expression
-    (25) bool_expression -> . bool_expression IMP bool_expression
+    (22) bool_expression -> . BOOL_LIT
+    (24) bool_expression -> . LPAREN bool_expression RPAREN
     (3) arith_expression -> . arith_expression PLUS arith_expression
     (4) arith_expression -> . arith_expression MINUS arith_expression
     (5) arith_expression -> . arith_expression TIMES arith_expression
     (6) arith_expression -> . arith_expression DIVIDE arith_expression
-    (7) arith_expression -> . NUMBER
-    (9) arith_expression -> . LPAREN arith_expression RPAREN
-    (11) arith_expression -> . arith_expression EQ arith_expression
-    (13) arith_expression -> . arith_expression NEQ arith_expression
+    (21) arith_expression -> . NUMBER
+    (23) arith_expression -> . LPAREN arith_expression RPAREN
 
-    BOOL_LIT        shift and go to state 6
+    NOT             shift and go to state 6
+    BOOL_LIT        shift and go to state 7
     LPAREN          shift and go to state 29
-    NOT             shift and go to state 7
     NUMBER          shift and go to state 4
 
-    bool_expression                shift and go to state 42
-    arith_expression               shift and go to state 30
+    bool_expression                shift and go to state 41
+    arith_expression               shift and go to state 28
 
 state 19
 
-    (14) bool_expression -> bool_expression NEQ . bool_expression
-    (8) bool_expression -> . BOOL_LIT
-    (10) bool_expression -> . LPAREN bool_expression RPAREN
-    (12) bool_expression -> . bool_expression EQ bool_expression
-    (14) bool_expression -> . bool_expression NEQ bool_expression
-    (15) bool_expression -> . bool_expression XOR bool_expression
-    (16) bool_expression -> . arith_expression LT arith_expression
-    (17) bool_expression -> . arith_expression GT arith_expression
-    (18) bool_expression -> . arith_expression LE arith_expression
-    (19) bool_expression -> . arith_expression GE arith_expression
+    (14) bool_expression -> bool_expression BNEQ . bool_expression
+    (7) bool_expression -> . arith_expression LT arith_expression
+    (8) bool_expression -> . arith_expression GT arith_expression
+    (9) bool_expression -> . arith_expression LE arith_expression
+    (10) bool_expression -> . arith_expression GE arith_expression
+    (11) bool_expression -> . arith_expression EQ arith_expression
+    (12) bool_expression -> . arith_expression NEQ arith_expression
+    (13) bool_expression -> . bool_expression BEQ bool_expression
+    (14) bool_expression -> . bool_expression BNEQ bool_expression
+    (15) bool_expression -> . bool_expression AND bool_expression
+    (16) bool_expression -> . bool_expression OR bool_expression
+    (17) bool_expression -> . bool_expression NAND bool_expression
+    (18) bool_expression -> . bool_expression NOR bool_expression
+    (19) bool_expression -> . bool_expression IMP bool_expression
     (20) bool_expression -> . NOT bool_expression
-    (21) bool_expression -> . bool_expression AND bool_expression
-    (22) bool_expression -> . bool_expression OR bool_expression
-    (23) bool_expression -> . bool_expression NAND bool_expression
-    (24) bool_expression -> . bool_expression NOR bool_expression
-    (25) bool_expression -> . bool_expression IMP bool_expression
+    (22) bool_expression -> . BOOL_LIT
+    (24) bool_expression -> . LPAREN bool_expression RPAREN
     (3) arith_expression -> . arith_expression PLUS arith_expression
     (4) arith_expression -> . arith_expression MINUS arith_expression
     (5) arith_expression -> . arith_expression TIMES arith_expression
     (6) arith_expression -> . arith_expression DIVIDE arith_expression
-    (7) arith_expression -> . NUMBER
-    (9) arith_expression -> . LPAREN arith_expression RPAREN
-    (11) arith_expression -> . arith_expression EQ arith_expression
-    (13) arith_expression -> . arith_expression NEQ arith_expression
+    (21) arith_expression -> . NUMBER
+    (23) arith_expression -> . LPAREN arith_expression RPAREN
 
-    BOOL_LIT        shift and go to state 6
+    NOT             shift and go to state 6
+    BOOL_LIT        shift and go to state 7
     LPAREN          shift and go to state 29
-    NOT             shift and go to state 7
     NUMBER          shift and go to state 4
 
-    bool_expression                shift and go to state 43
-    arith_expression               shift and go to state 30
+    bool_expression                shift and go to state 42
+    arith_expression               shift and go to state 28
 
 state 20
 
-    (15) bool_expression -> bool_expression XOR . bool_expression
-    (8) bool_expression -> . BOOL_LIT
-    (10) bool_expression -> . LPAREN bool_expression RPAREN
-    (12) bool_expression -> . bool_expression EQ bool_expression
-    (14) bool_expression -> . bool_expression NEQ bool_expression
-    (15) bool_expression -> . bool_expression XOR bool_expression
-    (16) bool_expression -> . arith_expression LT arith_expression
-    (17) bool_expression -> . arith_expression GT arith_expression
-    (18) bool_expression -> . arith_expression LE arith_expression
-    (19) bool_expression -> . arith_expression GE arith_expression
+    (15) bool_expression -> bool_expression AND . bool_expression
+    (7) bool_expression -> . arith_expression LT arith_expression
+    (8) bool_expression -> . arith_expression GT arith_expression
+    (9) bool_expression -> . arith_expression LE arith_expression
+    (10) bool_expression -> . arith_expression GE arith_expression
+    (11) bool_expression -> . arith_expression EQ arith_expression
+    (12) bool_expression -> . arith_expression NEQ arith_expression
+    (13) bool_expression -> . bool_expression BEQ bool_expression
+    (14) bool_expression -> . bool_expression BNEQ bool_expression
+    (15) bool_expression -> . bool_expression AND bool_expression
+    (16) bool_expression -> . bool_expression OR bool_expression
+    (17) bool_expression -> . bool_expression NAND bool_expression
+    (18) bool_expression -> . bool_expression NOR bool_expression
+    (19) bool_expression -> . bool_expression IMP bool_expression
     (20) bool_expression -> . NOT bool_expression
-    (21) bool_expression -> . bool_expression AND bool_expression
-    (22) bool_expression -> . bool_expression OR bool_expression
-    (23) bool_expression -> . bool_expression NAND bool_expression
-    (24) bool_expression -> . bool_expression NOR bool_expression
-    (25) bool_expression -> . bool_expression IMP bool_expression
+    (22) bool_expression -> . BOOL_LIT
+    (24) bool_expression -> . LPAREN bool_expression RPAREN
     (3) arith_expression -> . arith_expression PLUS arith_expression
     (4) arith_expression -> . arith_expression MINUS arith_expression
     (5) arith_expression -> . arith_expression TIMES arith_expression
     (6) arith_expression -> . arith_expression DIVIDE arith_expression
-    (7) arith_expression -> . NUMBER
-    (9) arith_expression -> . LPAREN arith_expression RPAREN
-    (11) arith_expression -> . arith_expression EQ arith_expression
-    (13) arith_expression -> . arith_expression NEQ arith_expression
+    (21) arith_expression -> . NUMBER
+    (23) arith_expression -> . LPAREN arith_expression RPAREN
 
-    BOOL_LIT        shift and go to state 6
+    NOT             shift and go to state 6
+    BOOL_LIT        shift and go to state 7
     LPAREN          shift and go to state 29
-    NOT             shift and go to state 7
     NUMBER          shift and go to state 4
 
-    bool_expression                shift and go to state 44
-    arith_expression               shift and go to state 30
+    bool_expression                shift and go to state 43
+    arith_expression               shift and go to state 28
 
 state 21
 
-    (21) bool_expression -> bool_expression AND . bool_expression
-    (8) bool_expression -> . BOOL_LIT
-    (10) bool_expression -> . LPAREN bool_expression RPAREN
-    (12) bool_expression -> . bool_expression EQ bool_expression
-    (14) bool_expression -> . bool_expression NEQ bool_expression
-    (15) bool_expression -> . bool_expression XOR bool_expression
-    (16) bool_expression -> . arith_expression LT arith_expression
-    (17) bool_expression -> . arith_expression GT arith_expression
-    (18) bool_expression -> . arith_expression LE arith_expression
-    (19) bool_expression -> . arith_expression GE arith_expression
+    (16) bool_expression -> bool_expression OR . bool_expression
+    (7) bool_expression -> . arith_expression LT arith_expression
+    (8) bool_expression -> . arith_expression GT arith_expression
+    (9) bool_expression -> . arith_expression LE arith_expression
+    (10) bool_expression -> . arith_expression GE arith_expression
+    (11) bool_expression -> . arith_expression EQ arith_expression
+    (12) bool_expression -> . arith_expression NEQ arith_expression
+    (13) bool_expression -> . bool_expression BEQ bool_expression
+    (14) bool_expression -> . bool_expression BNEQ bool_expression
+    (15) bool_expression -> . bool_expression AND bool_expression
+    (16) bool_expression -> . bool_expression OR bool_expression
+    (17) bool_expression -> . bool_expression NAND bool_expression
+    (18) bool_expression -> . bool_expression NOR bool_expression
+    (19) bool_expression -> . bool_expression IMP bool_expression
     (20) bool_expression -> . NOT bool_expression
-    (21) bool_expression -> . bool_expression AND bool_expression
-    (22) bool_expression -> . bool_expression OR bool_expression
-    (23) bool_expression -> . bool_expression NAND bool_expression
-    (24) bool_expression -> . bool_expression NOR bool_expression
-    (25) bool_expression -> . bool_expression IMP bool_expression
+    (22) bool_expression -> . BOOL_LIT
+    (24) bool_expression -> . LPAREN bool_expression RPAREN
     (3) arith_expression -> . arith_expression PLUS arith_expression
     (4) arith_expression -> . arith_expression MINUS arith_expression
     (5) arith_expression -> . arith_expression TIMES arith_expression
     (6) arith_expression -> . arith_expression DIVIDE arith_expression
-    (7) arith_expression -> . NUMBER
-    (9) arith_expression -> . LPAREN arith_expression RPAREN
-    (11) arith_expression -> . arith_expression EQ arith_expression
-    (13) arith_expression -> . arith_expression NEQ arith_expression
+    (21) arith_expression -> . NUMBER
+    (23) arith_expression -> . LPAREN arith_expression RPAREN
 
-    BOOL_LIT        shift and go to state 6
+    NOT             shift and go to state 6
+    BOOL_LIT        shift and go to state 7
     LPAREN          shift and go to state 29
-    NOT             shift and go to state 7
     NUMBER          shift and go to state 4
 
-    bool_expression                shift and go to state 45
-    arith_expression               shift and go to state 30
+    bool_expression                shift and go to state 44
+    arith_expression               shift and go to state 28
 
 state 22
 
-    (22) bool_expression -> bool_expression OR . bool_expression
-    (8) bool_expression -> . BOOL_LIT
-    (10) bool_expression -> . LPAREN bool_expression RPAREN
-    (12) bool_expression -> . bool_expression EQ bool_expression
-    (14) bool_expression -> . bool_expression NEQ bool_expression
-    (15) bool_expression -> . bool_expression XOR bool_expression
-    (16) bool_expression -> . arith_expression LT arith_expression
-    (17) bool_expression -> . arith_expression GT arith_expression
-    (18) bool_expression -> . arith_expression LE arith_expression
-    (19) bool_expression -> . arith_expression GE arith_expression
+    (17) bool_expression -> bool_expression NAND . bool_expression
+    (7) bool_expression -> . arith_expression LT arith_expression
+    (8) bool_expression -> . arith_expression GT arith_expression
+    (9) bool_expression -> . arith_expression LE arith_expression
+    (10) bool_expression -> . arith_expression GE arith_expression
+    (11) bool_expression -> . arith_expression EQ arith_expression
+    (12) bool_expression -> . arith_expression NEQ arith_expression
+    (13) bool_expression -> . bool_expression BEQ bool_expression
+    (14) bool_expression -> . bool_expression BNEQ bool_expression
+    (15) bool_expression -> . bool_expression AND bool_expression
+    (16) bool_expression -> . bool_expression OR bool_expression
+    (17) bool_expression -> . bool_expression NAND bool_expression
+    (18) bool_expression -> . bool_expression NOR bool_expression
+    (19) bool_expression -> . bool_expression IMP bool_expression
     (20) bool_expression -> . NOT bool_expression
-    (21) bool_expression -> . bool_expression AND bool_expression
-    (22) bool_expression -> . bool_expression OR bool_expression
-    (23) bool_expression -> . bool_expression NAND bool_expression
-    (24) bool_expression -> . bool_expression NOR bool_expression
-    (25) bool_expression -> . bool_expression IMP bool_expression
+    (22) bool_expression -> . BOOL_LIT
+    (24) bool_expression -> . LPAREN bool_expression RPAREN
     (3) arith_expression -> . arith_expression PLUS arith_expression
     (4) arith_expression -> . arith_expression MINUS arith_expression
     (5) arith_expression -> . arith_expression TIMES arith_expression
     (6) arith_expression -> . arith_expression DIVIDE arith_expression
-    (7) arith_expression -> . NUMBER
-    (9) arith_expression -> . LPAREN arith_expression RPAREN
-    (11) arith_expression -> . arith_expression EQ arith_expression
-    (13) arith_expression -> . arith_expression NEQ arith_expression
+    (21) arith_expression -> . NUMBER
+    (23) arith_expression -> . LPAREN arith_expression RPAREN
 
-    BOOL_LIT        shift and go to state 6
+    NOT             shift and go to state 6
+    BOOL_LIT        shift and go to state 7
     LPAREN          shift and go to state 29
-    NOT             shift and go to state 7
     NUMBER          shift and go to state 4
 
-    bool_expression                shift and go to state 46
-    arith_expression               shift and go to state 30
+    bool_expression                shift and go to state 45
+    arith_expression               shift and go to state 28
 
 state 23
 
-    (23) bool_expression -> bool_expression NAND . bool_expression
-    (8) bool_expression -> . BOOL_LIT
-    (10) bool_expression -> . LPAREN bool_expression RPAREN
-    (12) bool_expression -> . bool_expression EQ bool_expression
-    (14) bool_expression -> . bool_expression NEQ bool_expression
-    (15) bool_expression -> . bool_expression XOR bool_expression
-    (16) bool_expression -> . arith_expression LT arith_expression
-    (17) bool_expression -> . arith_expression GT arith_expression
-    (18) bool_expression -> . arith_expression LE arith_expression
-    (19) bool_expression -> . arith_expression GE arith_expression
+    (18) bool_expression -> bool_expression NOR . bool_expression
+    (7) bool_expression -> . arith_expression LT arith_expression
+    (8) bool_expression -> . arith_expression GT arith_expression
+    (9) bool_expression -> . arith_expression LE arith_expression
+    (10) bool_expression -> . arith_expression GE arith_expression
+    (11) bool_expression -> . arith_expression EQ arith_expression
+    (12) bool_expression -> . arith_expression NEQ arith_expression
+    (13) bool_expression -> . bool_expression BEQ bool_expression
+    (14) bool_expression -> . bool_expression BNEQ bool_expression
+    (15) bool_expression -> . bool_expression AND bool_expression
+    (16) bool_expression -> . bool_expression OR bool_expression
+    (17) bool_expression -> . bool_expression NAND bool_expression
+    (18) bool_expression -> . bool_expression NOR bool_expression
+    (19) bool_expression -> . bool_expression IMP bool_expression
     (20) bool_expression -> . NOT bool_expression
-    (21) bool_expression -> . bool_expression AND bool_expression
-    (22) bool_expression -> . bool_expression OR bool_expression
-    (23) bool_expression -> . bool_expression NAND bool_expression
-    (24) bool_expression -> . bool_expression NOR bool_expression
-    (25) bool_expression -> . bool_expression IMP bool_expression
+    (22) bool_expression -> . BOOL_LIT
+    (24) bool_expression -> . LPAREN bool_expression RPAREN
     (3) arith_expression -> . arith_expression PLUS arith_expression
     (4) arith_expression -> . arith_expression MINUS arith_expression
     (5) arith_expression -> . arith_expression TIMES arith_expression
     (6) arith_expression -> . arith_expression DIVIDE arith_expression
-    (7) arith_expression -> . NUMBER
-    (9) arith_expression -> . LPAREN arith_expression RPAREN
-    (11) arith_expression -> . arith_expression EQ arith_expression
-    (13) arith_expression -> . arith_expression NEQ arith_expression
+    (21) arith_expression -> . NUMBER
+    (23) arith_expression -> . LPAREN arith_expression RPAREN
 
-    BOOL_LIT        shift and go to state 6
+    NOT             shift and go to state 6
+    BOOL_LIT        shift and go to state 7
     LPAREN          shift and go to state 29
-    NOT             shift and go to state 7
     NUMBER          shift and go to state 4
 
-    bool_expression                shift and go to state 47
-    arith_expression               shift and go to state 30
+    bool_expression                shift and go to state 46
+    arith_expression               shift and go to state 28
 
 state 24
 
-    (24) bool_expression -> bool_expression NOR . bool_expression
-    (8) bool_expression -> . BOOL_LIT
-    (10) bool_expression -> . LPAREN bool_expression RPAREN
-    (12) bool_expression -> . bool_expression EQ bool_expression
-    (14) bool_expression -> . bool_expression NEQ bool_expression
-    (15) bool_expression -> . bool_expression XOR bool_expression
-    (16) bool_expression -> . arith_expression LT arith_expression
-    (17) bool_expression -> . arith_expression GT arith_expression
-    (18) bool_expression -> . arith_expression LE arith_expression
-    (19) bool_expression -> . arith_expression GE arith_expression
+    (19) bool_expression -> bool_expression IMP . bool_expression
+    (7) bool_expression -> . arith_expression LT arith_expression
+    (8) bool_expression -> . arith_expression GT arith_expression
+    (9) bool_expression -> . arith_expression LE arith_expression
+    (10) bool_expression -> . arith_expression GE arith_expression
+    (11) bool_expression -> . arith_expression EQ arith_expression
+    (12) bool_expression -> . arith_expression NEQ arith_expression
+    (13) bool_expression -> . bool_expression BEQ bool_expression
+    (14) bool_expression -> . bool_expression BNEQ bool_expression
+    (15) bool_expression -> . bool_expression AND bool_expression
+    (16) bool_expression -> . bool_expression OR bool_expression
+    (17) bool_expression -> . bool_expression NAND bool_expression
+    (18) bool_expression -> . bool_expression NOR bool_expression
+    (19) bool_expression -> . bool_expression IMP bool_expression
     (20) bool_expression -> . NOT bool_expression
-    (21) bool_expression -> . bool_expression AND bool_expression
-    (22) bool_expression -> . bool_expression OR bool_expression
-    (23) bool_expression -> . bool_expression NAND bool_expression
-    (24) bool_expression -> . bool_expression NOR bool_expression
-    (25) bool_expression -> . bool_expression IMP bool_expression
+    (22) bool_expression -> . BOOL_LIT
+    (24) bool_expression -> . LPAREN bool_expression RPAREN
     (3) arith_expression -> . arith_expression PLUS arith_expression
     (4) arith_expression -> . arith_expression MINUS arith_expression
     (5) arith_expression -> . arith_expression TIMES arith_expression
     (6) arith_expression -> . arith_expression DIVIDE arith_expression
-    (7) arith_expression -> . NUMBER
-    (9) arith_expression -> . LPAREN arith_expression RPAREN
-    (11) arith_expression -> . arith_expression EQ arith_expression
-    (13) arith_expression -> . arith_expression NEQ arith_expression
+    (21) arith_expression -> . NUMBER
+    (23) arith_expression -> . LPAREN arith_expression RPAREN
 
-    BOOL_LIT        shift and go to state 6
+    NOT             shift and go to state 6
+    BOOL_LIT        shift and go to state 7
     LPAREN          shift and go to state 29
-    NOT             shift and go to state 7
     NUMBER          shift and go to state 4
 
-    bool_expression                shift and go to state 48
-    arith_expression               shift and go to state 30
+    bool_expression                shift and go to state 47
+    arith_expression               shift and go to state 28
 
 state 25
 
-    (25) bool_expression -> bool_expression IMP . bool_expression
-    (8) bool_expression -> . BOOL_LIT
-    (10) bool_expression -> . LPAREN bool_expression RPAREN
-    (12) bool_expression -> . bool_expression EQ bool_expression
-    (14) bool_expression -> . bool_expression NEQ bool_expression
-    (15) bool_expression -> . bool_expression XOR bool_expression
-    (16) bool_expression -> . arith_expression LT arith_expression
-    (17) bool_expression -> . arith_expression GT arith_expression
-    (18) bool_expression -> . arith_expression LE arith_expression
-    (19) bool_expression -> . arith_expression GE arith_expression
-    (20) bool_expression -> . NOT bool_expression
-    (21) bool_expression -> . bool_expression AND bool_expression
-    (22) bool_expression -> . bool_expression OR bool_expression
-    (23) bool_expression -> . bool_expression NAND bool_expression
-    (24) bool_expression -> . bool_expression NOR bool_expression
-    (25) bool_expression -> . bool_expression IMP bool_expression
-    (3) arith_expression -> . arith_expression PLUS arith_expression
-    (4) arith_expression -> . arith_expression MINUS arith_expression
-    (5) arith_expression -> . arith_expression TIMES arith_expression
-    (6) arith_expression -> . arith_expression DIVIDE arith_expression
-    (7) arith_expression -> . NUMBER
-    (9) arith_expression -> . LPAREN arith_expression RPAREN
-    (11) arith_expression -> . arith_expression EQ arith_expression
-    (13) arith_expression -> . arith_expression NEQ arith_expression
-
-    BOOL_LIT        shift and go to state 6
-    LPAREN          shift and go to state 29
-    NOT             shift and go to state 7
-    NUMBER          shift and go to state 4
-
-    bool_expression                shift and go to state 49
-    arith_expression               shift and go to state 30
-
-state 26
-
-    (9) arith_expression -> LPAREN arith_expression . RPAREN
+    (23) arith_expression -> LPAREN arith_expression . RPAREN
     (3) arith_expression -> arith_expression . PLUS arith_expression
     (4) arith_expression -> arith_expression . MINUS arith_expression
     (5) arith_expression -> arith_expression . TIMES arith_expression
     (6) arith_expression -> arith_expression . DIVIDE arith_expression
-    (11) arith_expression -> arith_expression . EQ arith_expression
-    (13) arith_expression -> arith_expression . NEQ arith_expression
-    (16) bool_expression -> arith_expression . LT arith_expression
-    (17) bool_expression -> arith_expression . GT arith_expression
-    (18) bool_expression -> arith_expression . LE arith_expression
-    (19) bool_expression -> arith_expression . GE arith_expression
+    (7) bool_expression -> arith_expression . LT arith_expression
+    (8) bool_expression -> arith_expression . GT arith_expression
+    (9) bool_expression -> arith_expression . LE arith_expression
+    (10) bool_expression -> arith_expression . GE arith_expression
+    (11) bool_expression -> arith_expression . EQ arith_expression
+    (12) bool_expression -> arith_expression . NEQ arith_expression
 
-    RPAREN          shift and go to state 50
+    RPAREN          shift and go to state 48
     PLUS            shift and go to state 8
     MINUS           shift and go to state 9
     TIMES           shift and go to state 10
     DIVIDE          shift and go to state 11
-    EQ              shift and go to state 12
-    NEQ             shift and go to state 13
-    LT              shift and go to state 14
-    GT              shift and go to state 15
-    LE              shift and go to state 16
-    GE              shift and go to state 17
+    LT              shift and go to state 12
+    GT              shift and go to state 13
+    LE              shift and go to state 14
+    GE              shift and go to state 15
+    EQ              shift and go to state 16
+    NEQ             shift and go to state 17
+
+
+state 26
+
+    (24) bool_expression -> LPAREN bool_expression . RPAREN
+    (13) bool_expression -> bool_expression . BEQ bool_expression
+    (14) bool_expression -> bool_expression . BNEQ bool_expression
+    (15) bool_expression -> bool_expression . AND bool_expression
+    (16) bool_expression -> bool_expression . OR bool_expression
+    (17) bool_expression -> bool_expression . NAND bool_expression
+    (18) bool_expression -> bool_expression . NOR bool_expression
+    (19) bool_expression -> bool_expression . IMP bool_expression
+
+    RPAREN          shift and go to state 49
+    BEQ             shift and go to state 18
+    BNEQ            shift and go to state 19
+    AND             shift and go to state 20
+    OR              shift and go to state 21
+    NAND            shift and go to state 22
+    NOR             shift and go to state 23
+    IMP             shift and go to state 24
 
 
 state 27
 
-    (10) bool_expression -> LPAREN bool_expression . RPAREN
-    (12) bool_expression -> bool_expression . EQ bool_expression
-    (14) bool_expression -> bool_expression . NEQ bool_expression
-    (15) bool_expression -> bool_expression . XOR bool_expression
-    (21) bool_expression -> bool_expression . AND bool_expression
-    (22) bool_expression -> bool_expression . OR bool_expression
-    (23) bool_expression -> bool_expression . NAND bool_expression
-    (24) bool_expression -> bool_expression . NOR bool_expression
-    (25) bool_expression -> bool_expression . IMP bool_expression
-
-    RPAREN          shift and go to state 51
-    EQ              shift and go to state 18
-    NEQ             shift and go to state 19
-    XOR             shift and go to state 20
-    AND             shift and go to state 21
-    OR              shift and go to state 22
-    NAND            shift and go to state 23
-    NOR             shift and go to state 24
-    IMP             shift and go to state 25
-
-
-state 28
-
     (20) bool_expression -> NOT bool_expression .
-    (12) bool_expression -> bool_expression . EQ bool_expression
-    (14) bool_expression -> bool_expression . NEQ bool_expression
-    (15) bool_expression -> bool_expression . XOR bool_expression
-    (21) bool_expression -> bool_expression . AND bool_expression
-    (22) bool_expression -> bool_expression . OR bool_expression
-    (23) bool_expression -> bool_expression . NAND bool_expression
-    (24) bool_expression -> bool_expression . NOR bool_expression
-    (25) bool_expression -> bool_expression . IMP bool_expression
+    (13) bool_expression -> bool_expression . BEQ bool_expression
+    (14) bool_expression -> bool_expression . BNEQ bool_expression
+    (15) bool_expression -> bool_expression . AND bool_expression
+    (16) bool_expression -> bool_expression . OR bool_expression
+    (17) bool_expression -> bool_expression . NAND bool_expression
+    (18) bool_expression -> bool_expression . NOR bool_expression
+    (19) bool_expression -> bool_expression . IMP bool_expression
 
-  ! shift/reduce conflict for EQ resolved as shift
-  ! shift/reduce conflict for NEQ resolved as shift
-  ! shift/reduce conflict for XOR resolved as shift
+  ! shift/reduce conflict for BEQ resolved as shift
+  ! shift/reduce conflict for BNEQ resolved as shift
   ! shift/reduce conflict for AND resolved as shift
   ! shift/reduce conflict for OR resolved as shift
   ! shift/reduce conflict for NAND resolved as shift
@@ -789,18 +718,16 @@ state 28
   ! shift/reduce conflict for IMP resolved as shift
     $end            reduce using rule 20 (bool_expression -> NOT bool_expression .)
     RPAREN          reduce using rule 20 (bool_expression -> NOT bool_expression .)
-    EQ              shift and go to state 18
-    NEQ             shift and go to state 19
-    XOR             shift and go to state 20
-    AND             shift and go to state 21
-    OR              shift and go to state 22
-    NAND            shift and go to state 23
-    NOR             shift and go to state 24
-    IMP             shift and go to state 25
+    BEQ             shift and go to state 18
+    BNEQ            shift and go to state 19
+    AND             shift and go to state 20
+    OR              shift and go to state 21
+    NAND            shift and go to state 22
+    NOR             shift and go to state 23
+    IMP             shift and go to state 24
 
-  ! EQ              [ reduce using rule 20 (bool_expression -> NOT bool_expression .) ]
-  ! NEQ             [ reduce using rule 20 (bool_expression -> NOT bool_expression .) ]
-  ! XOR             [ reduce using rule 20 (bool_expression -> NOT bool_expression .) ]
+  ! BEQ             [ reduce using rule 20 (bool_expression -> NOT bool_expression .) ]
+  ! BNEQ            [ reduce using rule 20 (bool_expression -> NOT bool_expression .) ]
   ! AND             [ reduce using rule 20 (bool_expression -> NOT bool_expression .) ]
   ! OR              [ reduce using rule 20 (bool_expression -> NOT bool_expression .) ]
   ! NAND            [ reduce using rule 20 (bool_expression -> NOT bool_expression .) ]
@@ -808,88 +735,86 @@ state 28
   ! IMP             [ reduce using rule 20 (bool_expression -> NOT bool_expression .) ]
 
 
-state 29
+state 28
 
-    (10) bool_expression -> LPAREN . bool_expression RPAREN
-    (9) arith_expression -> LPAREN . arith_expression RPAREN
-    (8) bool_expression -> . BOOL_LIT
-    (10) bool_expression -> . LPAREN bool_expression RPAREN
-    (12) bool_expression -> . bool_expression EQ bool_expression
-    (14) bool_expression -> . bool_expression NEQ bool_expression
-    (15) bool_expression -> . bool_expression XOR bool_expression
-    (16) bool_expression -> . arith_expression LT arith_expression
-    (17) bool_expression -> . arith_expression GT arith_expression
-    (18) bool_expression -> . arith_expression LE arith_expression
-    (19) bool_expression -> . arith_expression GE arith_expression
-    (20) bool_expression -> . NOT bool_expression
-    (21) bool_expression -> . bool_expression AND bool_expression
-    (22) bool_expression -> . bool_expression OR bool_expression
-    (23) bool_expression -> . bool_expression NAND bool_expression
-    (24) bool_expression -> . bool_expression NOR bool_expression
-    (25) bool_expression -> . bool_expression IMP bool_expression
-    (3) arith_expression -> . arith_expression PLUS arith_expression
-    (4) arith_expression -> . arith_expression MINUS arith_expression
-    (5) arith_expression -> . arith_expression TIMES arith_expression
-    (6) arith_expression -> . arith_expression DIVIDE arith_expression
-    (7) arith_expression -> . NUMBER
-    (9) arith_expression -> . LPAREN arith_expression RPAREN
-    (11) arith_expression -> . arith_expression EQ arith_expression
-    (13) arith_expression -> . arith_expression NEQ arith_expression
-
-    BOOL_LIT        shift and go to state 6
-    LPAREN          shift and go to state 29
-    NOT             shift and go to state 7
-    NUMBER          shift and go to state 4
-
-    bool_expression                shift and go to state 27
-    arith_expression               shift and go to state 52
-
-state 30
-
-    (16) bool_expression -> arith_expression . LT arith_expression
-    (17) bool_expression -> arith_expression . GT arith_expression
-    (18) bool_expression -> arith_expression . LE arith_expression
-    (19) bool_expression -> arith_expression . GE arith_expression
+    (7) bool_expression -> arith_expression . LT arith_expression
+    (8) bool_expression -> arith_expression . GT arith_expression
+    (9) bool_expression -> arith_expression . LE arith_expression
+    (10) bool_expression -> arith_expression . GE arith_expression
+    (11) bool_expression -> arith_expression . EQ arith_expression
+    (12) bool_expression -> arith_expression . NEQ arith_expression
     (3) arith_expression -> arith_expression . PLUS arith_expression
     (4) arith_expression -> arith_expression . MINUS arith_expression
     (5) arith_expression -> arith_expression . TIMES arith_expression
     (6) arith_expression -> arith_expression . DIVIDE arith_expression
-    (11) arith_expression -> arith_expression . EQ arith_expression
-    (13) arith_expression -> arith_expression . NEQ arith_expression
 
-    LT              shift and go to state 14
-    GT              shift and go to state 15
-    LE              shift and go to state 16
-    GE              shift and go to state 17
+    LT              shift and go to state 12
+    GT              shift and go to state 13
+    LE              shift and go to state 14
+    GE              shift and go to state 15
+    EQ              shift and go to state 16
+    NEQ             shift and go to state 17
     PLUS            shift and go to state 8
     MINUS           shift and go to state 9
     TIMES           shift and go to state 10
     DIVIDE          shift and go to state 11
-    EQ              shift and go to state 12
-    NEQ             shift and go to state 13
 
 
-state 31
+state 29
+
+    (24) bool_expression -> LPAREN . bool_expression RPAREN
+    (23) arith_expression -> LPAREN . arith_expression RPAREN
+    (7) bool_expression -> . arith_expression LT arith_expression
+    (8) bool_expression -> . arith_expression GT arith_expression
+    (9) bool_expression -> . arith_expression LE arith_expression
+    (10) bool_expression -> . arith_expression GE arith_expression
+    (11) bool_expression -> . arith_expression EQ arith_expression
+    (12) bool_expression -> . arith_expression NEQ arith_expression
+    (13) bool_expression -> . bool_expression BEQ bool_expression
+    (14) bool_expression -> . bool_expression BNEQ bool_expression
+    (15) bool_expression -> . bool_expression AND bool_expression
+    (16) bool_expression -> . bool_expression OR bool_expression
+    (17) bool_expression -> . bool_expression NAND bool_expression
+    (18) bool_expression -> . bool_expression NOR bool_expression
+    (19) bool_expression -> . bool_expression IMP bool_expression
+    (20) bool_expression -> . NOT bool_expression
+    (22) bool_expression -> . BOOL_LIT
+    (24) bool_expression -> . LPAREN bool_expression RPAREN
+    (3) arith_expression -> . arith_expression PLUS arith_expression
+    (4) arith_expression -> . arith_expression MINUS arith_expression
+    (5) arith_expression -> . arith_expression TIMES arith_expression
+    (6) arith_expression -> . arith_expression DIVIDE arith_expression
+    (21) arith_expression -> . NUMBER
+    (23) arith_expression -> . LPAREN arith_expression RPAREN
+
+    NOT             shift and go to state 6
+    BOOL_LIT        shift and go to state 7
+    LPAREN          shift and go to state 29
+    NUMBER          shift and go to state 4
+
+    bool_expression                shift and go to state 26
+    arith_expression               shift and go to state 50
+
+state 30
 
     (3) arith_expression -> arith_expression PLUS arith_expression .
     (3) arith_expression -> arith_expression . PLUS arith_expression
     (4) arith_expression -> arith_expression . MINUS arith_expression
     (5) arith_expression -> arith_expression . TIMES arith_expression
     (6) arith_expression -> arith_expression . DIVIDE arith_expression
-    (11) arith_expression -> arith_expression . EQ arith_expression
-    (13) arith_expression -> arith_expression . NEQ arith_expression
 
     PLUS            reduce using rule 3 (arith_expression -> arith_expression PLUS arith_expression .)
     MINUS           reduce using rule 3 (arith_expression -> arith_expression PLUS arith_expression .)
-    EQ              reduce using rule 3 (arith_expression -> arith_expression PLUS arith_expression .)
-    NEQ             reduce using rule 3 (arith_expression -> arith_expression PLUS arith_expression .)
     LT              reduce using rule 3 (arith_expression -> arith_expression PLUS arith_expression .)
     GT              reduce using rule 3 (arith_expression -> arith_expression PLUS arith_expression .)
     LE              reduce using rule 3 (arith_expression -> arith_expression PLUS arith_expression .)
     GE              reduce using rule 3 (arith_expression -> arith_expression PLUS arith_expression .)
+    EQ              reduce using rule 3 (arith_expression -> arith_expression PLUS arith_expression .)
+    NEQ             reduce using rule 3 (arith_expression -> arith_expression PLUS arith_expression .)
     $end            reduce using rule 3 (arith_expression -> arith_expression PLUS arith_expression .)
     RPAREN          reduce using rule 3 (arith_expression -> arith_expression PLUS arith_expression .)
-    XOR             reduce using rule 3 (arith_expression -> arith_expression PLUS arith_expression .)
+    BEQ             reduce using rule 3 (arith_expression -> arith_expression PLUS arith_expression .)
+    BNEQ            reduce using rule 3 (arith_expression -> arith_expression PLUS arith_expression .)
     AND             reduce using rule 3 (arith_expression -> arith_expression PLUS arith_expression .)
     OR              reduce using rule 3 (arith_expression -> arith_expression PLUS arith_expression .)
     NAND            reduce using rule 3 (arith_expression -> arith_expression PLUS arith_expression .)
@@ -902,48 +827,43 @@ state 31
   ! DIVIDE          [ reduce using rule 3 (arith_expression -> arith_expression PLUS arith_expression .) ]
   ! PLUS            [ shift and go to state 8 ]
   ! MINUS           [ shift and go to state 9 ]
-  ! EQ              [ shift and go to state 12 ]
-  ! NEQ             [ shift and go to state 13 ]
 
 
-state 32
+state 31
 
-    (9) arith_expression -> LPAREN . arith_expression RPAREN
+    (23) arith_expression -> LPAREN . arith_expression RPAREN
     (3) arith_expression -> . arith_expression PLUS arith_expression
     (4) arith_expression -> . arith_expression MINUS arith_expression
     (5) arith_expression -> . arith_expression TIMES arith_expression
     (6) arith_expression -> . arith_expression DIVIDE arith_expression
-    (7) arith_expression -> . NUMBER
-    (9) arith_expression -> . LPAREN arith_expression RPAREN
-    (11) arith_expression -> . arith_expression EQ arith_expression
-    (13) arith_expression -> . arith_expression NEQ arith_expression
+    (21) arith_expression -> . NUMBER
+    (23) arith_expression -> . LPAREN arith_expression RPAREN
 
     NUMBER          shift and go to state 4
-    LPAREN          shift and go to state 32
+    LPAREN          shift and go to state 31
 
-    arith_expression               shift and go to state 53
+    arith_expression               shift and go to state 51
 
-state 33
+state 32
 
     (4) arith_expression -> arith_expression MINUS arith_expression .
     (3) arith_expression -> arith_expression . PLUS arith_expression
     (4) arith_expression -> arith_expression . MINUS arith_expression
     (5) arith_expression -> arith_expression . TIMES arith_expression
     (6) arith_expression -> arith_expression . DIVIDE arith_expression
-    (11) arith_expression -> arith_expression . EQ arith_expression
-    (13) arith_expression -> arith_expression . NEQ arith_expression
 
     PLUS            reduce using rule 4 (arith_expression -> arith_expression MINUS arith_expression .)
     MINUS           reduce using rule 4 (arith_expression -> arith_expression MINUS arith_expression .)
-    EQ              reduce using rule 4 (arith_expression -> arith_expression MINUS arith_expression .)
-    NEQ             reduce using rule 4 (arith_expression -> arith_expression MINUS arith_expression .)
     LT              reduce using rule 4 (arith_expression -> arith_expression MINUS arith_expression .)
     GT              reduce using rule 4 (arith_expression -> arith_expression MINUS arith_expression .)
     LE              reduce using rule 4 (arith_expression -> arith_expression MINUS arith_expression .)
     GE              reduce using rule 4 (arith_expression -> arith_expression MINUS arith_expression .)
+    EQ              reduce using rule 4 (arith_expression -> arith_expression MINUS arith_expression .)
+    NEQ             reduce using rule 4 (arith_expression -> arith_expression MINUS arith_expression .)
     $end            reduce using rule 4 (arith_expression -> arith_expression MINUS arith_expression .)
     RPAREN          reduce using rule 4 (arith_expression -> arith_expression MINUS arith_expression .)
-    XOR             reduce using rule 4 (arith_expression -> arith_expression MINUS arith_expression .)
+    BEQ             reduce using rule 4 (arith_expression -> arith_expression MINUS arith_expression .)
+    BNEQ            reduce using rule 4 (arith_expression -> arith_expression MINUS arith_expression .)
     AND             reduce using rule 4 (arith_expression -> arith_expression MINUS arith_expression .)
     OR              reduce using rule 4 (arith_expression -> arith_expression MINUS arith_expression .)
     NAND            reduce using rule 4 (arith_expression -> arith_expression MINUS arith_expression .)
@@ -956,33 +876,30 @@ state 33
   ! DIVIDE          [ reduce using rule 4 (arith_expression -> arith_expression MINUS arith_expression .) ]
   ! PLUS            [ shift and go to state 8 ]
   ! MINUS           [ shift and go to state 9 ]
-  ! EQ              [ shift and go to state 12 ]
-  ! NEQ             [ shift and go to state 13 ]
 
 
-state 34
+state 33
 
     (5) arith_expression -> arith_expression TIMES arith_expression .
     (3) arith_expression -> arith_expression . PLUS arith_expression
     (4) arith_expression -> arith_expression . MINUS arith_expression
     (5) arith_expression -> arith_expression . TIMES arith_expression
     (6) arith_expression -> arith_expression . DIVIDE arith_expression
-    (11) arith_expression -> arith_expression . EQ arith_expression
-    (13) arith_expression -> arith_expression . NEQ arith_expression
 
     PLUS            reduce using rule 5 (arith_expression -> arith_expression TIMES arith_expression .)
     MINUS           reduce using rule 5 (arith_expression -> arith_expression TIMES arith_expression .)
     TIMES           reduce using rule 5 (arith_expression -> arith_expression TIMES arith_expression .)
     DIVIDE          reduce using rule 5 (arith_expression -> arith_expression TIMES arith_expression .)
-    EQ              reduce using rule 5 (arith_expression -> arith_expression TIMES arith_expression .)
-    NEQ             reduce using rule 5 (arith_expression -> arith_expression TIMES arith_expression .)
     LT              reduce using rule 5 (arith_expression -> arith_expression TIMES arith_expression .)
     GT              reduce using rule 5 (arith_expression -> arith_expression TIMES arith_expression .)
     LE              reduce using rule 5 (arith_expression -> arith_expression TIMES arith_expression .)
     GE              reduce using rule 5 (arith_expression -> arith_expression TIMES arith_expression .)
+    EQ              reduce using rule 5 (arith_expression -> arith_expression TIMES arith_expression .)
+    NEQ             reduce using rule 5 (arith_expression -> arith_expression TIMES arith_expression .)
     $end            reduce using rule 5 (arith_expression -> arith_expression TIMES arith_expression .)
     RPAREN          reduce using rule 5 (arith_expression -> arith_expression TIMES arith_expression .)
-    XOR             reduce using rule 5 (arith_expression -> arith_expression TIMES arith_expression .)
+    BEQ             reduce using rule 5 (arith_expression -> arith_expression TIMES arith_expression .)
+    BNEQ            reduce using rule 5 (arith_expression -> arith_expression TIMES arith_expression .)
     AND             reduce using rule 5 (arith_expression -> arith_expression TIMES arith_expression .)
     OR              reduce using rule 5 (arith_expression -> arith_expression TIMES arith_expression .)
     NAND            reduce using rule 5 (arith_expression -> arith_expression TIMES arith_expression .)
@@ -993,33 +910,30 @@ state 34
   ! MINUS           [ shift and go to state 9 ]
   ! TIMES           [ shift and go to state 10 ]
   ! DIVIDE          [ shift and go to state 11 ]
-  ! EQ              [ shift and go to state 12 ]
-  ! NEQ             [ shift and go to state 13 ]
 
 
-state 35
+state 34
 
     (6) arith_expression -> arith_expression DIVIDE arith_expression .
     (3) arith_expression -> arith_expression . PLUS arith_expression
     (4) arith_expression -> arith_expression . MINUS arith_expression
     (5) arith_expression -> arith_expression . TIMES arith_expression
     (6) arith_expression -> arith_expression . DIVIDE arith_expression
-    (11) arith_expression -> arith_expression . EQ arith_expression
-    (13) arith_expression -> arith_expression . NEQ arith_expression
 
     PLUS            reduce using rule 6 (arith_expression -> arith_expression DIVIDE arith_expression .)
     MINUS           reduce using rule 6 (arith_expression -> arith_expression DIVIDE arith_expression .)
     TIMES           reduce using rule 6 (arith_expression -> arith_expression DIVIDE arith_expression .)
     DIVIDE          reduce using rule 6 (arith_expression -> arith_expression DIVIDE arith_expression .)
-    EQ              reduce using rule 6 (arith_expression -> arith_expression DIVIDE arith_expression .)
-    NEQ             reduce using rule 6 (arith_expression -> arith_expression DIVIDE arith_expression .)
     LT              reduce using rule 6 (arith_expression -> arith_expression DIVIDE arith_expression .)
     GT              reduce using rule 6 (arith_expression -> arith_expression DIVIDE arith_expression .)
     LE              reduce using rule 6 (arith_expression -> arith_expression DIVIDE arith_expression .)
     GE              reduce using rule 6 (arith_expression -> arith_expression DIVIDE arith_expression .)
+    EQ              reduce using rule 6 (arith_expression -> arith_expression DIVIDE arith_expression .)
+    NEQ             reduce using rule 6 (arith_expression -> arith_expression DIVIDE arith_expression .)
     $end            reduce using rule 6 (arith_expression -> arith_expression DIVIDE arith_expression .)
     RPAREN          reduce using rule 6 (arith_expression -> arith_expression DIVIDE arith_expression .)
-    XOR             reduce using rule 6 (arith_expression -> arith_expression DIVIDE arith_expression .)
+    BEQ             reduce using rule 6 (arith_expression -> arith_expression DIVIDE arith_expression .)
+    BNEQ            reduce using rule 6 (arith_expression -> arith_expression DIVIDE arith_expression .)
     AND             reduce using rule 6 (arith_expression -> arith_expression DIVIDE arith_expression .)
     OR              reduce using rule 6 (arith_expression -> arith_expression DIVIDE arith_expression .)
     NAND            reduce using rule 6 (arith_expression -> arith_expression DIVIDE arith_expression .)
@@ -1030,573 +944,458 @@ state 35
   ! MINUS           [ shift and go to state 9 ]
   ! TIMES           [ shift and go to state 10 ]
   ! DIVIDE          [ shift and go to state 11 ]
-  ! EQ              [ shift and go to state 12 ]
-  ! NEQ             [ shift and go to state 13 ]
+
+
+state 35
+
+    (7) bool_expression -> arith_expression LT arith_expression .
+    (3) arith_expression -> arith_expression . PLUS arith_expression
+    (4) arith_expression -> arith_expression . MINUS arith_expression
+    (5) arith_expression -> arith_expression . TIMES arith_expression
+    (6) arith_expression -> arith_expression . DIVIDE arith_expression
+
+    BEQ             reduce using rule 7 (bool_expression -> arith_expression LT arith_expression .)
+    BNEQ            reduce using rule 7 (bool_expression -> arith_expression LT arith_expression .)
+    AND             reduce using rule 7 (bool_expression -> arith_expression LT arith_expression .)
+    OR              reduce using rule 7 (bool_expression -> arith_expression LT arith_expression .)
+    NAND            reduce using rule 7 (bool_expression -> arith_expression LT arith_expression .)
+    NOR             reduce using rule 7 (bool_expression -> arith_expression LT arith_expression .)
+    IMP             reduce using rule 7 (bool_expression -> arith_expression LT arith_expression .)
+    $end            reduce using rule 7 (bool_expression -> arith_expression LT arith_expression .)
+    RPAREN          reduce using rule 7 (bool_expression -> arith_expression LT arith_expression .)
+    PLUS            shift and go to state 8
+    MINUS           shift and go to state 9
+    TIMES           shift and go to state 10
+    DIVIDE          shift and go to state 11
 
 
 state 36
 
-    (11) arith_expression -> arith_expression EQ arith_expression .
+    (8) bool_expression -> arith_expression GT arith_expression .
     (3) arith_expression -> arith_expression . PLUS arith_expression
     (4) arith_expression -> arith_expression . MINUS arith_expression
     (5) arith_expression -> arith_expression . TIMES arith_expression
     (6) arith_expression -> arith_expression . DIVIDE arith_expression
-    (11) arith_expression -> arith_expression . EQ arith_expression
-    (13) arith_expression -> arith_expression . NEQ arith_expression
 
-    EQ              reduce using rule 11 (arith_expression -> arith_expression EQ arith_expression .)
-    NEQ             reduce using rule 11 (arith_expression -> arith_expression EQ arith_expression .)
-    LT              reduce using rule 11 (arith_expression -> arith_expression EQ arith_expression .)
-    GT              reduce using rule 11 (arith_expression -> arith_expression EQ arith_expression .)
-    LE              reduce using rule 11 (arith_expression -> arith_expression EQ arith_expression .)
-    GE              reduce using rule 11 (arith_expression -> arith_expression EQ arith_expression .)
-    $end            reduce using rule 11 (arith_expression -> arith_expression EQ arith_expression .)
-    RPAREN          reduce using rule 11 (arith_expression -> arith_expression EQ arith_expression .)
-    XOR             reduce using rule 11 (arith_expression -> arith_expression EQ arith_expression .)
-    AND             reduce using rule 11 (arith_expression -> arith_expression EQ arith_expression .)
-    OR              reduce using rule 11 (arith_expression -> arith_expression EQ arith_expression .)
-    NAND            reduce using rule 11 (arith_expression -> arith_expression EQ arith_expression .)
-    NOR             reduce using rule 11 (arith_expression -> arith_expression EQ arith_expression .)
-    IMP             reduce using rule 11 (arith_expression -> arith_expression EQ arith_expression .)
+    BEQ             reduce using rule 8 (bool_expression -> arith_expression GT arith_expression .)
+    BNEQ            reduce using rule 8 (bool_expression -> arith_expression GT arith_expression .)
+    AND             reduce using rule 8 (bool_expression -> arith_expression GT arith_expression .)
+    OR              reduce using rule 8 (bool_expression -> arith_expression GT arith_expression .)
+    NAND            reduce using rule 8 (bool_expression -> arith_expression GT arith_expression .)
+    NOR             reduce using rule 8 (bool_expression -> arith_expression GT arith_expression .)
+    IMP             reduce using rule 8 (bool_expression -> arith_expression GT arith_expression .)
+    $end            reduce using rule 8 (bool_expression -> arith_expression GT arith_expression .)
+    RPAREN          reduce using rule 8 (bool_expression -> arith_expression GT arith_expression .)
     PLUS            shift and go to state 8
     MINUS           shift and go to state 9
     TIMES           shift and go to state 10
     DIVIDE          shift and go to state 11
-
-  ! PLUS            [ reduce using rule 11 (arith_expression -> arith_expression EQ arith_expression .) ]
-  ! MINUS           [ reduce using rule 11 (arith_expression -> arith_expression EQ arith_expression .) ]
-  ! TIMES           [ reduce using rule 11 (arith_expression -> arith_expression EQ arith_expression .) ]
-  ! DIVIDE          [ reduce using rule 11 (arith_expression -> arith_expression EQ arith_expression .) ]
-  ! EQ              [ shift and go to state 12 ]
-  ! NEQ             [ shift and go to state 13 ]
 
 
 state 37
 
-    (13) arith_expression -> arith_expression NEQ arith_expression .
+    (9) bool_expression -> arith_expression LE arith_expression .
     (3) arith_expression -> arith_expression . PLUS arith_expression
     (4) arith_expression -> arith_expression . MINUS arith_expression
     (5) arith_expression -> arith_expression . TIMES arith_expression
     (6) arith_expression -> arith_expression . DIVIDE arith_expression
-    (11) arith_expression -> arith_expression . EQ arith_expression
-    (13) arith_expression -> arith_expression . NEQ arith_expression
 
-    EQ              reduce using rule 13 (arith_expression -> arith_expression NEQ arith_expression .)
-    NEQ             reduce using rule 13 (arith_expression -> arith_expression NEQ arith_expression .)
-    LT              reduce using rule 13 (arith_expression -> arith_expression NEQ arith_expression .)
-    GT              reduce using rule 13 (arith_expression -> arith_expression NEQ arith_expression .)
-    LE              reduce using rule 13 (arith_expression -> arith_expression NEQ arith_expression .)
-    GE              reduce using rule 13 (arith_expression -> arith_expression NEQ arith_expression .)
-    $end            reduce using rule 13 (arith_expression -> arith_expression NEQ arith_expression .)
-    RPAREN          reduce using rule 13 (arith_expression -> arith_expression NEQ arith_expression .)
-    XOR             reduce using rule 13 (arith_expression -> arith_expression NEQ arith_expression .)
-    AND             reduce using rule 13 (arith_expression -> arith_expression NEQ arith_expression .)
-    OR              reduce using rule 13 (arith_expression -> arith_expression NEQ arith_expression .)
-    NAND            reduce using rule 13 (arith_expression -> arith_expression NEQ arith_expression .)
-    NOR             reduce using rule 13 (arith_expression -> arith_expression NEQ arith_expression .)
-    IMP             reduce using rule 13 (arith_expression -> arith_expression NEQ arith_expression .)
+    BEQ             reduce using rule 9 (bool_expression -> arith_expression LE arith_expression .)
+    BNEQ            reduce using rule 9 (bool_expression -> arith_expression LE arith_expression .)
+    AND             reduce using rule 9 (bool_expression -> arith_expression LE arith_expression .)
+    OR              reduce using rule 9 (bool_expression -> arith_expression LE arith_expression .)
+    NAND            reduce using rule 9 (bool_expression -> arith_expression LE arith_expression .)
+    NOR             reduce using rule 9 (bool_expression -> arith_expression LE arith_expression .)
+    IMP             reduce using rule 9 (bool_expression -> arith_expression LE arith_expression .)
+    $end            reduce using rule 9 (bool_expression -> arith_expression LE arith_expression .)
+    RPAREN          reduce using rule 9 (bool_expression -> arith_expression LE arith_expression .)
     PLUS            shift and go to state 8
     MINUS           shift and go to state 9
     TIMES           shift and go to state 10
     DIVIDE          shift and go to state 11
-
-  ! PLUS            [ reduce using rule 13 (arith_expression -> arith_expression NEQ arith_expression .) ]
-  ! MINUS           [ reduce using rule 13 (arith_expression -> arith_expression NEQ arith_expression .) ]
-  ! TIMES           [ reduce using rule 13 (arith_expression -> arith_expression NEQ arith_expression .) ]
-  ! DIVIDE          [ reduce using rule 13 (arith_expression -> arith_expression NEQ arith_expression .) ]
-  ! EQ              [ shift and go to state 12 ]
-  ! NEQ             [ shift and go to state 13 ]
 
 
 state 38
 
-    (16) bool_expression -> arith_expression LT arith_expression .
+    (10) bool_expression -> arith_expression GE arith_expression .
     (3) arith_expression -> arith_expression . PLUS arith_expression
     (4) arith_expression -> arith_expression . MINUS arith_expression
     (5) arith_expression -> arith_expression . TIMES arith_expression
     (6) arith_expression -> arith_expression . DIVIDE arith_expression
-    (11) arith_expression -> arith_expression . EQ arith_expression
-    (13) arith_expression -> arith_expression . NEQ arith_expression
 
-    EQ              reduce using rule 16 (bool_expression -> arith_expression LT arith_expression .)
-    NEQ             reduce using rule 16 (bool_expression -> arith_expression LT arith_expression .)
-    XOR             reduce using rule 16 (bool_expression -> arith_expression LT arith_expression .)
-    AND             reduce using rule 16 (bool_expression -> arith_expression LT arith_expression .)
-    OR              reduce using rule 16 (bool_expression -> arith_expression LT arith_expression .)
-    NAND            reduce using rule 16 (bool_expression -> arith_expression LT arith_expression .)
-    NOR             reduce using rule 16 (bool_expression -> arith_expression LT arith_expression .)
-    IMP             reduce using rule 16 (bool_expression -> arith_expression LT arith_expression .)
-    $end            reduce using rule 16 (bool_expression -> arith_expression LT arith_expression .)
-    RPAREN          reduce using rule 16 (bool_expression -> arith_expression LT arith_expression .)
+    BEQ             reduce using rule 10 (bool_expression -> arith_expression GE arith_expression .)
+    BNEQ            reduce using rule 10 (bool_expression -> arith_expression GE arith_expression .)
+    AND             reduce using rule 10 (bool_expression -> arith_expression GE arith_expression .)
+    OR              reduce using rule 10 (bool_expression -> arith_expression GE arith_expression .)
+    NAND            reduce using rule 10 (bool_expression -> arith_expression GE arith_expression .)
+    NOR             reduce using rule 10 (bool_expression -> arith_expression GE arith_expression .)
+    IMP             reduce using rule 10 (bool_expression -> arith_expression GE arith_expression .)
+    $end            reduce using rule 10 (bool_expression -> arith_expression GE arith_expression .)
+    RPAREN          reduce using rule 10 (bool_expression -> arith_expression GE arith_expression .)
     PLUS            shift and go to state 8
     MINUS           shift and go to state 9
     TIMES           shift and go to state 10
     DIVIDE          shift and go to state 11
-
-  ! EQ              [ shift and go to state 12 ]
-  ! NEQ             [ shift and go to state 13 ]
 
 
 state 39
 
-    (17) bool_expression -> arith_expression GT arith_expression .
+    (11) bool_expression -> arith_expression EQ arith_expression .
     (3) arith_expression -> arith_expression . PLUS arith_expression
     (4) arith_expression -> arith_expression . MINUS arith_expression
     (5) arith_expression -> arith_expression . TIMES arith_expression
     (6) arith_expression -> arith_expression . DIVIDE arith_expression
-    (11) arith_expression -> arith_expression . EQ arith_expression
-    (13) arith_expression -> arith_expression . NEQ arith_expression
 
-    EQ              reduce using rule 17 (bool_expression -> arith_expression GT arith_expression .)
-    NEQ             reduce using rule 17 (bool_expression -> arith_expression GT arith_expression .)
-    XOR             reduce using rule 17 (bool_expression -> arith_expression GT arith_expression .)
-    AND             reduce using rule 17 (bool_expression -> arith_expression GT arith_expression .)
-    OR              reduce using rule 17 (bool_expression -> arith_expression GT arith_expression .)
-    NAND            reduce using rule 17 (bool_expression -> arith_expression GT arith_expression .)
-    NOR             reduce using rule 17 (bool_expression -> arith_expression GT arith_expression .)
-    IMP             reduce using rule 17 (bool_expression -> arith_expression GT arith_expression .)
-    $end            reduce using rule 17 (bool_expression -> arith_expression GT arith_expression .)
-    RPAREN          reduce using rule 17 (bool_expression -> arith_expression GT arith_expression .)
+    BEQ             reduce using rule 11 (bool_expression -> arith_expression EQ arith_expression .)
+    BNEQ            reduce using rule 11 (bool_expression -> arith_expression EQ arith_expression .)
+    AND             reduce using rule 11 (bool_expression -> arith_expression EQ arith_expression .)
+    OR              reduce using rule 11 (bool_expression -> arith_expression EQ arith_expression .)
+    NAND            reduce using rule 11 (bool_expression -> arith_expression EQ arith_expression .)
+    NOR             reduce using rule 11 (bool_expression -> arith_expression EQ arith_expression .)
+    IMP             reduce using rule 11 (bool_expression -> arith_expression EQ arith_expression .)
+    $end            reduce using rule 11 (bool_expression -> arith_expression EQ arith_expression .)
+    RPAREN          reduce using rule 11 (bool_expression -> arith_expression EQ arith_expression .)
     PLUS            shift and go to state 8
     MINUS           shift and go to state 9
     TIMES           shift and go to state 10
     DIVIDE          shift and go to state 11
-
-  ! EQ              [ shift and go to state 12 ]
-  ! NEQ             [ shift and go to state 13 ]
 
 
 state 40
 
-    (18) bool_expression -> arith_expression LE arith_expression .
+    (12) bool_expression -> arith_expression NEQ arith_expression .
     (3) arith_expression -> arith_expression . PLUS arith_expression
     (4) arith_expression -> arith_expression . MINUS arith_expression
     (5) arith_expression -> arith_expression . TIMES arith_expression
     (6) arith_expression -> arith_expression . DIVIDE arith_expression
-    (11) arith_expression -> arith_expression . EQ arith_expression
-    (13) arith_expression -> arith_expression . NEQ arith_expression
 
-    EQ              reduce using rule 18 (bool_expression -> arith_expression LE arith_expression .)
-    NEQ             reduce using rule 18 (bool_expression -> arith_expression LE arith_expression .)
-    XOR             reduce using rule 18 (bool_expression -> arith_expression LE arith_expression .)
-    AND             reduce using rule 18 (bool_expression -> arith_expression LE arith_expression .)
-    OR              reduce using rule 18 (bool_expression -> arith_expression LE arith_expression .)
-    NAND            reduce using rule 18 (bool_expression -> arith_expression LE arith_expression .)
-    NOR             reduce using rule 18 (bool_expression -> arith_expression LE arith_expression .)
-    IMP             reduce using rule 18 (bool_expression -> arith_expression LE arith_expression .)
-    $end            reduce using rule 18 (bool_expression -> arith_expression LE arith_expression .)
-    RPAREN          reduce using rule 18 (bool_expression -> arith_expression LE arith_expression .)
+    BEQ             reduce using rule 12 (bool_expression -> arith_expression NEQ arith_expression .)
+    BNEQ            reduce using rule 12 (bool_expression -> arith_expression NEQ arith_expression .)
+    AND             reduce using rule 12 (bool_expression -> arith_expression NEQ arith_expression .)
+    OR              reduce using rule 12 (bool_expression -> arith_expression NEQ arith_expression .)
+    NAND            reduce using rule 12 (bool_expression -> arith_expression NEQ arith_expression .)
+    NOR             reduce using rule 12 (bool_expression -> arith_expression NEQ arith_expression .)
+    IMP             reduce using rule 12 (bool_expression -> arith_expression NEQ arith_expression .)
+    $end            reduce using rule 12 (bool_expression -> arith_expression NEQ arith_expression .)
+    RPAREN          reduce using rule 12 (bool_expression -> arith_expression NEQ arith_expression .)
     PLUS            shift and go to state 8
     MINUS           shift and go to state 9
     TIMES           shift and go to state 10
     DIVIDE          shift and go to state 11
-
-  ! EQ              [ shift and go to state 12 ]
-  ! NEQ             [ shift and go to state 13 ]
 
 
 state 41
 
-    (19) bool_expression -> arith_expression GE arith_expression .
-    (3) arith_expression -> arith_expression . PLUS arith_expression
-    (4) arith_expression -> arith_expression . MINUS arith_expression
-    (5) arith_expression -> arith_expression . TIMES arith_expression
-    (6) arith_expression -> arith_expression . DIVIDE arith_expression
-    (11) arith_expression -> arith_expression . EQ arith_expression
-    (13) arith_expression -> arith_expression . NEQ arith_expression
+    (13) bool_expression -> bool_expression BEQ bool_expression .
+    (13) bool_expression -> bool_expression . BEQ bool_expression
+    (14) bool_expression -> bool_expression . BNEQ bool_expression
+    (15) bool_expression -> bool_expression . AND bool_expression
+    (16) bool_expression -> bool_expression . OR bool_expression
+    (17) bool_expression -> bool_expression . NAND bool_expression
+    (18) bool_expression -> bool_expression . NOR bool_expression
+    (19) bool_expression -> bool_expression . IMP bool_expression
 
-    EQ              reduce using rule 19 (bool_expression -> arith_expression GE arith_expression .)
-    NEQ             reduce using rule 19 (bool_expression -> arith_expression GE arith_expression .)
-    XOR             reduce using rule 19 (bool_expression -> arith_expression GE arith_expression .)
-    AND             reduce using rule 19 (bool_expression -> arith_expression GE arith_expression .)
-    OR              reduce using rule 19 (bool_expression -> arith_expression GE arith_expression .)
-    NAND            reduce using rule 19 (bool_expression -> arith_expression GE arith_expression .)
-    NOR             reduce using rule 19 (bool_expression -> arith_expression GE arith_expression .)
-    IMP             reduce using rule 19 (bool_expression -> arith_expression GE arith_expression .)
-    $end            reduce using rule 19 (bool_expression -> arith_expression GE arith_expression .)
-    RPAREN          reduce using rule 19 (bool_expression -> arith_expression GE arith_expression .)
-    PLUS            shift and go to state 8
-    MINUS           shift and go to state 9
-    TIMES           shift and go to state 10
-    DIVIDE          shift and go to state 11
+    BEQ             reduce using rule 13 (bool_expression -> bool_expression BEQ bool_expression .)
+    BNEQ            reduce using rule 13 (bool_expression -> bool_expression BEQ bool_expression .)
+    AND             reduce using rule 13 (bool_expression -> bool_expression BEQ bool_expression .)
+    OR              reduce using rule 13 (bool_expression -> bool_expression BEQ bool_expression .)
+    NAND            reduce using rule 13 (bool_expression -> bool_expression BEQ bool_expression .)
+    NOR             reduce using rule 13 (bool_expression -> bool_expression BEQ bool_expression .)
+    IMP             reduce using rule 13 (bool_expression -> bool_expression BEQ bool_expression .)
+    $end            reduce using rule 13 (bool_expression -> bool_expression BEQ bool_expression .)
+    RPAREN          reduce using rule 13 (bool_expression -> bool_expression BEQ bool_expression .)
 
-  ! EQ              [ shift and go to state 12 ]
-  ! NEQ             [ shift and go to state 13 ]
+  ! BEQ             [ shift and go to state 18 ]
+  ! BNEQ            [ shift and go to state 19 ]
+  ! AND             [ shift and go to state 20 ]
+  ! OR              [ shift and go to state 21 ]
+  ! NAND            [ shift and go to state 22 ]
+  ! NOR             [ shift and go to state 23 ]
+  ! IMP             [ shift and go to state 24 ]
 
 
 state 42
 
-    (12) bool_expression -> bool_expression EQ bool_expression .
-    (12) bool_expression -> bool_expression . EQ bool_expression
-    (14) bool_expression -> bool_expression . NEQ bool_expression
-    (15) bool_expression -> bool_expression . XOR bool_expression
-    (21) bool_expression -> bool_expression . AND bool_expression
-    (22) bool_expression -> bool_expression . OR bool_expression
-    (23) bool_expression -> bool_expression . NAND bool_expression
-    (24) bool_expression -> bool_expression . NOR bool_expression
-    (25) bool_expression -> bool_expression . IMP bool_expression
+    (14) bool_expression -> bool_expression BNEQ bool_expression .
+    (13) bool_expression -> bool_expression . BEQ bool_expression
+    (14) bool_expression -> bool_expression . BNEQ bool_expression
+    (15) bool_expression -> bool_expression . AND bool_expression
+    (16) bool_expression -> bool_expression . OR bool_expression
+    (17) bool_expression -> bool_expression . NAND bool_expression
+    (18) bool_expression -> bool_expression . NOR bool_expression
+    (19) bool_expression -> bool_expression . IMP bool_expression
 
-    EQ              reduce using rule 12 (bool_expression -> bool_expression EQ bool_expression .)
-    NEQ             reduce using rule 12 (bool_expression -> bool_expression EQ bool_expression .)
-    XOR             reduce using rule 12 (bool_expression -> bool_expression EQ bool_expression .)
-    AND             reduce using rule 12 (bool_expression -> bool_expression EQ bool_expression .)
-    OR              reduce using rule 12 (bool_expression -> bool_expression EQ bool_expression .)
-    NAND            reduce using rule 12 (bool_expression -> bool_expression EQ bool_expression .)
-    NOR             reduce using rule 12 (bool_expression -> bool_expression EQ bool_expression .)
-    IMP             reduce using rule 12 (bool_expression -> bool_expression EQ bool_expression .)
-    $end            reduce using rule 12 (bool_expression -> bool_expression EQ bool_expression .)
-    RPAREN          reduce using rule 12 (bool_expression -> bool_expression EQ bool_expression .)
+    BEQ             reduce using rule 14 (bool_expression -> bool_expression BNEQ bool_expression .)
+    BNEQ            reduce using rule 14 (bool_expression -> bool_expression BNEQ bool_expression .)
+    AND             reduce using rule 14 (bool_expression -> bool_expression BNEQ bool_expression .)
+    OR              reduce using rule 14 (bool_expression -> bool_expression BNEQ bool_expression .)
+    NAND            reduce using rule 14 (bool_expression -> bool_expression BNEQ bool_expression .)
+    NOR             reduce using rule 14 (bool_expression -> bool_expression BNEQ bool_expression .)
+    IMP             reduce using rule 14 (bool_expression -> bool_expression BNEQ bool_expression .)
+    $end            reduce using rule 14 (bool_expression -> bool_expression BNEQ bool_expression .)
+    RPAREN          reduce using rule 14 (bool_expression -> bool_expression BNEQ bool_expression .)
 
-  ! EQ              [ shift and go to state 18 ]
-  ! NEQ             [ shift and go to state 19 ]
-  ! XOR             [ shift and go to state 20 ]
-  ! AND             [ shift and go to state 21 ]
-  ! OR              [ shift and go to state 22 ]
-  ! NAND            [ shift and go to state 23 ]
-  ! NOR             [ shift and go to state 24 ]
-  ! IMP             [ shift and go to state 25 ]
+  ! BEQ             [ shift and go to state 18 ]
+  ! BNEQ            [ shift and go to state 19 ]
+  ! AND             [ shift and go to state 20 ]
+  ! OR              [ shift and go to state 21 ]
+  ! NAND            [ shift and go to state 22 ]
+  ! NOR             [ shift and go to state 23 ]
+  ! IMP             [ shift and go to state 24 ]
 
 
 state 43
 
-    (14) bool_expression -> bool_expression NEQ bool_expression .
-    (12) bool_expression -> bool_expression . EQ bool_expression
-    (14) bool_expression -> bool_expression . NEQ bool_expression
-    (15) bool_expression -> bool_expression . XOR bool_expression
-    (21) bool_expression -> bool_expression . AND bool_expression
-    (22) bool_expression -> bool_expression . OR bool_expression
-    (23) bool_expression -> bool_expression . NAND bool_expression
-    (24) bool_expression -> bool_expression . NOR bool_expression
-    (25) bool_expression -> bool_expression . IMP bool_expression
+    (15) bool_expression -> bool_expression AND bool_expression .
+    (13) bool_expression -> bool_expression . BEQ bool_expression
+    (14) bool_expression -> bool_expression . BNEQ bool_expression
+    (15) bool_expression -> bool_expression . AND bool_expression
+    (16) bool_expression -> bool_expression . OR bool_expression
+    (17) bool_expression -> bool_expression . NAND bool_expression
+    (18) bool_expression -> bool_expression . NOR bool_expression
+    (19) bool_expression -> bool_expression . IMP bool_expression
 
-    EQ              reduce using rule 14 (bool_expression -> bool_expression NEQ bool_expression .)
-    NEQ             reduce using rule 14 (bool_expression -> bool_expression NEQ bool_expression .)
-    XOR             reduce using rule 14 (bool_expression -> bool_expression NEQ bool_expression .)
-    AND             reduce using rule 14 (bool_expression -> bool_expression NEQ bool_expression .)
-    OR              reduce using rule 14 (bool_expression -> bool_expression NEQ bool_expression .)
-    NAND            reduce using rule 14 (bool_expression -> bool_expression NEQ bool_expression .)
-    NOR             reduce using rule 14 (bool_expression -> bool_expression NEQ bool_expression .)
-    IMP             reduce using rule 14 (bool_expression -> bool_expression NEQ bool_expression .)
-    $end            reduce using rule 14 (bool_expression -> bool_expression NEQ bool_expression .)
-    RPAREN          reduce using rule 14 (bool_expression -> bool_expression NEQ bool_expression .)
+    AND             reduce using rule 15 (bool_expression -> bool_expression AND bool_expression .)
+    OR              reduce using rule 15 (bool_expression -> bool_expression AND bool_expression .)
+    NAND            reduce using rule 15 (bool_expression -> bool_expression AND bool_expression .)
+    NOR             reduce using rule 15 (bool_expression -> bool_expression AND bool_expression .)
+    IMP             reduce using rule 15 (bool_expression -> bool_expression AND bool_expression .)
+    $end            reduce using rule 15 (bool_expression -> bool_expression AND bool_expression .)
+    RPAREN          reduce using rule 15 (bool_expression -> bool_expression AND bool_expression .)
+    BEQ             shift and go to state 18
+    BNEQ            shift and go to state 19
 
-  ! EQ              [ shift and go to state 18 ]
-  ! NEQ             [ shift and go to state 19 ]
-  ! XOR             [ shift and go to state 20 ]
-  ! AND             [ shift and go to state 21 ]
-  ! OR              [ shift and go to state 22 ]
-  ! NAND            [ shift and go to state 23 ]
-  ! NOR             [ shift and go to state 24 ]
-  ! IMP             [ shift and go to state 25 ]
+  ! BEQ             [ reduce using rule 15 (bool_expression -> bool_expression AND bool_expression .) ]
+  ! BNEQ            [ reduce using rule 15 (bool_expression -> bool_expression AND bool_expression .) ]
+  ! AND             [ shift and go to state 20 ]
+  ! OR              [ shift and go to state 21 ]
+  ! NAND            [ shift and go to state 22 ]
+  ! NOR             [ shift and go to state 23 ]
+  ! IMP             [ shift and go to state 24 ]
 
 
 state 44
 
-    (15) bool_expression -> bool_expression XOR bool_expression .
-    (12) bool_expression -> bool_expression . EQ bool_expression
-    (14) bool_expression -> bool_expression . NEQ bool_expression
-    (15) bool_expression -> bool_expression . XOR bool_expression
-    (21) bool_expression -> bool_expression . AND bool_expression
-    (22) bool_expression -> bool_expression . OR bool_expression
-    (23) bool_expression -> bool_expression . NAND bool_expression
-    (24) bool_expression -> bool_expression . NOR bool_expression
-    (25) bool_expression -> bool_expression . IMP bool_expression
+    (16) bool_expression -> bool_expression OR bool_expression .
+    (13) bool_expression -> bool_expression . BEQ bool_expression
+    (14) bool_expression -> bool_expression . BNEQ bool_expression
+    (15) bool_expression -> bool_expression . AND bool_expression
+    (16) bool_expression -> bool_expression . OR bool_expression
+    (17) bool_expression -> bool_expression . NAND bool_expression
+    (18) bool_expression -> bool_expression . NOR bool_expression
+    (19) bool_expression -> bool_expression . IMP bool_expression
 
-    XOR             reduce using rule 15 (bool_expression -> bool_expression XOR bool_expression .)
-    OR              reduce using rule 15 (bool_expression -> bool_expression XOR bool_expression .)
-    NOR             reduce using rule 15 (bool_expression -> bool_expression XOR bool_expression .)
-    IMP             reduce using rule 15 (bool_expression -> bool_expression XOR bool_expression .)
-    $end            reduce using rule 15 (bool_expression -> bool_expression XOR bool_expression .)
-    RPAREN          reduce using rule 15 (bool_expression -> bool_expression XOR bool_expression .)
-    EQ              shift and go to state 18
-    NEQ             shift and go to state 19
-    AND             shift and go to state 21
-    NAND            shift and go to state 23
+    OR              reduce using rule 16 (bool_expression -> bool_expression OR bool_expression .)
+    NOR             reduce using rule 16 (bool_expression -> bool_expression OR bool_expression .)
+    IMP             reduce using rule 16 (bool_expression -> bool_expression OR bool_expression .)
+    $end            reduce using rule 16 (bool_expression -> bool_expression OR bool_expression .)
+    RPAREN          reduce using rule 16 (bool_expression -> bool_expression OR bool_expression .)
+    BEQ             shift and go to state 18
+    BNEQ            shift and go to state 19
+    AND             shift and go to state 20
+    NAND            shift and go to state 22
 
-  ! EQ              [ reduce using rule 15 (bool_expression -> bool_expression XOR bool_expression .) ]
-  ! NEQ             [ reduce using rule 15 (bool_expression -> bool_expression XOR bool_expression .) ]
-  ! AND             [ reduce using rule 15 (bool_expression -> bool_expression XOR bool_expression .) ]
-  ! NAND            [ reduce using rule 15 (bool_expression -> bool_expression XOR bool_expression .) ]
-  ! XOR             [ shift and go to state 20 ]
-  ! OR              [ shift and go to state 22 ]
-  ! NOR             [ shift and go to state 24 ]
-  ! IMP             [ shift and go to state 25 ]
+  ! BEQ             [ reduce using rule 16 (bool_expression -> bool_expression OR bool_expression .) ]
+  ! BNEQ            [ reduce using rule 16 (bool_expression -> bool_expression OR bool_expression .) ]
+  ! AND             [ reduce using rule 16 (bool_expression -> bool_expression OR bool_expression .) ]
+  ! NAND            [ reduce using rule 16 (bool_expression -> bool_expression OR bool_expression .) ]
+  ! OR              [ shift and go to state 21 ]
+  ! NOR             [ shift and go to state 23 ]
+  ! IMP             [ shift and go to state 24 ]
 
 
 state 45
 
-    (21) bool_expression -> bool_expression AND bool_expression .
-    (12) bool_expression -> bool_expression . EQ bool_expression
-    (14) bool_expression -> bool_expression . NEQ bool_expression
-    (15) bool_expression -> bool_expression . XOR bool_expression
-    (21) bool_expression -> bool_expression . AND bool_expression
-    (22) bool_expression -> bool_expression . OR bool_expression
-    (23) bool_expression -> bool_expression . NAND bool_expression
-    (24) bool_expression -> bool_expression . NOR bool_expression
-    (25) bool_expression -> bool_expression . IMP bool_expression
+    (17) bool_expression -> bool_expression NAND bool_expression .
+    (13) bool_expression -> bool_expression . BEQ bool_expression
+    (14) bool_expression -> bool_expression . BNEQ bool_expression
+    (15) bool_expression -> bool_expression . AND bool_expression
+    (16) bool_expression -> bool_expression . OR bool_expression
+    (17) bool_expression -> bool_expression . NAND bool_expression
+    (18) bool_expression -> bool_expression . NOR bool_expression
+    (19) bool_expression -> bool_expression . IMP bool_expression
 
-    XOR             reduce using rule 21 (bool_expression -> bool_expression AND bool_expression .)
-    AND             reduce using rule 21 (bool_expression -> bool_expression AND bool_expression .)
-    OR              reduce using rule 21 (bool_expression -> bool_expression AND bool_expression .)
-    NAND            reduce using rule 21 (bool_expression -> bool_expression AND bool_expression .)
-    NOR             reduce using rule 21 (bool_expression -> bool_expression AND bool_expression .)
-    IMP             reduce using rule 21 (bool_expression -> bool_expression AND bool_expression .)
-    $end            reduce using rule 21 (bool_expression -> bool_expression AND bool_expression .)
-    RPAREN          reduce using rule 21 (bool_expression -> bool_expression AND bool_expression .)
-    EQ              shift and go to state 18
-    NEQ             shift and go to state 19
+    AND             reduce using rule 17 (bool_expression -> bool_expression NAND bool_expression .)
+    OR              reduce using rule 17 (bool_expression -> bool_expression NAND bool_expression .)
+    NAND            reduce using rule 17 (bool_expression -> bool_expression NAND bool_expression .)
+    NOR             reduce using rule 17 (bool_expression -> bool_expression NAND bool_expression .)
+    IMP             reduce using rule 17 (bool_expression -> bool_expression NAND bool_expression .)
+    $end            reduce using rule 17 (bool_expression -> bool_expression NAND bool_expression .)
+    RPAREN          reduce using rule 17 (bool_expression -> bool_expression NAND bool_expression .)
+    BEQ             shift and go to state 18
+    BNEQ            shift and go to state 19
 
-  ! EQ              [ reduce using rule 21 (bool_expression -> bool_expression AND bool_expression .) ]
-  ! NEQ             [ reduce using rule 21 (bool_expression -> bool_expression AND bool_expression .) ]
-  ! XOR             [ shift and go to state 20 ]
-  ! AND             [ shift and go to state 21 ]
-  ! OR              [ shift and go to state 22 ]
-  ! NAND            [ shift and go to state 23 ]
-  ! NOR             [ shift and go to state 24 ]
-  ! IMP             [ shift and go to state 25 ]
+  ! BEQ             [ reduce using rule 17 (bool_expression -> bool_expression NAND bool_expression .) ]
+  ! BNEQ            [ reduce using rule 17 (bool_expression -> bool_expression NAND bool_expression .) ]
+  ! AND             [ shift and go to state 20 ]
+  ! OR              [ shift and go to state 21 ]
+  ! NAND            [ shift and go to state 22 ]
+  ! NOR             [ shift and go to state 23 ]
+  ! IMP             [ shift and go to state 24 ]
 
 
 state 46
 
-    (22) bool_expression -> bool_expression OR bool_expression .
-    (12) bool_expression -> bool_expression . EQ bool_expression
-    (14) bool_expression -> bool_expression . NEQ bool_expression
-    (15) bool_expression -> bool_expression . XOR bool_expression
-    (21) bool_expression -> bool_expression . AND bool_expression
-    (22) bool_expression -> bool_expression . OR bool_expression
-    (23) bool_expression -> bool_expression . NAND bool_expression
-    (24) bool_expression -> bool_expression . NOR bool_expression
-    (25) bool_expression -> bool_expression . IMP bool_expression
+    (18) bool_expression -> bool_expression NOR bool_expression .
+    (13) bool_expression -> bool_expression . BEQ bool_expression
+    (14) bool_expression -> bool_expression . BNEQ bool_expression
+    (15) bool_expression -> bool_expression . AND bool_expression
+    (16) bool_expression -> bool_expression . OR bool_expression
+    (17) bool_expression -> bool_expression . NAND bool_expression
+    (18) bool_expression -> bool_expression . NOR bool_expression
+    (19) bool_expression -> bool_expression . IMP bool_expression
 
-    XOR             reduce using rule 22 (bool_expression -> bool_expression OR bool_expression .)
-    OR              reduce using rule 22 (bool_expression -> bool_expression OR bool_expression .)
-    NOR             reduce using rule 22 (bool_expression -> bool_expression OR bool_expression .)
-    IMP             reduce using rule 22 (bool_expression -> bool_expression OR bool_expression .)
-    $end            reduce using rule 22 (bool_expression -> bool_expression OR bool_expression .)
-    RPAREN          reduce using rule 22 (bool_expression -> bool_expression OR bool_expression .)
-    EQ              shift and go to state 18
-    NEQ             shift and go to state 19
-    AND             shift and go to state 21
-    NAND            shift and go to state 23
+    OR              reduce using rule 18 (bool_expression -> bool_expression NOR bool_expression .)
+    NOR             reduce using rule 18 (bool_expression -> bool_expression NOR bool_expression .)
+    IMP             reduce using rule 18 (bool_expression -> bool_expression NOR bool_expression .)
+    $end            reduce using rule 18 (bool_expression -> bool_expression NOR bool_expression .)
+    RPAREN          reduce using rule 18 (bool_expression -> bool_expression NOR bool_expression .)
+    BEQ             shift and go to state 18
+    BNEQ            shift and go to state 19
+    AND             shift and go to state 20
+    NAND            shift and go to state 22
 
-  ! EQ              [ reduce using rule 22 (bool_expression -> bool_expression OR bool_expression .) ]
-  ! NEQ             [ reduce using rule 22 (bool_expression -> bool_expression OR bool_expression .) ]
-  ! AND             [ reduce using rule 22 (bool_expression -> bool_expression OR bool_expression .) ]
-  ! NAND            [ reduce using rule 22 (bool_expression -> bool_expression OR bool_expression .) ]
-  ! XOR             [ shift and go to state 20 ]
-  ! OR              [ shift and go to state 22 ]
-  ! NOR             [ shift and go to state 24 ]
-  ! IMP             [ shift and go to state 25 ]
+  ! BEQ             [ reduce using rule 18 (bool_expression -> bool_expression NOR bool_expression .) ]
+  ! BNEQ            [ reduce using rule 18 (bool_expression -> bool_expression NOR bool_expression .) ]
+  ! AND             [ reduce using rule 18 (bool_expression -> bool_expression NOR bool_expression .) ]
+  ! NAND            [ reduce using rule 18 (bool_expression -> bool_expression NOR bool_expression .) ]
+  ! OR              [ shift and go to state 21 ]
+  ! NOR             [ shift and go to state 23 ]
+  ! IMP             [ shift and go to state 24 ]
 
 
 state 47
 
-    (23) bool_expression -> bool_expression NAND bool_expression .
-    (12) bool_expression -> bool_expression . EQ bool_expression
-    (14) bool_expression -> bool_expression . NEQ bool_expression
-    (15) bool_expression -> bool_expression . XOR bool_expression
-    (21) bool_expression -> bool_expression . AND bool_expression
-    (22) bool_expression -> bool_expression . OR bool_expression
-    (23) bool_expression -> bool_expression . NAND bool_expression
-    (24) bool_expression -> bool_expression . NOR bool_expression
-    (25) bool_expression -> bool_expression . IMP bool_expression
+    (19) bool_expression -> bool_expression IMP bool_expression .
+    (13) bool_expression -> bool_expression . BEQ bool_expression
+    (14) bool_expression -> bool_expression . BNEQ bool_expression
+    (15) bool_expression -> bool_expression . AND bool_expression
+    (16) bool_expression -> bool_expression . OR bool_expression
+    (17) bool_expression -> bool_expression . NAND bool_expression
+    (18) bool_expression -> bool_expression . NOR bool_expression
+    (19) bool_expression -> bool_expression . IMP bool_expression
 
-    XOR             reduce using rule 23 (bool_expression -> bool_expression NAND bool_expression .)
-    AND             reduce using rule 23 (bool_expression -> bool_expression NAND bool_expression .)
-    OR              reduce using rule 23 (bool_expression -> bool_expression NAND bool_expression .)
-    NAND            reduce using rule 23 (bool_expression -> bool_expression NAND bool_expression .)
-    NOR             reduce using rule 23 (bool_expression -> bool_expression NAND bool_expression .)
-    IMP             reduce using rule 23 (bool_expression -> bool_expression NAND bool_expression .)
-    $end            reduce using rule 23 (bool_expression -> bool_expression NAND bool_expression .)
-    RPAREN          reduce using rule 23 (bool_expression -> bool_expression NAND bool_expression .)
-    EQ              shift and go to state 18
-    NEQ             shift and go to state 19
-
-  ! EQ              [ reduce using rule 23 (bool_expression -> bool_expression NAND bool_expression .) ]
-  ! NEQ             [ reduce using rule 23 (bool_expression -> bool_expression NAND bool_expression .) ]
-  ! XOR             [ shift and go to state 20 ]
-  ! AND             [ shift and go to state 21 ]
-  ! OR              [ shift and go to state 22 ]
-  ! NAND            [ shift and go to state 23 ]
-  ! NOR             [ shift and go to state 24 ]
-  ! IMP             [ shift and go to state 25 ]
-
-
-state 48
-
-    (24) bool_expression -> bool_expression NOR bool_expression .
-    (12) bool_expression -> bool_expression . EQ bool_expression
-    (14) bool_expression -> bool_expression . NEQ bool_expression
-    (15) bool_expression -> bool_expression . XOR bool_expression
-    (21) bool_expression -> bool_expression . AND bool_expression
-    (22) bool_expression -> bool_expression . OR bool_expression
-    (23) bool_expression -> bool_expression . NAND bool_expression
-    (24) bool_expression -> bool_expression . NOR bool_expression
-    (25) bool_expression -> bool_expression . IMP bool_expression
-
-    XOR             reduce using rule 24 (bool_expression -> bool_expression NOR bool_expression .)
-    OR              reduce using rule 24 (bool_expression -> bool_expression NOR bool_expression .)
-    NOR             reduce using rule 24 (bool_expression -> bool_expression NOR bool_expression .)
-    IMP             reduce using rule 24 (bool_expression -> bool_expression NOR bool_expression .)
-    $end            reduce using rule 24 (bool_expression -> bool_expression NOR bool_expression .)
-    RPAREN          reduce using rule 24 (bool_expression -> bool_expression NOR bool_expression .)
-    EQ              shift and go to state 18
-    NEQ             shift and go to state 19
-    AND             shift and go to state 21
-    NAND            shift and go to state 23
-
-  ! EQ              [ reduce using rule 24 (bool_expression -> bool_expression NOR bool_expression .) ]
-  ! NEQ             [ reduce using rule 24 (bool_expression -> bool_expression NOR bool_expression .) ]
-  ! AND             [ reduce using rule 24 (bool_expression -> bool_expression NOR bool_expression .) ]
-  ! NAND            [ reduce using rule 24 (bool_expression -> bool_expression NOR bool_expression .) ]
-  ! XOR             [ shift and go to state 20 ]
-  ! OR              [ shift and go to state 22 ]
-  ! NOR             [ shift and go to state 24 ]
-  ! IMP             [ shift and go to state 25 ]
-
-
-state 49
-
-    (25) bool_expression -> bool_expression IMP bool_expression .
-    (12) bool_expression -> bool_expression . EQ bool_expression
-    (14) bool_expression -> bool_expression . NEQ bool_expression
-    (15) bool_expression -> bool_expression . XOR bool_expression
-    (21) bool_expression -> bool_expression . AND bool_expression
-    (22) bool_expression -> bool_expression . OR bool_expression
-    (23) bool_expression -> bool_expression . NAND bool_expression
-    (24) bool_expression -> bool_expression . NOR bool_expression
-    (25) bool_expression -> bool_expression . IMP bool_expression
-
-  ! shift/reduce conflict for EQ resolved as shift
-  ! shift/reduce conflict for NEQ resolved as shift
-  ! shift/reduce conflict for XOR resolved as shift
+  ! shift/reduce conflict for BEQ resolved as shift
+  ! shift/reduce conflict for BNEQ resolved as shift
   ! shift/reduce conflict for AND resolved as shift
   ! shift/reduce conflict for OR resolved as shift
   ! shift/reduce conflict for NAND resolved as shift
   ! shift/reduce conflict for NOR resolved as shift
   ! shift/reduce conflict for IMP resolved as shift
-    $end            reduce using rule 25 (bool_expression -> bool_expression IMP bool_expression .)
-    RPAREN          reduce using rule 25 (bool_expression -> bool_expression IMP bool_expression .)
-    EQ              shift and go to state 18
-    NEQ             shift and go to state 19
-    XOR             shift and go to state 20
-    AND             shift and go to state 21
-    OR              shift and go to state 22
-    NAND            shift and go to state 23
-    NOR             shift and go to state 24
-    IMP             shift and go to state 25
+    $end            reduce using rule 19 (bool_expression -> bool_expression IMP bool_expression .)
+    RPAREN          reduce using rule 19 (bool_expression -> bool_expression IMP bool_expression .)
+    BEQ             shift and go to state 18
+    BNEQ            shift and go to state 19
+    AND             shift and go to state 20
+    OR              shift and go to state 21
+    NAND            shift and go to state 22
+    NOR             shift and go to state 23
+    IMP             shift and go to state 24
 
-  ! EQ              [ reduce using rule 25 (bool_expression -> bool_expression IMP bool_expression .) ]
-  ! NEQ             [ reduce using rule 25 (bool_expression -> bool_expression IMP bool_expression .) ]
-  ! XOR             [ reduce using rule 25 (bool_expression -> bool_expression IMP bool_expression .) ]
-  ! AND             [ reduce using rule 25 (bool_expression -> bool_expression IMP bool_expression .) ]
-  ! OR              [ reduce using rule 25 (bool_expression -> bool_expression IMP bool_expression .) ]
-  ! NAND            [ reduce using rule 25 (bool_expression -> bool_expression IMP bool_expression .) ]
-  ! NOR             [ reduce using rule 25 (bool_expression -> bool_expression IMP bool_expression .) ]
-  ! IMP             [ reduce using rule 25 (bool_expression -> bool_expression IMP bool_expression .) ]
+  ! BEQ             [ reduce using rule 19 (bool_expression -> bool_expression IMP bool_expression .) ]
+  ! BNEQ            [ reduce using rule 19 (bool_expression -> bool_expression IMP bool_expression .) ]
+  ! AND             [ reduce using rule 19 (bool_expression -> bool_expression IMP bool_expression .) ]
+  ! OR              [ reduce using rule 19 (bool_expression -> bool_expression IMP bool_expression .) ]
+  ! NAND            [ reduce using rule 19 (bool_expression -> bool_expression IMP bool_expression .) ]
+  ! NOR             [ reduce using rule 19 (bool_expression -> bool_expression IMP bool_expression .) ]
+  ! IMP             [ reduce using rule 19 (bool_expression -> bool_expression IMP bool_expression .) ]
+
+
+state 48
+
+    (23) arith_expression -> LPAREN arith_expression RPAREN .
+
+    PLUS            reduce using rule 23 (arith_expression -> LPAREN arith_expression RPAREN .)
+    MINUS           reduce using rule 23 (arith_expression -> LPAREN arith_expression RPAREN .)
+    TIMES           reduce using rule 23 (arith_expression -> LPAREN arith_expression RPAREN .)
+    DIVIDE          reduce using rule 23 (arith_expression -> LPAREN arith_expression RPAREN .)
+    LT              reduce using rule 23 (arith_expression -> LPAREN arith_expression RPAREN .)
+    GT              reduce using rule 23 (arith_expression -> LPAREN arith_expression RPAREN .)
+    LE              reduce using rule 23 (arith_expression -> LPAREN arith_expression RPAREN .)
+    GE              reduce using rule 23 (arith_expression -> LPAREN arith_expression RPAREN .)
+    EQ              reduce using rule 23 (arith_expression -> LPAREN arith_expression RPAREN .)
+    NEQ             reduce using rule 23 (arith_expression -> LPAREN arith_expression RPAREN .)
+    $end            reduce using rule 23 (arith_expression -> LPAREN arith_expression RPAREN .)
+    RPAREN          reduce using rule 23 (arith_expression -> LPAREN arith_expression RPAREN .)
+    BEQ             reduce using rule 23 (arith_expression -> LPAREN arith_expression RPAREN .)
+    BNEQ            reduce using rule 23 (arith_expression -> LPAREN arith_expression RPAREN .)
+    AND             reduce using rule 23 (arith_expression -> LPAREN arith_expression RPAREN .)
+    OR              reduce using rule 23 (arith_expression -> LPAREN arith_expression RPAREN .)
+    NAND            reduce using rule 23 (arith_expression -> LPAREN arith_expression RPAREN .)
+    NOR             reduce using rule 23 (arith_expression -> LPAREN arith_expression RPAREN .)
+    IMP             reduce using rule 23 (arith_expression -> LPAREN arith_expression RPAREN .)
+
+
+state 49
+
+    (24) bool_expression -> LPAREN bool_expression RPAREN .
+
+    BEQ             reduce using rule 24 (bool_expression -> LPAREN bool_expression RPAREN .)
+    BNEQ            reduce using rule 24 (bool_expression -> LPAREN bool_expression RPAREN .)
+    AND             reduce using rule 24 (bool_expression -> LPAREN bool_expression RPAREN .)
+    OR              reduce using rule 24 (bool_expression -> LPAREN bool_expression RPAREN .)
+    NAND            reduce using rule 24 (bool_expression -> LPAREN bool_expression RPAREN .)
+    NOR             reduce using rule 24 (bool_expression -> LPAREN bool_expression RPAREN .)
+    IMP             reduce using rule 24 (bool_expression -> LPAREN bool_expression RPAREN .)
+    $end            reduce using rule 24 (bool_expression -> LPAREN bool_expression RPAREN .)
+    RPAREN          reduce using rule 24 (bool_expression -> LPAREN bool_expression RPAREN .)
 
 
 state 50
 
-    (9) arith_expression -> LPAREN arith_expression RPAREN .
+    (23) arith_expression -> LPAREN arith_expression . RPAREN
+    (7) bool_expression -> arith_expression . LT arith_expression
+    (8) bool_expression -> arith_expression . GT arith_expression
+    (9) bool_expression -> arith_expression . LE arith_expression
+    (10) bool_expression -> arith_expression . GE arith_expression
+    (11) bool_expression -> arith_expression . EQ arith_expression
+    (12) bool_expression -> arith_expression . NEQ arith_expression
+    (3) arith_expression -> arith_expression . PLUS arith_expression
+    (4) arith_expression -> arith_expression . MINUS arith_expression
+    (5) arith_expression -> arith_expression . TIMES arith_expression
+    (6) arith_expression -> arith_expression . DIVIDE arith_expression
 
-    PLUS            reduce using rule 9 (arith_expression -> LPAREN arith_expression RPAREN .)
-    MINUS           reduce using rule 9 (arith_expression -> LPAREN arith_expression RPAREN .)
-    TIMES           reduce using rule 9 (arith_expression -> LPAREN arith_expression RPAREN .)
-    DIVIDE          reduce using rule 9 (arith_expression -> LPAREN arith_expression RPAREN .)
-    EQ              reduce using rule 9 (arith_expression -> LPAREN arith_expression RPAREN .)
-    NEQ             reduce using rule 9 (arith_expression -> LPAREN arith_expression RPAREN .)
-    LT              reduce using rule 9 (arith_expression -> LPAREN arith_expression RPAREN .)
-    GT              reduce using rule 9 (arith_expression -> LPAREN arith_expression RPAREN .)
-    LE              reduce using rule 9 (arith_expression -> LPAREN arith_expression RPAREN .)
-    GE              reduce using rule 9 (arith_expression -> LPAREN arith_expression RPAREN .)
-    $end            reduce using rule 9 (arith_expression -> LPAREN arith_expression RPAREN .)
-    RPAREN          reduce using rule 9 (arith_expression -> LPAREN arith_expression RPAREN .)
-    XOR             reduce using rule 9 (arith_expression -> LPAREN arith_expression RPAREN .)
-    AND             reduce using rule 9 (arith_expression -> LPAREN arith_expression RPAREN .)
-    OR              reduce using rule 9 (arith_expression -> LPAREN arith_expression RPAREN .)
-    NAND            reduce using rule 9 (arith_expression -> LPAREN arith_expression RPAREN .)
-    NOR             reduce using rule 9 (arith_expression -> LPAREN arith_expression RPAREN .)
-    IMP             reduce using rule 9 (arith_expression -> LPAREN arith_expression RPAREN .)
+    RPAREN          shift and go to state 48
+    LT              shift and go to state 12
+    GT              shift and go to state 13
+    LE              shift and go to state 14
+    GE              shift and go to state 15
+    EQ              shift and go to state 16
+    NEQ             shift and go to state 17
+    PLUS            shift and go to state 8
+    MINUS           shift and go to state 9
+    TIMES           shift and go to state 10
+    DIVIDE          shift and go to state 11
 
 
 state 51
 
-    (10) bool_expression -> LPAREN bool_expression RPAREN .
-
-    EQ              reduce using rule 10 (bool_expression -> LPAREN bool_expression RPAREN .)
-    NEQ             reduce using rule 10 (bool_expression -> LPAREN bool_expression RPAREN .)
-    XOR             reduce using rule 10 (bool_expression -> LPAREN bool_expression RPAREN .)
-    AND             reduce using rule 10 (bool_expression -> LPAREN bool_expression RPAREN .)
-    OR              reduce using rule 10 (bool_expression -> LPAREN bool_expression RPAREN .)
-    NAND            reduce using rule 10 (bool_expression -> LPAREN bool_expression RPAREN .)
-    NOR             reduce using rule 10 (bool_expression -> LPAREN bool_expression RPAREN .)
-    IMP             reduce using rule 10 (bool_expression -> LPAREN bool_expression RPAREN .)
-    $end            reduce using rule 10 (bool_expression -> LPAREN bool_expression RPAREN .)
-    RPAREN          reduce using rule 10 (bool_expression -> LPAREN bool_expression RPAREN .)
-
-
-state 52
-
-    (9) arith_expression -> LPAREN arith_expression . RPAREN
-    (16) bool_expression -> arith_expression . LT arith_expression
-    (17) bool_expression -> arith_expression . GT arith_expression
-    (18) bool_expression -> arith_expression . LE arith_expression
-    (19) bool_expression -> arith_expression . GE arith_expression
+    (23) arith_expression -> LPAREN arith_expression . RPAREN
     (3) arith_expression -> arith_expression . PLUS arith_expression
     (4) arith_expression -> arith_expression . MINUS arith_expression
     (5) arith_expression -> arith_expression . TIMES arith_expression
     (6) arith_expression -> arith_expression . DIVIDE arith_expression
-    (11) arith_expression -> arith_expression . EQ arith_expression
-    (13) arith_expression -> arith_expression . NEQ arith_expression
 
-    RPAREN          shift and go to state 50
-    LT              shift and go to state 14
-    GT              shift and go to state 15
-    LE              shift and go to state 16
-    GE              shift and go to state 17
+    RPAREN          shift and go to state 48
     PLUS            shift and go to state 8
     MINUS           shift and go to state 9
     TIMES           shift and go to state 10
     DIVIDE          shift and go to state 11
-    EQ              shift and go to state 12
-    NEQ             shift and go to state 13
-
-
-state 53
-
-    (9) arith_expression -> LPAREN arith_expression . RPAREN
-    (3) arith_expression -> arith_expression . PLUS arith_expression
-    (4) arith_expression -> arith_expression . MINUS arith_expression
-    (5) arith_expression -> arith_expression . TIMES arith_expression
-    (6) arith_expression -> arith_expression . DIVIDE arith_expression
-    (11) arith_expression -> arith_expression . EQ arith_expression
-    (13) arith_expression -> arith_expression . NEQ arith_expression
-
-    RPAREN          shift and go to state 50
-    PLUS            shift and go to state 8
-    MINUS           shift and go to state 9
-    TIMES           shift and go to state 10
-    DIVIDE          shift and go to state 11
-    EQ              shift and go to state 12
-    NEQ             shift and go to state 13
 
 WARNING: 
 WARNING: Conflicts:
 WARNING: 
-WARNING: shift/reduce conflict for EQ in state 28 resolved as shift
-WARNING: shift/reduce conflict for NEQ in state 28 resolved as shift
-WARNING: shift/reduce conflict for XOR in state 28 resolved as shift
-WARNING: shift/reduce conflict for AND in state 28 resolved as shift
-WARNING: shift/reduce conflict for OR in state 28 resolved as shift
-WARNING: shift/reduce conflict for NAND in state 28 resolved as shift
-WARNING: shift/reduce conflict for NOR in state 28 resolved as shift
-WARNING: shift/reduce conflict for IMP in state 28 resolved as shift
-WARNING: shift/reduce conflict for EQ in state 49 resolved as shift
-WARNING: shift/reduce conflict for NEQ in state 49 resolved as shift
-WARNING: shift/reduce conflict for XOR in state 49 resolved as shift
-WARNING: shift/reduce conflict for AND in state 49 resolved as shift
-WARNING: shift/reduce conflict for OR in state 49 resolved as shift
-WARNING: shift/reduce conflict for NAND in state 49 resolved as shift
-WARNING: shift/reduce conflict for NOR in state 49 resolved as shift
-WARNING: shift/reduce conflict for IMP in state 49 resolved as shift
+WARNING: shift/reduce conflict for BEQ in state 27 resolved as shift
+WARNING: shift/reduce conflict for BNEQ in state 27 resolved as shift
+WARNING: shift/reduce conflict for AND in state 27 resolved as shift
+WARNING: shift/reduce conflict for OR in state 27 resolved as shift
+WARNING: shift/reduce conflict for NAND in state 27 resolved as shift
+WARNING: shift/reduce conflict for NOR in state 27 resolved as shift
+WARNING: shift/reduce conflict for IMP in state 27 resolved as shift
+WARNING: shift/reduce conflict for BEQ in state 47 resolved as shift
+WARNING: shift/reduce conflict for BNEQ in state 47 resolved as shift
+WARNING: shift/reduce conflict for AND in state 47 resolved as shift
+WARNING: shift/reduce conflict for OR in state 47 resolved as shift
+WARNING: shift/reduce conflict for NAND in state 47 resolved as shift
+WARNING: shift/reduce conflict for NOR in state 47 resolved as shift
+WARNING: shift/reduce conflict for IMP in state 47 resolved as shift

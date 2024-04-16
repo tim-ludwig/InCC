@@ -144,3 +144,23 @@ class ImpExpression(Expression):
         v2 = self.e2.eval()
         return v2 if v1 else 1
     
+binop_expressions = {
+    '+' : PlusExpression,
+    '-' : MinusExpression,
+    '*' : TimesExpression,
+    '/' : DivideExpression,
+    '<' : LessExpression,
+    '>' : GreaterExpression,
+    '<=' : LessEqualExpression,
+    '>=' : GreaterEqualExpression,
+    '=' : EqualExpression,
+    'eq' : EqualExpression,
+    '!=' : NotEqualExpression,
+    'neq' : NotEqualExpression,
+    'xor' : NotEqualExpression,
+    'and' : AndExpression,
+    'or' : OrExpression,
+    'nand' : NandExpression,
+    'nor' : NorExpression,
+    'imp' : ImpExpression
+}

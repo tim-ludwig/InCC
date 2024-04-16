@@ -9,8 +9,8 @@ tokens = [
     'PLUS', 'MINUS', 'TIMES', 'DIVIDE',
     'LPAREN', 'RPAREN',
     'LT', 'GT', 'LE', 'GE',
-    'EQ', 'NEQ',
-    'NOT', 'AND', 'OR', 'NAND', 'NOR', 'XOR', 'IMP'
+    'EQ', 'NEQ', 'BEQ', 'BNEQ',
+    'NOT', 'AND', 'OR', 'NAND', 'NOR', 'IMP'
 ]
 
 t_NUMBER='\d+(\.\d+)?'
@@ -25,14 +25,15 @@ t_LT='<'
 t_GT='>'
 t_LE='<='
 t_GE='>='
-t_EQ='=|eq'
-t_NEQ='!=|neq'
+t_EQ='='
+t_NEQ='!='
+t_BEQ='eq'
+t_BNEQ='neq|xor'
 t_NOT='not'
 t_AND='and'
 t_OR='or'
 t_NAND='nand'
 t_NOR='nor'
-t_XOR='xor'
 t_IMP='imp'
 
 lexer = lex(reflags=re.IGNORECASE)
