@@ -10,7 +10,7 @@ tokens = [
     'LPAREN', 'RPAREN',
     'LT', 'GT', 'LE', 'GE',
     'EQ', 'NEQ', 'BEQ', 'BNEQ',
-    'NOT', 'AND', 'OR', 'NAND', 'NOR', 'IMP'
+    'NOT', 'AND', 'OR', 'NAND', 'NOR', 'IMP', 'XOR'
 ]
 
 t_NUMBER='\d+(\.\d+)?'
@@ -28,7 +28,8 @@ t_GE='>='
 t_EQ='='
 t_NEQ='!='
 t_BEQ='eq'
-t_BNEQ='neq|xor'
+t_BNEQ='neq'
+t_XOR='xor'
 t_NOT='not'
 t_AND='and'
 t_OR='or'

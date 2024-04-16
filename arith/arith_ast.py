@@ -1,11 +1,12 @@
-class Expression:
-    def __init__(self):
-        pass
+class Expression: pass
 
 class NumberExpression(Expression):
     def __init__(self, e):
         self.e = e
     
+    def typecheck(self):
+        self.type = 'number'
+
     def eval(self):
         return float(self.e)
 
@@ -13,154 +14,91 @@ class BoolLiteralExpression(Expression):
     def __init__(self, e):
         self.e = e
     
+    def typecheck(self):
+        self.type = 'bool'
+
     def eval(self):
-        return bool(self.e)
+        return self.e.lower() == 'true'
 
 class ParenExpression(Expression):
     def __init__(self, e):
         self.e = e
     
+    def typecheck(self):
+        self.e.typecheck()
+        self.type = self.e.type
+
     def eval(self):
         return self.e.eval()
 
-class PlusExpression(Expression):
-    def __init__(self, e1, e2):
-        self.e1 = e1
-        self.e2 = e2
-    
-    def eval(self):
-        return self.e1.eval() + self.e2.eval()
-    
-class MinusExpression(Expression):
-    def __init__(self, e1, e2):
-        self.e1 = e1
-        self.e2 = e2
-    
-    def eval(self):
-        return self.e1.eval() - self.e2.eval()
-    
-class TimesExpression(Expression):
-    def __init__(self, e1, e2):
-        self.e1 = e1
-        self.e2 = e2
-    
-    def eval(self):
-        return self.e1.eval() * self.e2.eval()
-    
-class DivideExpression(Expression):
-    def __init__(self, e1, e2):
-        self.e1 = e1
-        self.e2 = e2
-    
-    def eval(self):
-        return self.e1.eval() / self.e2.eval()
-    
-class LessExpression(Expression):
-    def __init__(self, e1, e2):
-        self.e1 = e1
-        self.e2 = e2
-    
-    def eval(self):
-        return self.e1.eval() < self.e2.eval()
-    
-class GreaterExpression(Expression):
-    def __init__(self, e1, e2):
-        self.e1 = e1
-        self.e2 = e2
-    
-    def eval(self):
-        return self.e1.eval() > self.e2.eval()
-    
-class LessEqualExpression(Expression):
-    def __init__(self, e1, e2):
-        self.e1 = e1
-        self.e2 = e2
-    
-    def eval(self):
-        return self.e1.eval() <= self.e2.eval()
-    
-class GreaterEqualExpression(Expression):
-    def __init__(self, e1, e2):
-        self.e1 = e1
-        self.e2 = e2
-    
-    def eval(self):
-        return self.e1.eval() >= self.e2.eval()
-    
-class EqualExpression(Expression):
-    def __init__(self, e1, e2):
-        self.e1 = e1
-        self.e2 = e2
-    
-    def eval(self):
-        return self.e1.eval() == self.e2.eval()
-    
-class NotEqualExpression(Expression):
-    def __init__(self, e1, e2):
-        self.e1 = e1
-        self.e2 = e2
-    
-    def eval(self):
-        return self.e1.eval() != self.e2.eval()
-    
 class NotExpression(Expression):
     def __init__(self, e):
         self.e = e
     
+    def type(self):
+        self.e.typecheck()
+
+        if self.e.type != 'bool':
+            TypeError(f'operand types not applicable: not {self.e.type}')
+
+        self.type = 'bool'
+
     def eval(self):
-        return not self.e().eval()
-    
-class AndExpression(Expression):
-    def __init__(self, e1, e2):
+        return not self.e.eval()
+
+class BinaryOperator(Expression):
+    operators = dict()
+
+    @classmethod
+    def register(cls, operator, argument_types, return_type, action):
+        if operator not in cls.operators:
+            cls.operators[operator] = dict()
+        
+        cls.operators[operator][argument_types] = (return_type, action)
+
+    def __init__(self, op, e1, e2):
+        self.op = op
         self.e1 = e1
         self.e2 = e2
     
+    def typecheck(self):
+        self.e1.typecheck()
+        self.e2.typecheck()
+        t1 = self.e1.type
+        t2 = self.e2.type
+
+        instances = BinaryOperator.operators[self.op]
+        
+        if (t1, t2) not in instances:
+            alternatives = '\n'.join([f"\t{t1} {self.op} {t2} : {tr}" for ((t1, t2), (tr, _)) in instances.items()])
+            raise TypeError(
+                f"No instance of operator '{self.op}' has argument types '{t1}' and '{t2}'.\n"
+                "Possible signatures are:\n"
+                f"{alternatives}"
+            )
+        
+        self.type, _ = instances[(t1, t2)]
+
     def eval(self):
-        return self.e1.eval() and self.e2.eval()
+        instances = BinaryOperator.operators[self.op]
+        _, action = instances[(self.e1.type, self.e2.type)]
+        return action(self.e1.eval(), self.e2.eval())
     
-class OrExpression(Expression):
-    def __init__(self, e1, e2):
-        self.e1 = e1
-        self.e2 = e2
-    
-    def eval(self):
-        return self.e1.eval() or self.e2.eval()
-    
-class NandExpression(Expression):
-    def __init__(self, e1, e2):
-        self = NotExpression(AndExpression(e1, e2))
-    
-class NorExpression(Expression):
-    def __init__(self, e1, e2):
-        self = NotExpression(OrExpression(e1, e2))
-    
-class ImpExpression(Expression):
-    def __init__(self, e1, e2):
-        self.e1 = e1
-        self.e2 = e2
-    
-    def eval(self):
-        v1 = self.e1.eval()
-        v2 = self.e2.eval()
-        return v2 if v1 else 1
-    
-binop_expressions = {
-    '+' : PlusExpression,
-    '-' : MinusExpression,
-    '*' : TimesExpression,
-    '/' : DivideExpression,
-    '<' : LessExpression,
-    '>' : GreaterExpression,
-    '<=' : LessEqualExpression,
-    '>=' : GreaterEqualExpression,
-    '=' : EqualExpression,
-    'eq' : EqualExpression,
-    '!=' : NotEqualExpression,
-    'neq' : NotEqualExpression,
-    'xor' : NotEqualExpression,
-    'and' : AndExpression,
-    'or' : OrExpression,
-    'nand' : NandExpression,
-    'nor' : NorExpression,
-    'imp' : ImpExpression
-}
+BinaryOperator.register('+',    ('number', 'number'), 'number', lambda v1, v2: v1 + v2)
+BinaryOperator.register('-',    ('number', 'number'), 'number', lambda v1, v2: v1 - v2)
+BinaryOperator.register('*',    ('number', 'number'), 'number', lambda v1, v2: v1 * v2)
+BinaryOperator.register('/',    ('number', 'number'), 'number', lambda v1, v2: v1 / v2)
+BinaryOperator.register('<',    ('number', 'number'), 'bool',   lambda v1, v2: v1 < v2)
+BinaryOperator.register('>',    ('number', 'number'), 'bool',   lambda v1, v2: v1 > v2)
+BinaryOperator.register('<=',   ('number', 'number'), 'bool',   lambda v1, v2: v1 <= v2)
+BinaryOperator.register('>=',   ('number', 'number'), 'bool',   lambda v1, v2: v1 >= v2)
+BinaryOperator.register('=',    ('number', 'number'), 'bool',   lambda v1, v2: v1 == v2)
+BinaryOperator.register('!=',   ('number', 'number'), 'bool',   lambda v1, v2: v1 != v2)
+BinaryOperator.register('eq',   ('bool',   'bool'),   'bool',   lambda v1, v2: v1 == v2)
+BinaryOperator.register('neq',  ('bool',   'bool'),   'bool',   lambda v1, v2: v1 != v2)
+BinaryOperator.register('xor',  ('bool',   'bool'),   'bool',   lambda v1, v2: v1 != v2)
+BinaryOperator.register('and',  ('bool',   'bool'),   'bool',   lambda v1, v2: v1 and v2)
+BinaryOperator.register('or',   ('bool',   'bool'),   'bool',   lambda v1, v2: v1 or v2)
+BinaryOperator.register('nand', ('bool',   'bool'),   'bool',   lambda v1, v2: not (v1 and v2))
+BinaryOperator.register('nor',  ('bool',   'bool'),   'bool',   lambda v1, v2: not (v1 or v2))
+BinaryOperator.register('imp',  ('bool',   'bool'),   'bool',   lambda v1, v2: not v1 or v2)
