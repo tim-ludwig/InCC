@@ -35,11 +35,11 @@ class NotExpression(Expression):
     def __init__(self, e):
         self.e = e
     
-    def type(self):
+    def typecheck(self):
         self.e.typecheck()
 
         if self.e.type != 'bool':
-            TypeError(f'operand types not applicable: not {self.e.type}')
+            raise TypeError(f'operand types not applicable: not {self.e.type}')
 
         self.type = 'bool'
 
@@ -94,11 +94,11 @@ BinaryOperator.register('<=',   ('number', 'number'), 'bool',   lambda v1, v2: v
 BinaryOperator.register('>=',   ('number', 'number'), 'bool',   lambda v1, v2: v1 >= v2)
 BinaryOperator.register('=',    ('number', 'number'), 'bool',   lambda v1, v2: v1 == v2)
 BinaryOperator.register('!=',   ('number', 'number'), 'bool',   lambda v1, v2: v1 != v2)
-BinaryOperator.register('eq',   ('bool',   'bool'),   'bool',   lambda v1, v2: v1 == v2)
-BinaryOperator.register('neq',  ('bool',   'bool'),   'bool',   lambda v1, v2: v1 != v2)
-BinaryOperator.register('xor',  ('bool',   'bool'),   'bool',   lambda v1, v2: v1 != v2)
-BinaryOperator.register('and',  ('bool',   'bool'),   'bool',   lambda v1, v2: v1 and v2)
-BinaryOperator.register('or',   ('bool',   'bool'),   'bool',   lambda v1, v2: v1 or v2)
-BinaryOperator.register('nand', ('bool',   'bool'),   'bool',   lambda v1, v2: not (v1 and v2))
-BinaryOperator.register('nor',  ('bool',   'bool'),   'bool',   lambda v1, v2: not (v1 or v2))
-BinaryOperator.register('imp',  ('bool',   'bool'),   'bool',   lambda v1, v2: not v1 or v2)
+BinaryOperator.register('EQ',   ('bool',   'bool'),   'bool',   lambda v1, v2: v1 == v2)
+BinaryOperator.register('NEQ',  ('bool',   'bool'),   'bool',   lambda v1, v2: v1 != v2)
+BinaryOperator.register('XOR',  ('bool',   'bool'),   'bool',   lambda v1, v2: v1 != v2)
+BinaryOperator.register('AND',  ('bool',   'bool'),   'bool',   lambda v1, v2: v1 and v2)
+BinaryOperator.register('OR',   ('bool',   'bool'),   'bool',   lambda v1, v2: v1 or v2)
+BinaryOperator.register('NAND', ('bool',   'bool'),   'bool',   lambda v1, v2: not (v1 and v2))
+BinaryOperator.register('NOR',  ('bool',   'bool'),   'bool',   lambda v1, v2: not (v1 or v2))
+BinaryOperator.register('IMP',  ('bool',   'bool'),   'bool',   lambda v1, v2: not v1 or v2)

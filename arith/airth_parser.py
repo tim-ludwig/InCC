@@ -5,7 +5,7 @@ from arith_ast import *
 precedence = [
     ['left', 'OR', 'NOR', 'XOR'],
     ['left', 'AND', 'NAND'],
-    ['left', 'EQ', 'NEQ', 'BEQ', 'BNEQ'],
+    ['left', 'EQS', 'NEQS', 'EQ', 'NEQ'],
     ['left', 'LT', 'GT', 'LE', 'GE'],
     ['left', 'PLUS', 'MINUS'],
     ['left', 'TIMES', 'DIVIDE']
@@ -21,10 +21,10 @@ def p_expression_binary(p):
                | expression GT expression
                | expression LE expression
                | expression GE expression
+               | expression EQS expression
+               | expression NEQS expression
                | expression EQ expression
                | expression NEQ expression
-               | expression BEQ expression
-               | expression BNEQ expression
                | expression AND expression
                | expression OR expression
                | expression NAND expression
@@ -43,13 +43,15 @@ def p_expression_num(p):
     p[0] = NumberExpression(p[1])
 
 def p_expression_bool_lit(p):
-    'expression : BOOL_LIT'
+    '''
+    expression : TRUE
+               | FALSE
+    '''
     p[0] = BoolLiteralExpression(p[1])
 
 def p_expression_paren(p):
     'expression : LPAREN expression RPAREN'
     p[0] = ParenExpression(p[2])
-
 
 parser = yacc(start='expression')
 while True:

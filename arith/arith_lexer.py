@@ -5,16 +5,18 @@ t_ignore = ' \t\n'
 
 tokens = [
     'NUMBER',
-    'BOOL_LIT',
+    'IDENT',
     'PLUS', 'MINUS', 'TIMES', 'DIVIDE',
     'LPAREN', 'RPAREN',
     'LT', 'GT', 'LE', 'GE',
-    'EQ', 'NEQ', 'BEQ', 'BNEQ',
-    'NOT', 'AND', 'OR', 'NAND', 'NOR', 'IMP', 'XOR'
+    'EQS', 'NEQS'
 ]
+reseved_words = {
+    'TRUE', 'FALSE', 'EQ', 'NEQ', 'XOR', 'NOT', 'AND', 'OR', 'NAND', 'NOR', 'IMP'
+}
+tokens.extend(reseved_words)
 
 t_NUMBER='\d+(\.\d+)?'
-t_BOOL_LIT='true|false'
 t_PLUS='\+'
 t_MINUS='-'
 t_TIMES='\*'
@@ -25,16 +27,17 @@ t_LT='<'
 t_GT='>'
 t_LE='<='
 t_GE='>='
-t_EQ='='
-t_NEQ='!='
-t_BEQ='eq'
-t_BNEQ='neq'
-t_XOR='xor'
-t_NOT='not'
-t_AND='and'
-t_OR='or'
-t_NAND='nand'
-t_NOR='nor'
-t_IMP='imp'
+t_EQS='='
+t_NEQS='!='
 
-lexer = lex(reflags=re.IGNORECASE)
+def t_IDENT(t):
+    r'[_a-zA-Z][_a-zA-Z]*'
+
+    valUp = t.value.upper()
+    if valUp in reseved_words:
+        t.type = valUp
+        t.value = valUp
+    
+    return t
+
+lexer = lex()
