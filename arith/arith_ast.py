@@ -9,6 +9,9 @@ class NumberExpression(Expression):
 
     def eval(self):
         return float(self.e)
+    
+    def s_expression(self):
+        return str(self.e)
 
 class BoolLiteralExpression(Expression):
     def __init__(self, e):
@@ -19,6 +22,9 @@ class BoolLiteralExpression(Expression):
 
     def eval(self):
         return self.e.lower() == 'true'
+    
+    def s_expression(self):
+        return 't' if self.eval() else 'nil'
 
 class ParenExpression(Expression):
     def __init__(self, e):
@@ -30,6 +36,9 @@ class ParenExpression(Expression):
 
     def eval(self):
         return self.e.eval()
+    
+    def s_expression(self):
+        return self.e.s_expression()
 
 class NotExpression(Expression):
     def __init__(self, e):
@@ -45,6 +54,9 @@ class NotExpression(Expression):
 
     def eval(self):
         return not self.e.eval()
+    
+    def s_expression(self):
+        return f'(not {self.e.s_expression()})'
 
 class BinaryOperator(Expression):
     operators = dict()
@@ -84,6 +96,9 @@ class BinaryOperator(Expression):
         _, action = instances[(self.e1.type, self.e2.type)]
         return action(self.e1.eval(), self.e2.eval())
     
+    def s_expression(self):
+        return f'({self.op.lower()} {self.e1.s_expression()} {self.e2.s_expression()})'
+
 BinaryOperator.register('+',    ('number', 'number'), 'number', lambda v1, v2: v1 + v2)
 BinaryOperator.register('-',    ('number', 'number'), 'number', lambda v1, v2: v1 - v2)
 BinaryOperator.register('*',    ('number', 'number'), 'number', lambda v1, v2: v1 * v2)

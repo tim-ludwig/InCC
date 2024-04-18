@@ -59,6 +59,7 @@ while True:
 
     try:
         ast.typecheck()
+        print(ast.s_expression())
         print(ast.eval())
     except TypeError as error:
         print('TypeError')
