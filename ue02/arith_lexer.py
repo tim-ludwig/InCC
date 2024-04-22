@@ -31,7 +31,7 @@ t_EQS='='
 t_NEQS='!='
 
 def t_IDENT(t):
-    r'[_a-zA-Z][_a-zA-Z]*'
+    r'[_a-zA-Z][_a-zA-Z0-9]*'
 
     valUp = t.value.upper()
     if valUp in reseved_words:
