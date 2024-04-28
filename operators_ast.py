@@ -14,9 +14,9 @@ class Operator(Expression):
         self.op = op
         self.operands = operands
     
-    def typecheck(self):
+    def typecheck(self, vars):
         for operand in self.operands:
-            operand.typecheck()
+            vars = operand.typecheck(vars)
         
         self.operand_types = tuple([operand.type for operand in self.operands])
         instances = Operator.operators[self.op]
@@ -30,12 +30,16 @@ class Operator(Expression):
             )
         
         self.type, self.action = instances[self.operand_types]
+        return vars
 
-    def eval(self):
-        return self.action(*[operand.eval() for operand in self.operands])
-    
-    def s_expression(self):
-        return f"({self.op.lower()} {' '.join([operand.s_expression() for operand in self.operands])})"
+    def eval(self, env):
+        args = []
+        for operand in self.operands:
+            result, env = operand.eval(env)
+            args.append(result)
+        
+        result = self.action(*args)
+        return result, env
 
 Operator.register('+',    ('number', 'number'), 'number', lambda v1, v2: v1 + v2)
 Operator.register('-',    ('number', 'number'), 'number', lambda v1, v2: v1 - v2)

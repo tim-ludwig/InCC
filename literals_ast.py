@@ -4,24 +4,20 @@ class NumberLiteral(Expression):
     def __init__(self, e):
         self.e = e
     
-    def typecheck(self):
+    def typecheck(self, vars):
         self.type = 'number'
+        return vars
 
-    def eval(self):
-        return float(self.e)
-    
-    def s_expression(self):
-        return str(self.e)
+    def eval(self, env):
+        return float(self.e), env
 
 class BoolLiteral(Expression):
     def __init__(self, e):
         self.e = e
     
-    def typecheck(self):
+    def typecheck(self, vars):
         self.type = 'bool'
+        return vars
 
-    def eval(self):
-        return self.e.lower() == 'true'
-    
-    def s_expression(self):
-        return 't' if self.eval() else 'nil'
+    def eval(self, env):
+        return self.e.lower() == 'true', env

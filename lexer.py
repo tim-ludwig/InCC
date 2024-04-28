@@ -2,14 +2,17 @@ from ply import lex
 
 from literals_lexer import *
 from operators_lexer import *
+from variables_lexer import *
 
 tokens = list(
     lit_tokens
   | expr_tokens
+  | var_tokens
 )
 reserved_words = set(
     lit_reserved_words
   | expr_reserved_words
+  | var_reserved_words
 )
 
 tokens.extend(reserved_words)

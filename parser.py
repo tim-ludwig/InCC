@@ -3,8 +3,10 @@ from lexer import tokens, lexer
 
 from literals_parser import *
 from operators_parser import *
+from variables_parser import *
 
 precedence = [
+    ['right', 'ASSIGN'],
     ['left', 'OR', 'NOR', 'XOR'],
     ['left', 'IMP'],
     ['left', 'AND', 'NAND'],
@@ -16,13 +18,11 @@ precedence = [
 ]
 
 parser = yacc.yacc(start='expression')
+env = {}
+vars = {}
 while True:
     ast = parser.parse(input=input("> "), lexer=lexer)
-
-    try:
-        ast.typecheck()
-        print(ast.s_expression())
-        print(ast.eval())
-    except TypeError as error:
-        print('TypeError')
-        print(error)
+    vars = ast.typecheck(vars)
+    result, env = ast.eval(env)
+    print('Result: ', result)
+    print(env)
