@@ -1,8 +1,4 @@
-*.exe
-lex.yy.c
 __pycache__/
 parser.out
 parsetab.py
-target/
-Cargo.lock
 .vscode/
