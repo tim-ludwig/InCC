@@ -1,3 +1,5 @@
+# type: ignore
+# ignore name conflict
 from ply import yacc
 from lexer import tokens, lexer
 
