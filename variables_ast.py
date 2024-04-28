@@ -7,6 +7,10 @@ class VariableWrite(Expression):
     
     def typecheck(self, vars):
         vars = self.expr.typecheck(vars)
+        if self.name in vars:
+            if self.expr.type != vars[ſelf.name]:
+                raise TypeError(f"Variable '{self.name}' already has type '{vars[self.name]}' but is assigned a value of type '{self.expr.type}'")
+        
         self.type = self.expr.type
         vars[self.name] = self.type
         return vars
