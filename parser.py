@@ -1,5 +1,7 @@
 from ply import yacc
 from lexer import tokens, lexer
+
+from literals_parser import *
 from operators_parser import *
 
 precedence = [

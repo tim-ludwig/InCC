@@ -31,17 +31,6 @@ def p_expression_unary(p):
     '''
     p[0] = Operator(p[1], p[2])
 
-def p_expression_num_lit(p):
-    'expression : NUMBER'
-    p[0] = NumberLiteral(p[1])
-
-def p_expression_bool_lit(p):
-    '''
-    expression : TRUE
-               | FALSE
-    '''
-    p[0] = BoolLiteral(p[1])
-
 def p_expression_paren(p):
     'expression : LPAREN expression RPAREN'
     p[0] = p[2]

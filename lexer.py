@@ -1,11 +1,20 @@
 from ply import lex
+
+from literals_lexer import *
 from operators_lexer import *
 
-tokens = list(expr_tokens)
-reserved_words = set(expr_reserved_words)
+tokens = list(
+    lit_tokens
+  | expr_tokens
+)
+reserved_words = set(
+    lit_reserved_words
+  | expr_reserved_words
+)
 
 tokens.extend(reserved_words)
 
+tokens.append('IDENT')
 def t_IDENT(t):
     r'[_a-zA-Z][_a-zA-Z0-9]*'
 
