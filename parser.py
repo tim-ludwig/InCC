@@ -4,6 +4,7 @@ from lexer import tokens, lexer
 from literals_parser import *
 from operators_parser import *
 from variables_parser import *
+from sequences_parser import *
 
 precedence = [
     ['right', 'ASSIGN'],
@@ -24,5 +25,5 @@ while True:
     ast = parser.parse(input=input("> "), lexer=lexer)
     vars = ast.typecheck(vars)
     result, env = ast.eval(env)
-    print('Result: ', result)
-    print(env)
+    print(result)
+    print('Variables: ', env)
