@@ -7,6 +7,7 @@ from literals_parser import *
 from operators_parser import *
 from variables_parser import *
 from sequences_parser import *
+from controlflow_parser import *
 
 precedence = [
     ['right', 'ASSIGN'],
@@ -17,7 +18,8 @@ precedence = [
     ['left', 'LT', 'GT', 'LE', 'GE'],
     ['left', 'PLUS', 'MINUS'],
     ['left', 'TIMES', 'DIVIDE'],
-    ['right', 'NOT', 'UMINUS', 'UPLUS']
+    ['right', 'NOT', 'UMINUS', 'UPLUS'],
+    ['right', 'ELSE']
 ]
 
 parser = yacc.yacc(start='expression')
