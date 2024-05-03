@@ -11,7 +11,7 @@ class VariableWrite(Expression):
             if self.expr.type != vars[self.name]['type']:
                 raise TypeError(f"Variable '{self.name}' already has type '{vars[self.name]['type']}' but is assigned a value of type '{self.expr.type}'")
         
-            if not vars[ſelf.name]['writeable']:
+            if not vars[self.name]['writeable']:
                 raise AssertionError(f"Variable '{self.name}' is not writeable")
         
         self.type = self.expr.type
