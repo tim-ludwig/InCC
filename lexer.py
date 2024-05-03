@@ -15,6 +15,7 @@ tokens = list(
 reserved_words = set(
     lit_reserved_words
   | expr_reserved_words
+  | var_reserved_words
   | controlflow_reserved_words
 )
 
