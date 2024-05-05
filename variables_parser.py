@@ -6,17 +6,12 @@ def p_expression_variable(p):
     '''
     p[0] = VariableRead(p[1])
 
-def p_expression_assign_(p):
-    '''
-    expression : assign_expression
-    '''
-    p[0] = p[1]
-
 def p_expression_assign(p):
     '''
+    expression : assign_expression
     assign_expression : IDENT ASSIGN expression
     '''
-    p[0] = VariableWrite(p[1], p[3])
+    p[0] = p[1] if len(p) == 2 else VariableWrite(p[1], p[3])
 
 def p_ident_list(p):
     '''
