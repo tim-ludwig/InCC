@@ -10,6 +10,8 @@ from sequences_parser import *
 from controlflow_parser import *
 
 precedence = [
+    ['nonassoc', 'THEN'],
+    ['nonassoc', 'ELSE', 'LOCK', 'DO', 'WHILE'],
     ['right', 'ASSIGN'],
     ['left', 'OR', 'NOR', 'XOR'],
     ['left', 'IMP'],
@@ -19,7 +21,6 @@ precedence = [
     ['left', 'PLUS', 'MINUS'],
     ['left', 'TIMES', 'DIVIDE'],
     ['right', 'NOT', 'UMINUS', 'UPLUS'],
-    ['right', 'ELSE']
 ]
 
 parser = yacc.yacc(start='expression')
