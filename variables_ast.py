@@ -1,3 +1,4 @@
+from environment import Value
 from syntaxtree import *
 
 class VariableWrite(Expression):
@@ -8,19 +9,19 @@ class VariableWrite(Expression):
     def typecheck(self, vars):
         vars = self.expr.typecheck(vars)
         if self.name in vars:
-            if self.expr.type != vars[self.name]['type']:
-                raise TypeError(f"Variable '{self.name}' already has type '{vars[self.name]['type']}' but is assigned a value of type '{self.expr.type}'")
+            if self.expr.type != vars[self.name].type:
+                raise TypeError(f"Variable '{self.name}' already has type '{vars[self.name].type}' but is assigned a value of type '{self.expr.type}'")
         
-            if not vars[self.name]['writeable']:
+            if not vars[self.name].writeable:
                 raise AssertionError(f"Variable '{self.name}' is not writeable")
         
         self.type = self.expr.type
-        vars[self.name] = {'type': self.type, 'writeable': True}
+        vars[self.name] = Value(None, self.type)
         return vars
     
     def eval(self, env):
         result, env = self.expr.eval(env)
-        env[self.name] = result
+        env[self.name] = Value(result, self.expr.type)
         return result, env
 
 class VariableRead(Expression):
@@ -31,33 +32,61 @@ class VariableRead(Expression):
         if self.name not in vars:
                 raise KeyError(f"Undefined variable '{self.name}'")
         
-        self.type = vars[self.name]['type']
+        self.type = vars[self.name].type
         return vars
     
     def eval(self, env):
-        return env[self.name], env
+        return env[self.name].value, env
 
 class VariableLock(Expression):
-    def __init__(self, vars, expr):
-        self.vars = vars
+    def __init__(self, name, expr):
+        self.name = name
         self.expr = expr
     
     def typecheck(self, vars):
-        pre_lock = {}
-        for var in self.vars:
-            if var not in vars:
-                raise KeyError(f"Undefined variable '{var}'")
-            
-            pre_lock[var] = vars[var]['writeable']
-            vars[var]['writeable'] = False
+        if self.name not in vars:
+            raise KeyError(f"Undefined variable '{self.name}'")
+        
+        pre_lock = vars[self.name].writeable
+        vars[self.name].writeable = False
         
         vars = self.expr.typecheck(vars)
 
-        for var in self.vars:
-            vars[var]['writeable'] = pre_lock[var]
+        vars[self.name].writeable = pre_lock
 
         self.type = self.expr.type
         return vars
 
     def eval(self, env):
         return self.expr.eval(env)
+
+class LetExpression(Expression):
+    def __init__(self, assignment, body):
+        self.assignment = assignment
+        self.body = body
+
+    def typecheck(self, vars):
+        vars = vars.push()
+
+        name = self.assignment.name
+        expr = self.assignment.expr
+
+        vars = expr.typecheck(vars)
+        vars.define_local(name, Value(None, expr.type))
+        
+        vars = self.body.typecheck(vars)
+        self.type = self.body.type
+
+        return vars.pop()
+
+    def eval(self, env):
+        env = env.push()
+        
+        name = self.assignment.name
+        expr = self.assignment.expr
+        
+        result, env = expr.eval(env)
+        env.define_local(name, Value(result, expr.type))
+        
+        result, env = self.body.eval(env)
+        return result, env.pop()

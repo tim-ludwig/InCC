@@ -13,15 +13,14 @@ def p_expression_assign(p):
     '''
     p[0] = p[1] if len(p) == 2 else VariableWrite(p[1], p[3])
 
-def p_ident_list(p):
-    '''
-    ident_list : IDENT
-               | ident_list COMMA IDENT
-    '''
-    p[0] = [p[1]] if len(p) == 2 else [*p[1], p[3]]
-
 def p_lock(p):
     '''
-    expression : LOCK ident_list expression
+    expression : LOCK IDENT IN expression
     '''
     p[0] = VariableLock(p[2], p[3])
+
+def p_let(p):
+    '''
+    expression : LOCAL assign_expression IN expression
+    '''
+    p[0] = LetExpression(p[2], p[4])

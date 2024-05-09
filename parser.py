@@ -9,9 +9,11 @@ from variables_parser import *
 from sequences_parser import *
 from controlflow_parser import *
 
+from environment import Environment
+
 precedence = [
     ['nonassoc', 'THEN'],
-    ['nonassoc', 'ELSE', 'LOCK', 'DO', 'WHILE'],
+    ['nonassoc', 'ELSE', 'DO', 'WHILE', 'IN'],
     ['right', 'ASSIGN'],
     ['left', 'OR', 'NOR', 'XOR'],
     ['left', 'IMP'],
@@ -24,11 +26,10 @@ precedence = [
 ]
 
 parser = yacc.yacc(start='expression')
-env = {}
-vars = {}
+env = Environment()
 while True:
     ast = parser.parse(input=input("> "), lexer=lexer)
-    vars = ast.typecheck(vars)
+    env = ast.typecheck(env)
     result, env = ast.eval(env)
     print(result)
     print('Variables: ', env)

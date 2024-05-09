@@ -1,10 +1,8 @@
 var_tokens = {
-    'ASSIGN', 'COMMA'
+    'ASSIGN'
 }
 var_reserved_words = {
-    'LOCK'
+    'LOCK', 'LOCAL', 'IN'
 }
 
-
 t_ASSIGN=':='
-t_COMMA=','
