@@ -60,7 +60,7 @@ class VariableLock(Expression):
     def eval(self, env):
         return self.expr.eval(env)
 
-class LetExpression(Expression):
+class LetRecExpression(Expression):
     def __init__(self, assignment, body):
         self.assignment = assignment
         self.body = body
@@ -71,8 +71,8 @@ class LetExpression(Expression):
         name = self.assignment.name
         expr = self.assignment.expr
 
-        vars = expr.typecheck(vars)
         vars.define_local(name, Value(None, expr.type))
+        vars = expr.typecheck(vars)
         
         vars = self.body.typecheck(vars)
         self.type = self.body.type
@@ -85,8 +85,9 @@ class LetExpression(Expression):
         name = self.assignment.name
         expr = self.assignment.expr
         
+        env.define_local(name, Value(None, expr.type))
         result, env = expr.eval(env)
-        env.define_local(name, Value(result, expr.type))
+        env[name] = Value(result, expr.type)
         
         result, env = self.body.eval(env)
         return result, env.pop()

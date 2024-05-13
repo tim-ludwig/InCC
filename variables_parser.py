@@ -23,4 +23,4 @@ def p_let(p):
     '''
     expression : LOCAL assign_expression IN expression
     '''
-    p[0] = LetExpression(p[2], p[4])
+    p[0] = LetRecExpression(p[2], p[4])
