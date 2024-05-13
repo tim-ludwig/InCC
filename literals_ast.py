@@ -2,10 +2,10 @@ from syntaxtree import *
 
 class NumberLiteral(Expression):
     def __init__(self, e):
+        self.type = 'number'
         self.e = e
     
     def typecheck(self, vars):
-        self.type = 'number'
         return vars
 
     def eval(self, env):
@@ -13,10 +13,10 @@ class NumberLiteral(Expression):
 
 class BoolLiteral(Expression):
     def __init__(self, e):
+        self.type = 'bool'
         self.e = e
     
     def typecheck(self, vars):
-        self.type = 'bool'
         return vars
 
     def eval(self, env):
