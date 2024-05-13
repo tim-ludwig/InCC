@@ -33,5 +33,6 @@ def t_IDENT(t):
     return t
 
 t_ignore = ' \t\n'
+t_ignore_COMMENT = r'\#.*'
 
 lexer = lex.lex()
