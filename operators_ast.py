@@ -17,11 +17,11 @@ class Operator(Expression):
     def eval(self, env):
         args = []
         for operand in self.operands:
-            result, env = operand.eval(env)
+            result = operand.eval(env)
             args.append(result)
         
         result = Operator.operators[self.op][len(args)](*args)
-        return result, env
+        return result
 
 Operator.register('+',    2, lambda v1, v2: v1 + v2)
 Operator.register('-',    2, lambda v1, v2: v1 - v2)

@@ -7,16 +7,16 @@ class VariableWrite(Expression):
         self.expr = expr
     
     def eval(self, env):
-        result, env = self.expr.eval(env)
+        result = self.expr.eval(env)
         env[self.name] = Value(result)
-        return result, env
+        return result
 
 class VariableRead(Expression):
     def __init__(self, name):
         self.name = name
     
     def eval(self, env):
-        return env[self.name].value, env
+        return env[self.name].value
 
 class VariableLock(Expression):
     def __init__(self, name, expr):
@@ -38,8 +38,8 @@ class LetRecExpression(Expression):
         expr = self.assignment.expr
         
         env.define_local(name, Value(None))
-        result, env = expr.eval(env)
+        result = expr.eval(env)
         env[name] = Value(result)
         
-        result, env = self.body.eval(env)
-        return result, env.pop()
+        result = self.body.eval(env)
+        return result

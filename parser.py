@@ -29,6 +29,6 @@ parser = yacc.yacc(start='expression')
 env = Environment()
 while True:
     ast = parser.parse(input=input("> "), lexer=lexer)
-    result, env = ast.eval(env)
+    result = ast.eval(env)
     print(result)
     print('Variables: ', env)

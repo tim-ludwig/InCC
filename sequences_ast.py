@@ -7,6 +7,6 @@ class Sequence(Expression):
     def eval(self, env):
         result = None
         for expr in self.exprs:
-            result, env = expr.eval(env)
+            result = expr.eval(env)
         
-        return result, env
+        return result
