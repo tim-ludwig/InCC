@@ -4,33 +4,15 @@ class Operator(Expression):
     operators = dict()
 
     @classmethod
-    def register(cls, operator, operand_types, return_type, action):
+    def register(cls, operator, argc, action):
         if operator not in cls.operators:
             cls.operators[operator] = dict()
         
-        cls.operators[operator][operand_types] = (return_type, action)
+        cls.operators[operator][argc] = action
 
     def __init__(self, op, *operands):
         self.op = op
         self.operands = operands
-    
-    def typecheck(self, vars):
-        for operand in self.operands:
-            vars = operand.typecheck(vars)
-        
-        self.operand_types = tuple([operand.type for operand in self.operands])
-        instances = Operator.operators[self.op]
-        
-        if self.operand_types not in instances:
-            alternatives = '\n'.join([f"\t{self.op} : {operand_types} -> '{tr}'" for (operand_types, (tr, _)) in instances.items()])
-            raise TypeError(
-                f"No instance of operator '{self.op}' has operand types {self.operand_types}.\n"
-                "Possible signatures are:\n"
-                f"{alternatives}"
-            )
-        
-        self.type, self.action = instances[self.operand_types]
-        return vars
 
     def eval(self, env):
         args = []
@@ -38,27 +20,27 @@ class Operator(Expression):
             result, env = operand.eval(env)
             args.append(result)
         
-        result = self.action(*args)
+        result = Operator.operators[self.op][len(args)](*args)
         return result, env
 
-Operator.register('+',    ('number', 'number'), 'number', lambda v1, v2: v1 + v2)
-Operator.register('-',    ('number', 'number'), 'number', lambda v1, v2: v1 - v2)
-Operator.register('*',    ('number', 'number'), 'number', lambda v1, v2: v1 * v2)
-Operator.register('/',    ('number', 'number'), 'number', lambda v1, v2: v1 / v2)
-Operator.register('<',    ('number', 'number'), 'bool',   lambda v1, v2: v1 < v2)
-Operator.register('>',    ('number', 'number'), 'bool',   lambda v1, v2: v1 > v2)
-Operator.register('<=',   ('number', 'number'), 'bool',   lambda v1, v2: v1 <= v2)
-Operator.register('>=',   ('number', 'number'), 'bool',   lambda v1, v2: v1 >= v2)
-Operator.register('=',    ('number', 'number'), 'bool',   lambda v1, v2: v1 == v2)
-Operator.register('!=',   ('number', 'number'), 'bool',   lambda v1, v2: v1 != v2)
-Operator.register('+',    ('number',),          'number', lambda v1    : v1)
-Operator.register('-',    ('number',),          'number', lambda v1    : -v1)
-Operator.register('EQ',   ('bool',   'bool'),   'bool',   lambda v1, v2: v1 == v2)
-Operator.register('NEQ',  ('bool',   'bool'),   'bool',   lambda v1, v2: v1 != v2)
-Operator.register('XOR',  ('bool',   'bool'),   'bool',   lambda v1, v2: v1 != v2)
-Operator.register('AND',  ('bool',   'bool'),   'bool',   lambda v1, v2: v1 and v2)
-Operator.register('OR',   ('bool',   'bool'),   'bool',   lambda v1, v2: v1 or v2)
-Operator.register('NAND', ('bool',   'bool'),   'bool',   lambda v1, v2: not (v1 and v2))
-Operator.register('NOR',  ('bool',   'bool'),   'bool',   lambda v1, v2: not (v1 or v2))
-Operator.register('IMP',  ('bool',   'bool'),   'bool',   lambda v1, v2: not v1 or v2)
-Operator.register('NOT',  ('bool',),            'bool',   lambda v1    : not v1)
+Operator.register('+',    2, lambda v1, v2: v1 + v2)
+Operator.register('-',    2, lambda v1, v2: v1 - v2)
+Operator.register('*',    2, lambda v1, v2: v1 * v2)
+Operator.register('/',    2, lambda v1, v2: v1 / v2)
+Operator.register('<',    2, lambda v1, v2: v1 < v2)
+Operator.register('>',    2, lambda v1, v2: v1 > v2)
+Operator.register('<=',   2, lambda v1, v2: v1 <= v2)
+Operator.register('>=',   2, lambda v1, v2: v1 >= v2)
+Operator.register('=',    2, lambda v1, v2: v1 == v2)
+Operator.register('!=',   2, lambda v1, v2: v1 != v2)
+Operator.register('+',    1, lambda v1    : v1)
+Operator.register('-',    1, lambda v1    : -v1)
+Operator.register('EQ',   2, lambda v1, v2: v1 == v2)
+Operator.register('NEQ',  2, lambda v1, v2: v1 != v2)
+Operator.register('XOR',  2, lambda v1, v2: v1 != v2)
+Operator.register('AND',  2, lambda v1, v2: v1 and v2)
+Operator.register('OR',   2, lambda v1, v2: v1 or v2)
+Operator.register('NAND', 2, lambda v1, v2: not (v1 and v2))
+Operator.register('NOR',  2, lambda v1, v2: not (v1 or v2))
+Operator.register('IMP',  2, lambda v1, v2: not v1 or v2)
+Operator.register('NOT',  1, lambda v1    : not v1)

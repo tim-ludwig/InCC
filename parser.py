@@ -28,11 +28,7 @@ precedence = [
 parser = yacc.yacc(start='expression')
 env = Environment()
 while True:
-    try:
-        ast = parser.parse(input=input("> "), lexer=lexer)
-        env = ast.typecheck(env)
-        result, env = ast.eval(env)
-        print(result)
-        print('Variables: ', env)
-    except TypeError as e:
-        print(e)
+    ast = parser.parse(input=input("> "), lexer=lexer)
+    result, env = ast.eval(env)
+    print(result)
+    print('Variables: ', env)

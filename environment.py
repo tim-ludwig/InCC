@@ -1,11 +1,10 @@
 class Value:
-    def __init__(self, value, type, writeable=True):
+    def __init__(self, value, writeable=True):
         self.value = value
-        self.type = type
         self.writeable = writeable
 
     def __str__(self):
-        return 'value: ' + str(self.value) + ' type: ' + str(self.type) + ' writeable: ' + str(self.writeable)
+        return 'value: ' + str(self.value) + ' writeable: ' + str(self.writeable)
     
     def __repr__(self):
         return str(self)
