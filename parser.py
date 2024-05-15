@@ -8,6 +8,7 @@ from operators_parser import *
 from variables_parser import *
 from sequences_parser import *
 from controlflow_parser import *
+from lambda_parser import *
 
 from environment import Environment
 
@@ -15,6 +16,7 @@ precedence = [
     ['nonassoc', 'THEN'],
     ['nonassoc', 'ELSE', 'DO', 'WHILE', 'IN'],
     ['right', 'ASSIGN'],
+    ['right', 'RIGHT_ARROW'],
     ['left', 'OR', 'NOR', 'XOR'],
     ['left', 'IMP'],
     ['left', 'AND', 'NAND'],

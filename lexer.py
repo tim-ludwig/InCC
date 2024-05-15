@@ -5,12 +5,14 @@ from operators_lexer import *
 from variables_lexer import *
 from sequences_lexer import *
 from controlflow_lexer import *
+from lambda_lexer import *
 
 tokens = list(
     lit_tokens
   | expr_tokens
   | var_tokens
   | seq_tokens
+  | lambda_tokens
 )
 reserved_words = set(
     lit_reserved_words
