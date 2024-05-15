@@ -29,6 +29,7 @@ precedence = [
 
 parser = yacc.yacc(start='expression')
 env = Environment()
+parser.parse(input='counter := val -> inc -> val := val + inc', lexer=lexer).eval(env)
 while True:
     ast = parser.parse(input=input("> "), lexer=lexer)
     result = ast.eval(env)
