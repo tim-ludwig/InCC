@@ -11,9 +11,14 @@ if __name__ == '__main__':
     env = Environment()
 
     if args.file:
-        with open(args.file, 'r') as f:
-            parser.parse(f.read()).eval(env)
+        with (open(args.file, 'r') as f):
+            inp = f.read()
+            ast = parser.parse(inp)
+            ast.eval(env)
 
     if args.repl:
         while True:
-            print(parser.parse(input("> ")).eval(env))
+            inp = input("> ")
+            ast = parser.parse(inp)
+            res = ast.eval(env)
+            print(res)
