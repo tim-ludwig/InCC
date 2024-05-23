@@ -26,6 +26,9 @@ precedence = [
     ['right', 'LPAREN'],
 ]
 
+def p_error(p):
+    raise SyntaxError(f"Syntax error at token {p}")
+
 parser = yacc.yacc(start='expression')
 
 def parse(input: str) -> Expression:

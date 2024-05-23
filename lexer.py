@@ -34,7 +34,11 @@ def t_IDENT(t):
     
     return t
 
-t_ignore = ' \t\n'
+def t_newline(t):
+    r'\n+'
+    t.lexer.lineno += len(t.value)
+
+t_ignore = ' \t'
 t_ignore_COMMENT = r'\#.*'
 
 lexer = lex.lex()
