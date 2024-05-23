@@ -23,6 +23,7 @@ precedence = [
     ['left', 'PLUS', 'MINUS'],
     ['left', 'TIMES', 'DIVIDE'],
     ['right', 'NOT', 'UMINUS', 'UPLUS'],
+    ['right', 'LPAREN'],
 ]
 
 parser = yacc.yacc(start='expression')

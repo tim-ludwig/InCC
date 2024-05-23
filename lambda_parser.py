@@ -5,5 +5,5 @@ def p_expression_lambda(p):
     p[0] = LambdaExpression(p[1], p[3])
 
 def p_expression_call(p):
-    'expression : IDENT LPAREN expression RPAREN'
+    'expression : expression LPAREN expression RPAREN'
     p[0] = CallExpression(p[1], p[3])
