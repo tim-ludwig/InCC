@@ -1,5 +1,5 @@
 import argparse
-import parser # type: ignore
+from parser import parser # type: ignore
 from environment import Environment
 
 

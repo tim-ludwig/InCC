@@ -1,4 +1,4 @@
-from operators_ast import *
+from syntaxtree.operators import *
 
 
 def p_expression_binary(p):

@@ -1,4 +1,4 @@
-from variables_ast import *
+from syntaxtree.variables import *
 
 
 def p_expression_variable(p):

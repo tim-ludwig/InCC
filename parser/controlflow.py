@@ -1,4 +1,4 @@
-from controlflow_ast import *
+from syntaxtree.controlflow import *
 
 
 def p_loop(p):

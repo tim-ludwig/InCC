@@ -1,5 +1,5 @@
+from syntaxtree.syntaxtree import *
 from environment import Value
-from syntaxtree import *
 
 
 class VariableWrite(Expression):

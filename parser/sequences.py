@@ -1,5 +1,4 @@
-
-from sequences_ast import *
+from syntaxtree.sequences import *
 
 def p_expressions(p):
     """

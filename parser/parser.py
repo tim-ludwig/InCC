@@ -1,14 +1,14 @@
 # type: ignore
 # ignore name conflict
 from ply import yacc
-from lexer import tokens, lexer
+from lexer.lexer import tokens, lexer
 
-from literals_parser import *
-from operators_parser import *
-from variables_parser import *
-from sequences_parser import *
-from controlflow_parser import *
-from lambda_parser import *
+from parser.literals import *
+from parser.operators import *
+from parser.variables import *
+from parser.sequences import *
+from parser.controlflow import *
+from parser.lmbd import *
 
 
 precedence = [

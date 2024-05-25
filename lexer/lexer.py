@@ -1,11 +1,11 @@
 from ply import lex
 
-from literals_lexer import *
-from operators_lexer import *
-from variables_lexer import *
-from sequences_lexer import *
-from controlflow_lexer import *
-from lambda_lexer import *
+from lexer.literals import *
+from lexer.operators import *
+from lexer.variables import *
+from lexer.sequences import *
+from lexer.controlflow import *
+from lexer.lmbd import *
 
 
 tokens = list(

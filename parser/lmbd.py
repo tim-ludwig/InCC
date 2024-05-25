@@ -1,4 +1,4 @@
-from lambda_ast import *
+from syntaxtree.lmbd import *
 
 
 def p_expression_lambda(p):

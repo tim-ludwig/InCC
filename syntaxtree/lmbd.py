@@ -1,4 +1,4 @@
-from syntaxtree import *
+from syntaxtree.syntaxtree import *
 from environment import *
 
 

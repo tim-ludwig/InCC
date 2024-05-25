@@ -1,4 +1,4 @@
-from literals_ast import *
+from syntaxtree.literals import *
 
 
 def p_expression_num_lit(p):
