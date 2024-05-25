@@ -1,6 +1,7 @@
 from environment import Value
 from syntaxtree import *
 
+
 class VariableWrite(Expression):
     def __init__(self, name, expr):
         self.name = name
@@ -11,12 +12,14 @@ class VariableWrite(Expression):
         env[self.name] = Value(result)
         return result
 
+
 class VariableRead(Expression):
     def __init__(self, name):
         self.name = name
     
     def eval(self, env):
         return env[self.name].value
+
 
 class VariableLock(Expression):
     def __init__(self, name, expr):
@@ -25,6 +28,7 @@ class VariableLock(Expression):
 
     def eval(self, env):
         return self.expr.eval(env)
+
 
 class LetRecExpression(Expression):
     def __init__(self, assignment, body):

@@ -1,5 +1,6 @@
 from syntaxtree import *
 
+
 class LoopExpression(Expression):
     def __init__(self, count_expr, body):
         self.count_expr = count_expr
@@ -13,6 +14,7 @@ class LoopExpression(Expression):
             result = self.body.eval(env)
 
         return result
+
 
 class ForExpression(Expression):
     def __init__(self, initial_assign, condition, reassign, body):
@@ -35,6 +37,7 @@ class ForExpression(Expression):
 
         return result
 
+
 class WhileExpression(Expression):
     def __init__(self, condition, body):
         self.condition = condition
@@ -51,6 +54,7 @@ class WhileExpression(Expression):
 
         return result
 
+
 class DoWhileExpression(Expression):
     def __init__(self, condition, body):
         self.condition = condition
@@ -66,6 +70,7 @@ class DoWhileExpression(Expression):
                 break
 
         return result
+
 
 class IfExpression(Expression):
     def __init__(self, condition, then_body, else_body):

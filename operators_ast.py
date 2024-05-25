@@ -1,5 +1,6 @@
 from syntaxtree import *
 
+
 class Operator(Expression):
     operators = dict()
 
@@ -22,6 +23,7 @@ class Operator(Expression):
         
         result = Operator.operators[self.op][len(args)](*args)
         return result
+
 
 Operator.register('+',    2, lambda v1, v2: v1 + v2)
 Operator.register('-',    2, lambda v1, v2: v1 - v2)

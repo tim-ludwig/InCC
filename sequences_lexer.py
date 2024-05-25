@@ -4,6 +4,7 @@ seq_tokens = {
     'SEMICOLON'
 }
 
-t_LBRACE='{'
-t_RBRACE='}'
-t_SEMICOLON=';'
+
+t_LBRACE = '{'
+t_RBRACE = '}'
+t_SEMICOLON = ';'

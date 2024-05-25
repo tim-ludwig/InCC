@@ -1,5 +1,6 @@
 from syntaxtree import *
 
+
 class Sequence(Expression):
     def __init__(self, exprs):
         self.exprs = exprs

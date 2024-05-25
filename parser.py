@@ -10,6 +10,7 @@ from sequences_parser import *
 from controlflow_parser import *
 from lambda_parser import *
 
+
 precedence = [
     ['nonassoc', 'THEN'],
     ['nonassoc', 'ELSE', 'DO', 'WHILE', 'IN'],
@@ -26,10 +27,13 @@ precedence = [
     ['right', 'LPAREN'],
 ]
 
+
 def p_error(p):
     raise SyntaxError(f"Syntax error at token {p}")
 
+
 parser = yacc.yacc(start='expression')
 
-def parse(input: str) -> Expression:
-    return parser.parse(input=input, lexer=lexer)
+
+def parse(text: str) -> Expression:
+    return parser.parse(input=text, lexer=lexer)

@@ -1,4 +1,6 @@
-class Node: pass
+class Node:
+    pass
+
 
 class Expression(Node):
     def eval(self, env):

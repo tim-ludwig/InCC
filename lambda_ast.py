@@ -1,6 +1,7 @@
 from syntaxtree import *
 from environment import *
 
+
 class Closure:
     def __init__(self, env, arg_name, body):
         self.env = env.push()
@@ -12,6 +13,7 @@ class Closure:
         self.env[self.arg_name] = Value(val)
         return self.body.eval(self.env)
 
+
 class LambdaExpression(Expression):
     def __init__(self, arg_name, body):
         self.arg_name = arg_name
@@ -19,7 +21,8 @@ class LambdaExpression(Expression):
     
     def eval(self, env):
         return Closure(env, self.arg_name, self.body)
-    
+
+
 class CallExpression(Expression):
     def __init__(self, lmbd, arg):
         self.lmbd = lmbd

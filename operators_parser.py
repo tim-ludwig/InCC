@@ -1,7 +1,8 @@
 from operators_ast import *
 
+
 def p_expression_binary(p):
-    '''
+    """
     expression : expression PLUS expression
                | expression MINUS expression
                | expression TIMES expression
@@ -20,17 +21,21 @@ def p_expression_binary(p):
                | expression NOR expression
                | expression IMP expression
                | expression XOR expression
-    '''
+    """
     p[0] = Operator(p[2], p[1], p[3])
 
+
 def p_expression_unary(p):
-    '''
+    """
     expression : NOT expression
                | PLUS expression %prec UPLUS
                | MINUS expression %prec UMINUS
-    '''
+    """
     p[0] = Operator(p[1], p[2])
 
+
 def p_expression_paren(p):
-    'expression : LPAREN expression RPAREN'
+    """
+    expression : LPAREN expression RPAREN
+    """
     p[0] = p[2]
