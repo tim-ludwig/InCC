@@ -1,10 +1,9 @@
 class Value:
-    def __init__(self, value, writeable=True):
+    def __init__(self, value):
         self.value = value
-        self.writeable = writeable
 
     def __str__(self):
-        return 'value: ' + str(self.value) + ' writeable: ' + str(self.writeable)
+        return f'Value({str(self.value)})' if self.value else 'Value()'
     
     def __repr__(self):
         return str(self)
