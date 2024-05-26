@@ -91,12 +91,7 @@ def eval(expr: Expression, env: Environment):
             return eval(closure.body, closure.env)
 
 
-if __name__ == '__main__':
-    argparser = argparse.ArgumentParser(prog ='interpreter', description='Run the interpreter')
-    argparser.add_argument('file', type=str, nargs='?', help='The file to interpret')
-    argparser.add_argument('--repl', action='store_true', help='Run the interpreter in REPL mode')
-
-    args = argparser.parse_args()
+def main(args):
     env = Environment()
 
     if args.file:
@@ -112,3 +107,11 @@ if __name__ == '__main__':
             expr = parser.parse(inp)
             res = eval(expr, env)
             print(res)
+
+
+if __name__ == '__main__':
+    argparser = argparse.ArgumentParser(prog='interpreter', description='Run the interpreter')
+    argparser.add_argument('file', type=str, nargs='?', help='The file to interpret')
+    argparser.add_argument('--repl', action='store_true', help='Run the interpreter in REPL mode')
+
+    main(argparser.parse_args())
