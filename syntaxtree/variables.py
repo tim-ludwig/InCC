@@ -2,7 +2,7 @@ from syntaxtree.syntaxtree import *
 from environment import Value
 
 
-class VariableWrite(Expression):
+class AssignExpression(Expression):
     def __init__(self, name, expr):
         self.name = name
         self.expr = expr
@@ -13,7 +13,7 @@ class VariableWrite(Expression):
         return result
 
 
-class VariableRead(Expression):
+class VariableExpression(Expression):
     def __init__(self, name):
         self.name = name
     
@@ -21,7 +21,7 @@ class VariableRead(Expression):
         return env[self.name].value
 
 
-class VariableLock(Expression):
+class LockExpression(Expression):
     def __init__(self, name, expr):
         self.name = name
         self.expr = expr
@@ -30,7 +30,7 @@ class VariableLock(Expression):
         return self.expr.eval(env)
 
 
-class LetRecExpression(Expression):
+class LocalExpression(Expression):
     def __init__(self, assignment, body):
         self.assignment = assignment
         self.body = body
