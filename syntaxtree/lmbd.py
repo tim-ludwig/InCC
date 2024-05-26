@@ -1,6 +1,7 @@
 from syntaxtree.syntaxtree import *
 from environment import *
 from dataclasses import dataclass
+from typing import Callable
 
 
 @dataclass
@@ -11,6 +12,11 @@ class Closure:
 
 
 @dataclass
+class BuiltInFunction:
+    func: Callable
+
+
+@dataclass
 class LambdaExpression(Expression):
     arg_names: list[str]
     body: Expression
@@ -18,5 +24,5 @@ class LambdaExpression(Expression):
 
 @dataclass
 class CallExpression(Expression):
-    lmbd: Expression
-    args: list[Expression]
+    f: Expression
+    arg_exprs: list[Expression]

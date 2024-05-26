@@ -1,11 +1,12 @@
 import argparse
+
+from builtin_functions import register_builtin_functions
 from parser import parser # type: ignore
 
 from environment import Environment, Value
 from syntaxtree.controlflow import LoopExpression, ForExpression, WhileExpression, DoWhileExpression, IfExpression
 from syntaxtree.literals import NumberLiteral, BoolLiteral
-from syntaxtree.lmbd import LambdaExpression, CallExpression, Closure
-from syntaxtree.operators import OperatorExpression
+from syntaxtree.lmbd import LambdaExpression, CallExpression, Closure, BuiltInFunction
 from syntaxtree.sequences import SequenceExpression
 
 from syntaxtree.syntaxtree import Expression
@@ -16,9 +17,6 @@ def eval(expr: Expression, env: Environment):
     match expr:
         case NumberLiteral(value): return float(value)
         case BoolLiteral(value): return bool(value)
-
-        case OperatorExpression(op, operands):
-            return OperatorExpression.operators[op][len(operands)](*[eval(operand, env) for operand in operands])
 
         case AssignExpression(name, expression):
             res = eval(expression, env)
@@ -83,17 +81,25 @@ def eval(expr: Expression, env: Environment):
         case LambdaExpression(arg_names, body):
             return Closure(env, arg_names, body)
 
-        case CallExpression(lmbd, args):
-            closure = eval(lmbd, env)
+        case CallExpression(f, arg_exprs):
+            callable = eval(f, env)
+            arg_values = [eval(arg_expr, env) for arg_expr in arg_exprs]
 
-            cenv = closure.env.push()
-            for arg_name, arg_expr in zip(closure.arg_names, args):
-                cenv.define_local(arg_name, Value(eval(arg_expr, env)))
-            return eval(closure.body, cenv)
+            match callable:
+                case Closure(env, arg_names, body):
+                    cenv = env.push()
+                    for arg_name, arg_val in zip(arg_names, arg_values):
+                        cenv.define_local(arg_name, Value(arg_val))
+                    return eval(body, cenv)
+
+                case BuiltInFunction(func):
+                    return func(*arg_values)
 
 
 def main(args):
     env = Environment()
+
+    register_builtin_functions(env)
 
     if args.file:
         with (open(args.file, 'r') as f):

@@ -1,4 +1,5 @@
-from syntaxtree.operators import *
+from syntaxtree.lmbd import CallExpression
+from syntaxtree.variables import VariableExpression
 
 
 def p_expression_binary(p):
@@ -22,7 +23,7 @@ def p_expression_binary(p):
                | expression IMP expression
                | expression XOR expression
     """
-    p[0] = OperatorExpression(p[2], [p[1], p[3]])
+    p[0] = CallExpression(VariableExpression(p[2]),  [p[1], p[3]])
 
 
 def p_expression_unary(p):
@@ -31,7 +32,7 @@ def p_expression_unary(p):
                | PLUS expression %prec UPLUS
                | MINUS expression %prec UMINUS
     """
-    p[0] = OperatorExpression(p[1], [p[2]])
+    p[0] = CallExpression(VariableExpression(p[1]),  [p[2]])
 
 
 def p_expression_paren(p):

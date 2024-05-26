@@ -28,7 +28,7 @@ class Environment:
         elif self.parent:
             return self.parent[name]
         else:
-            return None
+            raise KeyError(f"'{name}' not in env")
     
     def __setitem__(self, name, value):
         env = self
