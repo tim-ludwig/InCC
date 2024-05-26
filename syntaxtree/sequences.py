@@ -3,5 +3,5 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Sequence(Expression):
+class SequenceExpression(Expression):
     expressions: list[Expression]

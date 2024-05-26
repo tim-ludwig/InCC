@@ -6,7 +6,7 @@ from syntaxtree.controlflow import LoopExpression, ForExpression, WhileExpressio
 from syntaxtree.literals import NumberLiteral, BoolLiteral
 from syntaxtree.lmbd import LambdaExpression, CallExpression, Closure
 from syntaxtree.operators import OperatorExpression
-from syntaxtree.sequences import Sequence
+from syntaxtree.sequences import SequenceExpression
 
 from syntaxtree.syntaxtree import Expression
 from syntaxtree.variables import AssignExpression, VariableExpression, LockExpression, LocalExpression
@@ -37,7 +37,7 @@ def eval(expr: Expression, env: Environment):
             eval(assignment, env)
             return eval(body, env)
 
-        case Sequence(expressions):
+        case SequenceExpression(expressions):
             result = None
             for expression in expressions:
                 result = eval(expression, env)
