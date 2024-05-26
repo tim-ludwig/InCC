@@ -1,11 +1,11 @@
 {
     counter := val -> inc -> val := val + inc;
     
-    fac := local f := x ->
+    fac := local f := x -> res ->
         if x = 0 then {
-            1
+            res
         } else {
-            x * f(x - 1)
+            f(x - 1)(x * res)
         }
-    in f
+    in x -> f(x)(1)
 }
