@@ -22,7 +22,10 @@ reserved_words = set(
     | controlflow_reserved_words
 )
 tokens.extend(reserved_words)
-tokens.append('IDENT')
+tokens.extend(['IDENT', 'COMMA'])
+
+
+t_COMMA = ','
 
 
 def t_IDENT(t):

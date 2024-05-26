@@ -6,17 +6,17 @@ from dataclasses import dataclass
 @dataclass
 class Closure:
     env: Environment
-    arg: str
+    arg_names: list[str]
     body: Expression
 
 
 @dataclass
 class LambdaExpression(Expression):
-    arg_name: str
+    arg_names: list[str]
     body: Expression
 
 
 @dataclass
 class CallExpression(Expression):
     lmbd: Expression
-    arg: Expression
+    args: list[Expression]

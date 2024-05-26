@@ -80,15 +80,16 @@ def eval(expr: Expression, env: Environment):
             else:
                 return None
 
-        case LambdaExpression(arg_name, body):
-            env = env.push()
-            env.define_local(arg_name, Value(None))
-            return Closure(env, arg_name, body)
+        case LambdaExpression(arg_names, body):
+            return Closure(env, arg_names, body)
 
-        case CallExpression(lmbd, arg):
+        case CallExpression(lmbd, args):
             closure = eval(lmbd, env)
-            closure.env[closure.arg] = Value(eval(arg, env))
-            return eval(closure.body, closure.env)
+
+            cenv = closure.env.push()
+            for arg_name, arg_expr in zip(closure.arg_names, args):
+                cenv.define_local(arg_name, Value(eval(arg_expr, env)))
+            return eval(closure.body, cenv)
 
 
 def main(args):
