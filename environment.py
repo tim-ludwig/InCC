@@ -1,9 +1,14 @@
+from typing import Any
+from type_checker.types import Type
+
+
 class Value:
-    def __init__(self, value):
+    def __init__(self, value: Any, type: Type=None):
         self.value = value
+        self.type = type
 
     def __str__(self):
-        return f'Value({str(self.value)})' if self.value else 'Value()'
+        return f'Value({str(self.value)}, t: {self.type})' if self.type else f'Value({str(self.value)})'
     
     def __repr__(self):
         return str(self)
