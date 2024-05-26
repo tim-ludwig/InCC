@@ -1,7 +1,2 @@
-class Node:
+class Expression:
     pass
-
-
-class Expression(Node):
-    def eval(self, env):
-        pass

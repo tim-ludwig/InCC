@@ -1,26 +1,114 @@
 import argparse
 from parser import parser # type: ignore
-from environment import Environment
+
+from environment import Environment, Value
+from syntaxtree.controlflow import LoopExpression, ForExpression, WhileExpression, DoWhileExpression, IfExpression
+from syntaxtree.literals import NumberLiteral, BoolLiteral
+from syntaxtree.lmbd import LambdaExpression, CallExpression, Closure
+from syntaxtree.operators import OperatorExpression
+from syntaxtree.sequences import Sequence
+
+from syntaxtree.syntaxtree import Expression
+from syntaxtree.variables import AssignExpression, VariableExpression, LockExpression, LocalExpression
 
 
-argparser = argparse.ArgumentParser(prog ='interpreter', description='Run the interpreter')
-argparser.add_argument('file', type=str, nargs='?', help='The file to interpret')
-argparser.add_argument('--repl', action='store_true', help='Run the interpreter in REPL mode')
+def eval(expr: Expression, env: Environment):
+    match expr:
+        case NumberLiteral(value): return float(value)
+        case BoolLiteral(value): return bool(value)
+
+        case OperatorExpression(op, operands):
+            return OperatorExpression.operators[op][len(operands)](*[eval(operand, env) for operand in operands])
+
+        case AssignExpression(name, expression):
+            res = eval(expression, env)
+            env[name] = Value(res)
+            return res
+
+        case VariableExpression(name):
+            return env[name].value
+
+        case LockExpression(_, body):
+            return eval(body, env)
+
+        case LocalExpression(assignment, body):
+            env = env.push()
+            env.define_local(assignment.name, Value(None))
+            eval(assignment, env)
+            return eval(body, env)
+
+        case Sequence(expressions):
+            result = None
+            for expression in expressions:
+                result = eval(expression, env)
+            return result
+
+        case LoopExpression(count, body):
+            n = int(eval(count, env))
+
+            result = None
+            for _ in range(n):
+                result = eval(body, env)
+            return result
+
+        case ForExpression(initial_assign, condition, reassign, body):
+            eval(initial_assign, env)
+
+            result = None
+            while eval(condition, env):
+                result = eval(body, env)
+                eval(reassign, env)
+            return result
+
+        case WhileExpression(condition, body):
+            result = None
+            while eval(condition, env):
+                result = eval(body, env)
+            return result
+
+        case DoWhileExpression(condition, body):
+            result = eval(body, env)
+            while eval(condition, env):
+                result = eval(body, env)
+            return result
+
+        case IfExpression(condition, then_body, else_body):
+            if eval(condition, env):
+                return eval(then_body, env)
+            elif else_body:
+                return eval(else_body, env)
+            else:
+                return None
+
+        case LambdaExpression(arg_name, body):
+            env = env.push()
+            env.define_local(arg_name, Value(None))
+            return Closure(env, arg_name, body)
+
+        case CallExpression(lmbd, arg):
+            closure = eval(lmbd, env)
+            closure.env[closure.arg] = Value(eval(arg, env))
+            return eval(closure.body, closure.env)
 
 
 if __name__ == '__main__':
+    argparser = argparse.ArgumentParser(prog ='interpreter', description='Run the interpreter')
+    argparser.add_argument('file', type=str, nargs='?', help='The file to interpret')
+    argparser.add_argument('--repl', action='store_true', help='Run the interpreter in REPL mode')
+
     args = argparser.parse_args()
     env = Environment()
 
     if args.file:
         with (open(args.file, 'r') as f):
             inp = f.read()
-            ast = parser.parse(inp)
-            ast.eval(env)
+            expr = parser.parse(inp)
+            res = eval(expr, env)
+            print(res)
 
     if args.repl:
         while True:
             inp = input("> ")
-            ast = parser.parse(inp)
-            res = ast.eval(env)
+            expr = parser.parse(inp)
+            res = eval(expr, env)
             print(res)
