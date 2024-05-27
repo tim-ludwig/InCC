@@ -11,6 +11,8 @@ from syntaxtree.sequences import SequenceExpression
 
 from syntaxtree.syntaxtree import Expression
 from syntaxtree.variables import AssignExpression, VariableExpression, LockExpression, LocalExpression
+from type_checker.substitution import instantiate
+from type_checker.types import TypeVar, PolyType, TypeFunc
 
 
 def eval(expr: Expression, env: Environment):
@@ -100,6 +102,12 @@ def main(args):
     env = Environment()
 
     register_builtin_functions(env)
+
+    a = TypeVar('a')
+    b = TypeVar('b')
+    p = PolyType(a, PolyType(b, TypeFunc('->', [a, b])))
+    print(p)
+    print(instantiate(p))
 
     if args.file:
         with (open(args.file, 'r') as f):

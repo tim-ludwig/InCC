@@ -5,15 +5,26 @@ class Type:
     pass
 
 
-@dataclass
-class TypeVar(Type):
-    name: str
+class MonoType(Type):
+    pass
 
 
 @dataclass
-class TypeFunc(Type):
+class TypeVar(MonoType):
+    type_var_count = 0
     name: str
-    args: list[Type]
+
+    @classmethod
+    def new(cls):
+        n = cls.type_var_count
+        cls.type_var_count += 1
+        return TypeVar(f't{n}')
+
+
+@dataclass
+class TypeFunc(MonoType):
+    name: str
+    args: list[MonoType]
 
 
 @dataclass

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from environment import Environment, Value
-from type_checker.types import TypeVar, Type, TypeFunc, PolyType
+from type_checker.types import TypeVar, Type, TypeFunc, PolyType, MonoType
 
 
 @dataclass
@@ -43,3 +43,13 @@ class Substitution:
 
             case Environment():
                 return self.apply_to_env(val)
+
+
+def instantiate(ty: Type) -> MonoType:
+    match ty:
+        case MonoType():
+            return ty
+
+        case PolyType(bound_var, t):
+            s = Substitution({bound_var.name: TypeVar.new()})
+            return s(instantiate(t))
