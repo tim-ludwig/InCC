@@ -13,7 +13,7 @@ def register_builtin_functions(env):
     i = TypeFunc('Int', [])
     b = TypeFunc('Bool', [])
     iii = TypeFunc('->', [i, i, i])
-    iib= TypeFunc('->', [i, i, b])
+    iib = TypeFunc('->', [i, i, b])
     bbb = TypeFunc('->', [b, b, b])
 
     register(env, '+', iii,    lambda v1, v2: v1 + v2)
