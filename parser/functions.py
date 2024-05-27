@@ -1,4 +1,5 @@
-from syntaxtree.lmbd import *
+from syntaxtree.functions import *
+from syntaxtree.variables import AssignExpression
 
 
 def p_ident_list(p):
@@ -24,6 +25,13 @@ def p_expression_lambda(p):
         p[0] = LambdaExpression([p[1]], p[3])
     else:
         p[0] = LambdaExpression(p[2], p[5])
+
+
+def p_expression_function(p):
+    """
+    expression : FUN IDENT LPAREN ident_list RPAREN RIGHT_ARROW expression
+    """
+    p[0] = AssignExpression(p[2], LambdaExpression(p[4], p[7]))
 
 
 def p_expr_list(p):

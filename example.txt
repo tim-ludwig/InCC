@@ -1,11 +1,11 @@
 {
-    counter := val -> inc -> val := val + inc;
+    fun counter(val) -> () -> val := val + 1;
     
-    fac := local f := (x, res) ->
+    local f := (x, res) ->
         if x = 0 then {
             res
         } else {
             f(x - 1, x * res)
         }
-    in x -> f(x, 1)
+    in fun fact(x) -> f(x, 1)
 }

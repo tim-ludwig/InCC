@@ -1,4 +1,4 @@
-from syntaxtree.lmbd import CallExpression
+from syntaxtree.functions import CallExpression
 from syntaxtree.variables import VariableExpression
 
 

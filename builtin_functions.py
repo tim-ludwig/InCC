@@ -1,7 +1,7 @@
 from typing import Callable
 
 from environment import Value, Environment
-from syntaxtree.lmbd import BuiltInFunction
+from syntaxtree.functions import BuiltInFunction
 
 
 def register(env: Environment, name: str, function: Callable):
