@@ -1,5 +1,5 @@
 from syntaxtree.functions import *
-from syntaxtree.variables import AssignExpression
+from syntaxtree.variables import AssignExpression, LocalExpression, VariableExpression
 
 
 def p_ident_list(p):
@@ -31,7 +31,10 @@ def p_expression_function(p):
     """
     expression : FUN IDENT LPAREN ident_list RPAREN RIGHT_ARROW expression
     """
-    p[0] = AssignExpression(p[2], LambdaExpression(p[4], p[7]))
+    #    fun f(x) -> body
+    # => f := local f := (x) -> body in f
+    f = AssignExpression(p[2], LambdaExpression(p[4], p[7]))
+    p[0] = AssignExpression(p[2], LocalExpression(f, VariableExpression(p[2])))
 
 
 def p_expr_list(p):

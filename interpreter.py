@@ -1,18 +1,30 @@
 import argparse
+from dataclasses import dataclass
 
-from builtin_functions import register_builtin_functions
 from parser import parser # type: ignore
 
 from environment import Environment, Value
 from syntaxtree.controlflow import LoopExpression, ForExpression, WhileExpression, DoWhileExpression, IfExpression
 from syntaxtree.literals import NumberLiteral, BoolLiteral
-from syntaxtree.functions import LambdaExpression, CallExpression, Closure, BuiltInFunction
+from syntaxtree.functions import LambdaExpression, CallExpression
 from syntaxtree.sequences import SequenceExpression
 
 from syntaxtree.syntaxtree import Expression
 from syntaxtree.variables import AssignExpression, VariableExpression, LockExpression, LocalExpression
-from type_checker.substitution import instantiate
+from type_checker.substitution import instantiate, generalise, unify
 from type_checker.types import TypeVar, PolyType, TypeFunc
+
+
+@dataclass
+class Closure:
+    parent_env: Environment
+    arg_names: list[str]
+    body: Expression
+
+    def __call__(self, *arg_values):
+        env = self.parent_env.push()
+        env.vars = {arg_name: Value(arg_value) for arg_name, arg_value in zip(self.arg_names, arg_values)}
+        return eval(self.body, env)
 
 
 def eval(expr: Expression, env: Environment):
@@ -86,28 +98,38 @@ def eval(expr: Expression, env: Environment):
         case CallExpression(f, arg_exprs):
             callable = eval(f, env)
             arg_values = [eval(arg_expr, env) for arg_expr in arg_exprs]
-
-            match callable:
-                case Closure(env, arg_names, body):
-                    cenv = env.push()
-                    for arg_name, arg_val in zip(arg_names, arg_values):
-                        cenv.define_local(arg_name, Value(arg_val))
-                    return eval(body, cenv)
-
-                case BuiltInFunction(func):
-                    return func(*arg_values)
+            return callable(*arg_values)
 
 
 def main(args):
     env = Environment()
+    f = TypeFunc('Float', [])
+    b = TypeFunc('Bool', [])
+    fff = TypeFunc('->', [f, f, f])
+    ffb = TypeFunc('->', [f, f, b])
+    bbb = TypeFunc('->', [b, b, b])
 
-    register_builtin_functions(env)
-
-    a = TypeVar('a')
-    b = TypeVar('b')
-    p = PolyType(a, PolyType(b, TypeFunc('->', [a, b])))
-    print(p)
-    print(instantiate(p))
+    env.vars = {
+        '+':    Value(lambda v1, v2: v1 + v2,         fff),
+        '-':    Value(lambda v1, v2: v1 - v2,         fff),
+        '*':    Value(lambda v1, v2: v1 * v2,         fff),
+        '/':    Value(lambda v1, v2: v1 / v2,         fff),
+        '<':    Value(lambda v1, v2: v1 < v2,         ffb),
+        '>':    Value(lambda v1, v2: v1 > v2,         ffb),
+        '<=':   Value(lambda v1, v2: v1 <= v2,        ffb),
+        '>=':   Value(lambda v1, v2: v1 >= v2,        ffb),
+        '=':    Value(lambda v1, v2: v1 == v2,        ffb),
+        '!=':   Value(lambda v1, v2: v1 != v2,        ffb),
+        'EQ':   Value(lambda v1, v2: v1 == v2,        bbb),
+        'NEQ':  Value(lambda v1, v2: v1 != v2,        bbb),
+        'XOR':  Value(lambda v1, v2: v1 != v2,        bbb),
+        'AND':  Value(lambda v1, v2: v1 and v2,       bbb),
+        'OR':   Value(lambda v1, v2: v1 or v2,        bbb),
+        'NAND': Value(lambda v1, v2: not (v1 and v2), bbb),
+        'NOR':  Value(lambda v1, v2: not (v1 or v2),  bbb),
+        'IMP':  Value(lambda v1, v2: not v1 or v2,    bbb),
+        'NOT':  Value(lambda v1:     not v1,          bbb),
+    }
 
     if args.file:
         with (open(args.file, 'r') as f):

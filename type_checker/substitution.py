@@ -53,3 +53,40 @@ def instantiate(ty: Type) -> MonoType:
         case PolyType(bound_var, t):
             s = Substitution({bound_var.name: TypeVar.new()})
             return s(instantiate(t))
+
+
+def generalise(ty: Type, env: Environment) -> Type:
+    for v in ty.free_vars() - env.free_type_vars():
+        ty = PolyType(TypeVar(v), ty)
+
+    return ty
+
+
+def unify(t1: MonoType, t2: MonoType) -> Substitution:
+    match t1:
+        case TypeVar(name1):
+            match t2:
+                case TypeVar(name2):
+                    if name1 == name2:
+                        return Substitution({})
+                    else:
+                        return Substitution({name2: t1})
+
+                case TypeFunc():
+                    return Substitution({name1: t2})
+
+        case TypeFunc(name1, args1):
+            match t2:
+                case TypeVar(name2):
+                    return Substitution({name2: t1})
+
+                case TypeFunc(name2, args2):
+                    if name1 != name2:
+                        raise TypeError(f"Types '{name1}' and '{name2}' don't match.")
+                    else:
+                        s = Substitution({})
+
+                        for arg1, arg2 in zip(args1, args2):
+                            s = s(unify(arg1, arg2))
+
+                        return s
