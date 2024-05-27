@@ -5,7 +5,7 @@ from lexer.operators import *
 from lexer.variables import *
 from lexer.sequences import *
 from lexer.controlflow import *
-from lexer.lmbd import *
+from lexer.functions import *
 
 
 tokens = list(
@@ -13,13 +13,14 @@ tokens = list(
     | expr_tokens
     | var_tokens
     | seq_tokens
-    | lambda_tokens
+    | functions_tokens
 )
 reserved_words = set(
     lit_reserved_words
     | expr_reserved_words
     | var_reserved_words
     | controlflow_reserved_words
+    | functions_reserved_words
 )
 tokens.extend(reserved_words)
 tokens.extend(['IDENT', 'COMMA'])

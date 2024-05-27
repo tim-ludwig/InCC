@@ -1,7 +1,7 @@
 from typing import Callable
 
 from environment import Value, Environment
-from syntaxtree.lmbd import BuiltInFunction
+from syntaxtree.functions import BuiltInFunction
 from type_checker.types import Type, TypeFunc
 
 

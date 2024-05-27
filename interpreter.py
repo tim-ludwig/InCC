@@ -6,7 +6,7 @@ from parser import parser # type: ignore
 from environment import Environment, Value
 from syntaxtree.controlflow import LoopExpression, ForExpression, WhileExpression, DoWhileExpression, IfExpression
 from syntaxtree.literals import NumberLiteral, BoolLiteral
-from syntaxtree.lmbd import LambdaExpression, CallExpression, Closure, BuiltInFunction
+from syntaxtree.functions import LambdaExpression, CallExpression, Closure, BuiltInFunction
 from syntaxtree.sequences import SequenceExpression
 
 from syntaxtree.syntaxtree import Expression

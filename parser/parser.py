@@ -8,7 +8,7 @@ from parser.operators import *
 from parser.variables import *
 from parser.sequences import *
 from parser.controlflow import *
-from parser.lmbd import *
+from parser.functions import *
 
 
 precedence = [

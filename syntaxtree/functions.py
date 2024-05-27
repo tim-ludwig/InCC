@@ -23,6 +23,13 @@ class LambdaExpression(Expression):
 
 
 @dataclass
+class FunctionExpression(Expression):
+    func_name: str
+    arg_names: list[str]
+    body: Expression
+
+
+@dataclass
 class CallExpression(Expression):
     f: Expression
     arg_exprs: list[Expression]
