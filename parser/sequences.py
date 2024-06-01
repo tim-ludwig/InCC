@@ -1,5 +1,6 @@
 from syntaxtree.sequences import *
 
+
 def p_expressions(p):
     """
     sequence : sequence SEMICOLON expression
