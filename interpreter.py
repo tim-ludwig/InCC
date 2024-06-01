@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from parser import parser # type: ignore
 
 from environment import Environment, Value
+from parser.parser import parse_expr
 from syntaxtree.controlflow import LoopExpression, WhileExpression, DoWhileExpression, IfExpression
 from syntaxtree.literals import NumberLiteral, BoolLiteral
 from syntaxtree.functions import LambdaExpression, CallExpression
@@ -12,7 +13,7 @@ from syntaxtree.sequences import SequenceExpression
 from syntaxtree.syntaxtree import Expression
 from syntaxtree.variables import AssignExpression, VariableExpression, LockExpression, LocalExpression
 from type_system.inference import generalise, infer_type
-from type_system.type_parser import parse_type
+from type_system.parser import parse_type
 
 
 @dataclass
@@ -135,14 +136,14 @@ def main(args):
     if args.file:
         with (open(args.file, 'r') as f):
             inp = f.read()
-            expr = parser.parse(inp)
+            expr = parse_expr(inp)
             infer_type(env, expr)
             eval(expr, env)
 
     if args.repl:
         while True:
             inp = input("> ")
-            expr = parser.parse(inp)
+            expr = parse_expr(inp)
             ty = infer_type(env, expr)
             res = eval(expr, env)
             print(f'{res} : {generalise(ty, env)}')

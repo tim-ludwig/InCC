@@ -35,5 +35,5 @@ def p_error(p):
 parser = yacc.yacc(start='expression')
 
 
-def parse(text: str) -> Expression:
+def parse_expr(text: str) -> Expression:
     return parser.parse(input=text, lexer=lexer)
