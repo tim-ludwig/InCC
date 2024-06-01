@@ -21,7 +21,7 @@ def instantiate(ty: Type) -> MonoType:
 
 def generalise(ty: Type, env: Environment) -> Type:
     fv = ty.free_vars() - env.free_type_vars()
-    renaming = {old: "'" + chr(new) for new, old in enumerate(fv, start=ord('a'))}
+    renaming = {old: chr(new) for new, old in enumerate(fv, start=ord('a'))}
 
     s = Substitution({v: TypeVar(renaming[v]) for v in fv})
     return TypeScheme(list(renaming.values()), s(ty))
