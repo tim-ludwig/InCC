@@ -45,8 +45,8 @@ class TypeFunc(MonoType):
             if len(self.args) == 1:
                 return f"-> {self.args[-1]}"
 
-            args_str = ', '.join(map(str, self.args[:-1]))
-            return f"{args_str} -> {self.args[-1]}"
+            arg_strs = [f"({arg_type})" if isinstance(arg_type, TypeFunc) and arg_type.name == '->' else str(arg_type) for arg_type in self.args[:-1]]
+            return f"{', '.join(arg_strs)} -> {self.args[-1]}"
 
         a = '' if len(self.args) == 0 else '[' + ', '.join(map(str, self.args)) + ']'
         return self.name + a
