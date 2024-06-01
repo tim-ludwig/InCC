@@ -11,8 +11,8 @@ from syntaxtree.sequences import SequenceExpression
 
 from syntaxtree.syntaxtree import Expression
 from syntaxtree.variables import AssignExpression, VariableExpression, LockExpression, LocalExpression
-from type_inference.inference import unify, generalise, infer_type
-from type_inference.types import TypeVar, TypeScheme, TypeFunc
+from type_system.inference import unify, generalise, infer_type
+from type_system.types import TypeVar, TypeScheme, TypeFunc
 
 
 @dataclass

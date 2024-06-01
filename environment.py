@@ -1,5 +1,5 @@
 from typing import Any
-from type_inference.types import Type
+from type_system.types import Type
 
 
 class Value:

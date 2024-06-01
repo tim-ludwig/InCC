@@ -5,8 +5,8 @@ from syntaxtree.literals import BoolLiteral, NumberLiteral
 from syntaxtree.sequences import SequenceExpression
 from syntaxtree.syntaxtree import Expression
 from syntaxtree.variables import VariableExpression, AssignExpression, LocalExpression, LockExpression
-from type_inference.substitution import Substitution
-from type_inference.types import Type, MonoType, TypeScheme, TypeVar, TypeFunc
+from type_system.substitution import Substitution
+from type_system.types import Type, MonoType, TypeScheme, TypeVar, TypeFunc
 
 
 def instantiate(ty: Type) -> MonoType:

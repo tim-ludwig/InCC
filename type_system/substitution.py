@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from environment import Environment, Value
-from type_inference.types import TypeVar, Type, TypeFunc, TypeScheme, MonoType
+from type_system.types import TypeVar, Type, TypeFunc, TypeScheme, MonoType
 
 
 @dataclass
