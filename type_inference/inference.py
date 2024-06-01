@@ -198,6 +198,6 @@ def _algorithm_w(env: Environment, expr: Expression) -> (Substitution, Type):
                 arg_types.append(arg_type)
 
             ret_type = TypeVar.new()
-            s_new = unify(s(func_type), s(TypeFunc('->', [*arg_types, ret_type])), f"called value has to have type {func_type}\n\t\targuments have types {arg_types}")
+            s_new = unify(s(func_type), s(TypeFunc('->', [*arg_types, ret_type])), f"called value has to have type {generalise(func_type, env)}\n\t\targuments have types {', '.join(map(str, arg_types))}")
             s = s_new(s)
             return s, s(ret_type)
