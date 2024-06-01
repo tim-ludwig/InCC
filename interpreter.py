@@ -102,33 +102,36 @@ def eval(expr: Expression, env: Environment):
 def main(args):
     n = TypeFunc('number', [])
     b = TypeFunc('bool', [])
-    any = TypeScheme('a', TypeVar('a'))
     nn_to_n = TypeFunc('->', [n, n, n])
     nn_to_b = TypeFunc('->', [n, n, b])
     bb_to_b = TypeFunc('->', [b, b, b])
     b_to_b = TypeFunc('->', [b, b])
+    any_list = TypeScheme(["a"], TypeFunc('list', [TypeVar("a")]))
+    list_t = TypeScheme(["a"], TypeFunc('->', [TypeVar("a"), TypeFunc("list", [TypeVar("a")]), TypeFunc('list', [TypeVar("a")])]))
 
     env = Environment()
     env.vars = {
-        '+':    Value(lambda v1, v2: v1 + v2,         nn_to_n),
-        '-':    Value(lambda v1, v2: v1 - v2,         nn_to_n),
-        '*':    Value(lambda v1, v2: v1 * v2,         nn_to_n),
-        '/':    Value(lambda v1, v2: v1 / v2,         nn_to_n),
-        '<':    Value(lambda v1, v2: v1 < v2,         nn_to_b),
-        '>':    Value(lambda v1, v2: v1 > v2,         nn_to_b),
-        '<=':   Value(lambda v1, v2: v1 <= v2,        nn_to_b),
-        '>=':   Value(lambda v1, v2: v1 >= v2,        nn_to_b),
-        '=':    Value(lambda v1, v2: v1 == v2,        nn_to_b),
-        '!=':   Value(lambda v1, v2: v1 != v2,        nn_to_b),
-        'EQ':   Value(lambda v1, v2: v1 == v2,        bb_to_b),
-        'NEQ':  Value(lambda v1, v2: v1 != v2,        bb_to_b),
-        'XOR':  Value(lambda v1, v2: v1 != v2,        bb_to_b),
-        'AND':  Value(lambda v1, v2: v1 and v2,       bb_to_b),
-        'OR':   Value(lambda v1, v2: v1 or v2,        bb_to_b),
-        'NAND': Value(lambda v1, v2: not (v1 and v2), bb_to_b),
-        'NOR':  Value(lambda v1, v2: not (v1 or v2),  bb_to_b),
-        'IMP':  Value(lambda v1, v2: not v1 or v2,    bb_to_b),
-        'NOT':  Value(lambda v1:     not v1,          b_to_b),
+        '+':    Value(lambda v1, v2: v1 + v2,         nn_to_n ),
+        '-':    Value(lambda v1, v2: v1 - v2,         nn_to_n ),
+        '*':    Value(lambda v1, v2: v1 * v2,         nn_to_n ),
+        '/':    Value(lambda v1, v2: v1 / v2,         nn_to_n ),
+        '<':    Value(lambda v1, v2: v1 < v2,         nn_to_b ),
+        '>':    Value(lambda v1, v2: v1 > v2,         nn_to_b ),
+        '<=':   Value(lambda v1, v2: v1 <= v2,        nn_to_b ),
+        '>=':   Value(lambda v1, v2: v1 >= v2,        nn_to_b ),
+        '=':    Value(lambda v1, v2: v1 == v2,        nn_to_b ),
+        '!=':   Value(lambda v1, v2: v1 != v2,        nn_to_b ),
+        'EQ':   Value(lambda v1, v2: v1 == v2,        bb_to_b ),
+        'NEQ':  Value(lambda v1, v2: v1 != v2,        bb_to_b ),
+        'XOR':  Value(lambda v1, v2: v1 != v2,        bb_to_b ),
+        'AND':  Value(lambda v1, v2: v1 and v2,       bb_to_b ),
+        'OR':   Value(lambda v1, v2: v1 or v2,        bb_to_b ),
+        'NAND': Value(lambda v1, v2: not (v1 and v2), bb_to_b ),
+        'NOR':  Value(lambda v1, v2: not (v1 or v2),  bb_to_b ),
+        'IMP':  Value(lambda v1, v2: not v1 or v2,    bb_to_b ),
+        'NOT':  Value(lambda v1:     not v1,          b_to_b  ),
+        'nil':  Value((),                             any_list),
+        'list': Value(lambda v1, v2: (v1, v2),        list_t),
     }
 
     if args.file:
