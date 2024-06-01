@@ -41,16 +41,16 @@ class TypeFunc(MonoType):
         return v
 
     def __str__(self):
+        if self.name == '->':
+            if len(self.args) == 1:
+                return f"-> {self.args[-1]}"
+
+            args_str = ', '.join(map(str, self.args[:-1]))
+            return f"{args_str} -> {self.args[-1]}"
+
         a = '' if len(self.args) == 0 else '[' + ', '.join(map(str, self.args)) + ']'
         return self.name + a
 
-
-class FunctionType(TypeFunc):
-    def __init__(self, args: list[MonoType], ret: MonoType):
-        super().__init__('->', [*args, ret])
-
-    def __str__(self):
-        return f"({', '.join(map(str, super().args[:-1]))}) -> {str(super().args[-1])}"
 
 @dataclass
 class TypeScheme(Type):

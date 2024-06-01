@@ -6,7 +6,7 @@ from syntaxtree.sequences import SequenceExpression
 from syntaxtree.syntaxtree import Expression
 from syntaxtree.variables import VariableExpression, AssignExpression, LocalExpression, LockExpression
 from type_inference.substitution import Substitution
-from type_inference.types import Type, MonoType, TypeScheme, TypeVar, TypeFunc, FunctionType
+from type_inference.types import Type, MonoType, TypeScheme, TypeVar, TypeFunc
 
 
 def instantiate(ty: Type) -> MonoType:
@@ -26,7 +26,7 @@ def generalise(ty: Type, env: Environment) -> Type:
     return ty
 
 
-def unify(t1: MonoType, t2: MonoType) -> Substitution:
+def unify(t1: MonoType, t2: MonoType, hint: str = '') -> Substitution:
     match t1:
         case TypeVar(name1):
             match t2:
@@ -44,134 +44,159 @@ def unify(t1: MonoType, t2: MonoType) -> Substitution:
         case TypeFunc(name1, args1):
             match t2:
                 case TypeVar():
-                    return unify(t2, t1)
+                    return unify(t2, t1, hint)
 
                 case TypeFunc(name2, args2):
                     if name1 != name2 or len(args1) != len(args2):
-                        raise TypeError(f"Types '{t1}' and '{t2}' don't match.")
+                        raise TypeError(f"Types '{t1}' and '{t2}' don't match.\n\tHint: {hint}")
                     else:
                         s = Substitution({})
 
                         for arg1, arg2 in zip(args1, args2):
-                            s = s(unify(s(arg1), s(arg2)))
+                            s = s(unify(s(arg1), s(arg2), hint))
 
                         return s
 
 
-def infer_type(env: Environment, exp: Expression) -> Type:
-    t = TypeVar.new()
-    s = algorithm_m(env, exp, t)
-    return s(t)
+def infer_type(env: Environment, expr: Expression) -> Type:
+    s, t = algorithm_w(env, expr)
+    return t
 
 
-def algorithm_m(env: Environment, expr: Expression, ty: MonoType) -> Substitution:
+def algorithm_w(env: Environment, expr: Expression) -> (Substitution, Type):
+    s, t = _algorithm_w(env, expr)
+    expr.type = t
+    return s, t
+
+
+def _algorithm_w(env: Environment, expr: Expression) -> (Substitution, Type):
     match expr:
-        case NumberLiteral(value): return unify(ty, TypeFunc('Float', []))
-        case BoolLiteral(value): return unify(ty, TypeFunc('Bool', []))
+        case NumberLiteral(value): return Substitution({}), TypeFunc('Number', [])
+        case BoolLiteral(value): return Substitution({}), TypeFunc('Bool', [])
 
         case AssignExpression(name, expression):
-            s = algorithm_m(env, expression, ty)
-
-            if name not in env:
-                env[name] = Value(None, generalise(s(ty), s(env)))
-            else:
-                if not env[name].writeable:
-                    raise TypeError(f"Variable '{name}' is not modifiable")
-                s = unify(s(ty), s(env[name].type))
-                env[name].type = generalise(s(ty), s(env))
-
+            s, t = algorithm_w(env, expression)
             s(env)
-            return s
+
+            if name in env:
+                s_new = unify(env[name].type, t, "can't change type of variable")
+                s = s_new(s)
+
+            env[name].type = generalise(t, env)
+
+            return s, s(t)
 
         case VariableExpression(name):
-            if name not in env:
-                raise TypeError(f"Unknown variable '{name}'.")
-            return unify(ty, instantiate(env[name].type))
+            return Substitution({}), instantiate(env[name].type)
 
-        case LockExpression(name, body):
-            if name not in env:
-                raise TypeError(f"Unknown variable '{name}'.")
-            pre_lock = env[name].writeable
-            env[name].writeable = False
-
-            s = algorithm_m(env, body, ty)
-            s(env)
-
-            env[name].writeable = pre_lock
-            return s
+        case LockExpression(name, body): return algorithm_w(env, body)
 
         case LocalExpression(assignment, body):
-            t = TypeVar.new()
             env = env.push()
-            env.define_local(assignment.name, Value(None, t))
-            s1 = algorithm_m(env, assignment.expression, t)
-            s1(env)
-            env[assignment.name].type = generalise(s1(t), env)
-            s2 = algorithm_m(env, body, s1(ty))
-            return s2(s1)
+            env[assignment.name].type = TypeVar.new()
+            s, _ = algorithm_w(env, assignment)
+            s(env)
+
+            s_new, t = algorithm_w(env, body)
+            s_new(env)
+            s = s_new(s)
+            return s, s(t)
 
         case SequenceExpression(expressions):
             s = Substitution({})
-            expr_types = [TypeVar.new() for _ in range(len(expressions))]
+            t = TypeFunc('()', [])
 
-            for expr, expr_type in zip(expressions, expr_types):
-                s_new = algorithm_m(env, expr, s(expr_type))
+            for expr in expressions:
+                s_new, t = algorithm_w(env, expr)
                 s_new(env)
                 s = s_new(s)
 
-            return unify(ty, s(expr_types[-1]))(s)
+            return s, s(t)
 
         case LoopExpression(count, body):
-            s1 = algorithm_m(env, count, TypeFunc('Float', []))
-            s2 = algorithm_m(s1(env), body, ty)
-            s2(env)
-            return s2(s1)
+            s, count_type = algorithm_w(env, count)
+            s(env)
+
+            s_new = unify(count_type, TypeFunc('Number', []), f"count of loop hast to have type Number, has type {count_type}")
+            s_new(env)
+            s = s_new(s)
+
+            s_new, t = algorithm_w(env, body)
+            s_new(env)
+            s = s_new(s)
+            return s, s(t)
 
         case WhileExpression(condition, body):
-            s1 = algorithm_m(env, condition, TypeFunc('Bool', []))
-            s2 = algorithm_m(s1(env), body, ty)
-            s2(env)
-            return s2(s1)
+            s, cond_type = algorithm_w(env, condition)
+            s(env)
+
+            s_new = unify(cond_type, TypeFunc('Bool', []), f"condition of while hast to have type Bool, has type {cond_type}")
+            s_new(env)
+            s = s_new(s)
+
+            s_new, t = algorithm_w(env, body)
+            s_new(env)
+            s = s_new(s)
+            return s, s(t)
 
         case DoWhileExpression(condition, body):
-            s1 = algorithm_m(env, body, ty)
-            s2 = algorithm_m(s1(env), condition, TypeFunc('Bool', []))
-            s2(env)
-            return s2(s1)
+            s, t = algorithm_w(env, body)
+            s(env)
+
+            s_new, cond_type = algorithm_w(env, condition)
+            s_new(env)
+            s = s_new(s)
+
+            s_new = unify(cond_type, TypeFunc('Bool', []), f"condition of do-while hast to have type Bool, has type {cond_type}")
+            s_new(env)
+            s = s_new(s)
+
+            return s, s(t)
 
         case IfExpression(condition, then_body, else_body):
-            s = algorithm_m(env, condition, TypeFunc('Bool', []))
+            s, cond_type = algorithm_w(env, condition)
             s(env)
 
-            s_new = algorithm_m(env, then_body, s(ty))
+            s_new = unify(cond_type, TypeFunc('Bool', []), f"condition of if hast to have type Bool, has type {cond_type}")
             s_new(env)
             s = s_new(s)
 
-            s_new = algorithm_m(env, else_body, s(ty))
+            s_new, then_type = algorithm_w(env, then_body)
             s_new(env)
             s = s_new(s)
-            return s
+
+            s_new, else_type = algorithm_w(env, else_body)
+            s_new(env)
+            s = s_new(s)
+
+            s_new = unify(then_type, else_type, f"types of if-branches have to match.\n\t\tthen-branch has type {then_type}\n\t\telse-branch has type {else_type}")
+            s_new(env)
+            s = s_new(s)
+
+            return s, s(then_type)
 
         case LambdaExpression(arg_names, body):
-            arg_types = [TypeVar.new() for _ in range(len(arg_names))]
-            ret_type = TypeVar.new()
-            s1 = unify(ty, FunctionType(arg_types, ret_type))
-
             env = env.push()
-            env.vars = {arg_name: Value(None, arg_type) for arg_name, arg_type in zip(arg_names, arg_types)}
-            s1(env)
-            s2 = algorithm_m(env, body, s1(ret_type))
-            s2(env)
-            return s2(s1)
+
+            arg_types = [TypeVar.new() for _ in range(len(arg_names))]
+            for arg_name, arg_type in zip(arg_names, arg_types):
+                env[arg_name].type = arg_type
+
+            s, t1 = algorithm_w(env, body)
+            return s, s(TypeFunc('->', [*arg_types, t1]))
 
         case CallExpression(f, arg_exprs):
-            arg_types = [TypeVar.new() for _ in range(len(arg_exprs))]
-
-            s = algorithm_m(env, f, FunctionType(arg_types, ty))
+            s, func_type = algorithm_w(env, f)
             s(env)
-            for arg_expr, arg_type in zip(arg_exprs, arg_types):
-                s_new = algorithm_m(env, arg_expr, s(arg_type))
+
+            arg_types = []
+            for arg_expr in arg_exprs:
+                s_new, arg_type = algorithm_w(env, arg_expr)
                 s_new(env)
                 s = s_new(s)
+                arg_types.append(arg_type)
 
-            return s
+            ret_type = TypeVar.new()
+            s_new = unify(s(func_type), s(TypeFunc('->', [*arg_types, ret_type])), f"called value has to have type {func_type}\n\t\targuments have types {arg_types}")
+            s = s_new(s)
+            return s, s(ret_type)

@@ -12,7 +12,7 @@ from syntaxtree.sequences import SequenceExpression
 from syntaxtree.syntaxtree import Expression
 from syntaxtree.variables import AssignExpression, VariableExpression, LockExpression, LocalExpression
 from type_inference.inference import unify, generalise, infer_type
-from type_inference.types import TypeVar, TypeScheme, TypeFunc, FunctionType
+from type_inference.types import TypeVar, TypeScheme, TypeFunc
 
 
 @dataclass
@@ -100,26 +100,26 @@ def eval(expr: Expression, env: Environment):
 
 
 def main(args):
-    f = TypeFunc('Float', [])
+    n = TypeFunc('Number', [])
     b = TypeFunc('Bool', [])
     any = TypeScheme('a', TypeVar('a'))
-    ff_to_f = FunctionType([f, f], f)
-    ff_to_b = FunctionType([f, f], b)
-    bb_to_b = FunctionType([b, b], b)
-    b_to_b = FunctionType([b], b)
+    nn_to_n = TypeFunc('->', [n, n, n])
+    nn_to_b = TypeFunc('->', [n, n, b])
+    bb_to_b = TypeFunc('->', [b, b, b])
+    b_to_b = TypeFunc('->', [b, b])
 
     env = Environment()
     env.vars = {
-        '+':    Value(lambda v1, v2: v1 + v2,         ff_to_f),
-        '-':    Value(lambda v1, v2: v1 - v2,         ff_to_f),
-        '*':    Value(lambda v1, v2: v1 * v2,         ff_to_f),
-        '/':    Value(lambda v1, v2: v1 / v2,         ff_to_f),
-        '<':    Value(lambda v1, v2: v1 < v2,         ff_to_b),
-        '>':    Value(lambda v1, v2: v1 > v2,         ff_to_b),
-        '<=':   Value(lambda v1, v2: v1 <= v2,        ff_to_b),
-        '>=':   Value(lambda v1, v2: v1 >= v2,        ff_to_b),
-        '=':    Value(lambda v1, v2: v1 == v2,        ff_to_b),
-        '!=':   Value(lambda v1, v2: v1 != v2,        ff_to_b),
+        '+':    Value(lambda v1, v2: v1 + v2,         nn_to_n),
+        '-':    Value(lambda v1, v2: v1 - v2,         nn_to_n),
+        '*':    Value(lambda v1, v2: v1 * v2,         nn_to_n),
+        '/':    Value(lambda v1, v2: v1 / v2,         nn_to_n),
+        '<':    Value(lambda v1, v2: v1 < v2,         nn_to_b),
+        '>':    Value(lambda v1, v2: v1 > v2,         nn_to_b),
+        '<=':   Value(lambda v1, v2: v1 <= v2,        nn_to_b),
+        '>=':   Value(lambda v1, v2: v1 >= v2,        nn_to_b),
+        '=':    Value(lambda v1, v2: v1 == v2,        nn_to_b),
+        '!=':   Value(lambda v1, v2: v1 != v2,        nn_to_b),
         'EQ':   Value(lambda v1, v2: v1 == v2,        bb_to_b),
         'NEQ':  Value(lambda v1, v2: v1 != v2,        bb_to_b),
         'XOR':  Value(lambda v1, v2: v1 != v2,        bb_to_b),
@@ -144,7 +144,7 @@ def main(args):
             expr = parser.parse(inp)
             ty = infer_type(env, expr)
             res = eval(expr, env)
-            print(f'it = {res} : {generalise(ty, env)}')
+            print(f'{res} : {generalise(ty, env)}')
 
 
 if __name__ == '__main__':
