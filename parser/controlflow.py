@@ -1,4 +1,5 @@
 from syntaxtree.controlflow import *
+from syntaxtree.sequences import SequenceExpression
 
 
 def p_loop(p):
@@ -12,7 +13,7 @@ def p_for(p):
     """
     expression : FOR assign_expression SEMICOLON expression SEMICOLON assign_expression DO expression
     """
-    p[0] = ForExpression(p[2], p[4], p[6], p[8])
+    p[0] = SequenceExpression([p[2], WhileExpression(p[4], SequenceExpression([p[8], p[6]]))])
 
 
 def p_while(p):

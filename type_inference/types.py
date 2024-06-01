@@ -24,6 +24,9 @@ class TypeVar(MonoType):
     def free_vars(self):
         return {self.name}
 
+    def __str__(self):
+        return self.name
+
 
 @dataclass
 class TypeFunc(MonoType):
@@ -37,11 +40,25 @@ class TypeFunc(MonoType):
 
         return v
 
+    def __str__(self):
+        a = '' if len(self.args) == 0 else '[' + ', '.join(map(str, self.args)) + ']'
+        return self.name + a
+
+
+class FunctionType(TypeFunc):
+    def __init__(self, args: list[MonoType], ret: MonoType):
+        super().__init__('->', [*args, ret])
+
+    def __str__(self):
+        return f"({', '.join(map(str, super().args[:-1]))}) -> {str(super().args[-1])}"
 
 @dataclass
-class PolyType(Type):
-    bound_var: TypeVar
+class TypeScheme(Type):
+    bound_var: str
     t: Type
 
     def free_vars(self):
-        return self.t.free_vars() - {self.bound_var.name}
+        return self.t.free_vars() - {self.bound_var}
+
+    def __str__(self):
+        return f'V{self.bound_var}: {self.t}'

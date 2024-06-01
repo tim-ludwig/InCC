@@ -20,7 +20,7 @@ def p_lock(p):
     """
     expression : LOCK IDENT IN expression
     """
-    p[0] = LockExpression(p[2], p[3])
+    p[0] = LockExpression(p[2], p[4])
 
 
 def p_let(p):

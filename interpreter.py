@@ -4,15 +4,15 @@ from dataclasses import dataclass
 from parser import parser # type: ignore
 
 from environment import Environment, Value
-from syntaxtree.controlflow import LoopExpression, ForExpression, WhileExpression, DoWhileExpression, IfExpression
+from syntaxtree.controlflow import LoopExpression, WhileExpression, DoWhileExpression, IfExpression
 from syntaxtree.literals import NumberLiteral, BoolLiteral
 from syntaxtree.functions import LambdaExpression, CallExpression
 from syntaxtree.sequences import SequenceExpression
 
 from syntaxtree.syntaxtree import Expression
 from syntaxtree.variables import AssignExpression, VariableExpression, LockExpression, LocalExpression
-from type_checker.substitution import instantiate, generalise, unify
-from type_checker.types import TypeVar, PolyType, TypeFunc
+from type_inference.inference import unify, generalise, infer_type
+from type_inference.types import TypeVar, TypeScheme, TypeFunc, FunctionType
 
 
 @dataclass
@@ -26,15 +26,18 @@ class Closure:
         env.vars = {arg_name: Value(arg_value) for arg_name, arg_value in zip(self.arg_names, arg_values)}
         return eval(self.body, env)
 
+    def __str__(self):
+        return f'Closure({", ".join(self.arg_names)})'
+
 
 def eval(expr: Expression, env: Environment):
     match expr:
         case NumberLiteral(value): return float(value)
-        case BoolLiteral(value): return bool(value)
+        case BoolLiteral(value): return value == 'TRUE'
 
         case AssignExpression(name, expression):
             res = eval(expression, env)
-            env[name] = Value(res)
+            env[name].value = res
             return res
 
         case VariableExpression(name):
@@ -61,15 +64,6 @@ def eval(expr: Expression, env: Environment):
             result = None
             for _ in range(n):
                 result = eval(body, env)
-            return result
-
-        case ForExpression(initial_assign, condition, reassign, body):
-            eval(initial_assign, env)
-
-            result = None
-            while eval(condition, env):
-                result = eval(body, env)
-                eval(reassign, env)
             return result
 
         case WhileExpression(condition, body):
@@ -102,48 +96,51 @@ def eval(expr: Expression, env: Environment):
 
 
 def main(args):
-    env = Environment()
     f = TypeFunc('Float', [])
     b = TypeFunc('Bool', [])
-    fff = TypeFunc('->', [f, f, f])
-    ffb = TypeFunc('->', [f, f, b])
-    bbb = TypeFunc('->', [b, b, b])
+    any = TypeScheme('a', TypeVar('a'))
+    ff_to_f = FunctionType([f, f], f)
+    ff_to_b = FunctionType([f, f], b)
+    bb_to_b = FunctionType([b, b], b)
+    b_to_b = FunctionType([b], b)
 
+    env = Environment()
     env.vars = {
-        '+':    Value(lambda v1, v2: v1 + v2,         fff),
-        '-':    Value(lambda v1, v2: v1 - v2,         fff),
-        '*':    Value(lambda v1, v2: v1 * v2,         fff),
-        '/':    Value(lambda v1, v2: v1 / v2,         fff),
-        '<':    Value(lambda v1, v2: v1 < v2,         ffb),
-        '>':    Value(lambda v1, v2: v1 > v2,         ffb),
-        '<=':   Value(lambda v1, v2: v1 <= v2,        ffb),
-        '>=':   Value(lambda v1, v2: v1 >= v2,        ffb),
-        '=':    Value(lambda v1, v2: v1 == v2,        ffb),
-        '!=':   Value(lambda v1, v2: v1 != v2,        ffb),
-        'EQ':   Value(lambda v1, v2: v1 == v2,        bbb),
-        'NEQ':  Value(lambda v1, v2: v1 != v2,        bbb),
-        'XOR':  Value(lambda v1, v2: v1 != v2,        bbb),
-        'AND':  Value(lambda v1, v2: v1 and v2,       bbb),
-        'OR':   Value(lambda v1, v2: v1 or v2,        bbb),
-        'NAND': Value(lambda v1, v2: not (v1 and v2), bbb),
-        'NOR':  Value(lambda v1, v2: not (v1 or v2),  bbb),
-        'IMP':  Value(lambda v1, v2: not v1 or v2,    bbb),
-        'NOT':  Value(lambda v1:     not v1,          bbb),
+        '+':    Value(lambda v1, v2: v1 + v2,         ff_to_f),
+        '-':    Value(lambda v1, v2: v1 - v2,         ff_to_f),
+        '*':    Value(lambda v1, v2: v1 * v2,         ff_to_f),
+        '/':    Value(lambda v1, v2: v1 / v2,         ff_to_f),
+        '<':    Value(lambda v1, v2: v1 < v2,         ff_to_b),
+        '>':    Value(lambda v1, v2: v1 > v2,         ff_to_b),
+        '<=':   Value(lambda v1, v2: v1 <= v2,        ff_to_b),
+        '>=':   Value(lambda v1, v2: v1 >= v2,        ff_to_b),
+        '=':    Value(lambda v1, v2: v1 == v2,        ff_to_b),
+        '!=':   Value(lambda v1, v2: v1 != v2,        ff_to_b),
+        'EQ':   Value(lambda v1, v2: v1 == v2,        bb_to_b),
+        'NEQ':  Value(lambda v1, v2: v1 != v2,        bb_to_b),
+        'XOR':  Value(lambda v1, v2: v1 != v2,        bb_to_b),
+        'AND':  Value(lambda v1, v2: v1 and v2,       bb_to_b),
+        'OR':   Value(lambda v1, v2: v1 or v2,        bb_to_b),
+        'NAND': Value(lambda v1, v2: not (v1 and v2), bb_to_b),
+        'NOR':  Value(lambda v1, v2: not (v1 or v2),  bb_to_b),
+        'IMP':  Value(lambda v1, v2: not v1 or v2,    bb_to_b),
+        'NOT':  Value(lambda v1:     not v1,          b_to_b),
     }
 
     if args.file:
         with (open(args.file, 'r') as f):
             inp = f.read()
             expr = parser.parse(inp)
-            res = eval(expr, env)
-            print(res)
+            infer_type(env, expr)
+            eval(expr, env)
 
     if args.repl:
         while True:
             inp = input("> ")
             expr = parser.parse(inp)
+            ty = infer_type(env, expr)
             res = eval(expr, env)
-            print(res)
+            print(f'it = {res} : {generalise(ty, env)}')
 
 
 if __name__ == '__main__':

@@ -9,14 +9,6 @@ class LoopExpression(Expression):
 
 
 @dataclass
-class ForExpression(Expression):
-    initial_assign: Expression
-    condition: Expression
-    reassign: Expression
-    body: Expression
-
-
-@dataclass
 class WhileExpression(Expression):
     condition: Expression
     body: Expression
