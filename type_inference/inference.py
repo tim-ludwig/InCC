@@ -14,16 +14,17 @@ def instantiate(ty: Type) -> MonoType:
         case MonoType():
             return ty
 
-        case TypeScheme(bound_var, t):
-            s = Substitution({bound_var: TypeVar.new()})
-            return s(instantiate(t))
+        case TypeScheme(bound_vars, t):
+            s = Substitution({bound_var: TypeVar.new() for bound_var in bound_vars})
+            return s(t)
 
 
 def generalise(ty: Type, env: Environment) -> Type:
-    for name, v in enumerate(ty.free_vars() - env.free_type_vars(), start=ord('a')):
-        ty = TypeScheme("'" + chr(name), Substitution({v: TypeVar("'" + chr(name))})(ty))
+    fv = ty.free_vars() - env.free_type_vars()
+    renaming = {old: "'" + chr(new) for new, old in enumerate(fv, start=ord('a'))}
 
-    return ty
+    s = Substitution({v: TypeVar(renaming[v]) for v in fv})
+    return TypeScheme(list(renaming.values()), s(ty))
 
 
 def unify(t1: MonoType, t2: MonoType, hint: str = '') -> Substitution:

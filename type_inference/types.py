@@ -54,11 +54,11 @@ class TypeFunc(MonoType):
 
 @dataclass
 class TypeScheme(Type):
-    bound_var: str
+    bound_vars: list[str]
     t: Type
 
     def free_vars(self):
-        return self.t.free_vars() - {self.bound_var}
+        return self.t.free_vars() - set(self.bound_vars)
 
     def __str__(self):
-        return f'V{self.bound_var}: {self.t}'
+        return str(self.t)
