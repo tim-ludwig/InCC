@@ -11,8 +11,8 @@ from syntaxtree.sequences import SequenceExpression
 
 from syntaxtree.syntaxtree import Expression
 from syntaxtree.variables import AssignExpression, VariableExpression, LockExpression, LocalExpression
-from type_system.inference import unify, generalise, infer_type
-from type_system.types import TypeVar, TypeScheme, TypeFunc
+from type_system.inference import generalise, infer_type
+from type_system.type_parser import parse_type
 
 
 @dataclass
@@ -100,14 +100,12 @@ def eval(expr: Expression, env: Environment):
 
 
 def main(args):
-    n = TypeFunc('number', [])
-    b = TypeFunc('bool', [])
-    nn_to_n = TypeFunc('->', [n, n, n])
-    nn_to_b = TypeFunc('->', [n, n, b])
-    bb_to_b = TypeFunc('->', [b, b, b])
-    b_to_b = TypeFunc('->', [b, b])
-    any_list = TypeScheme(["a"], TypeFunc('list', [TypeVar("a")]))
-    list_t = TypeScheme(["a"], TypeFunc('->', [TypeVar("a"), TypeFunc("list", [TypeVar("a")]), TypeFunc('list', [TypeVar("a")])]))
+    nn_to_n = parse_type('number, number -> number')
+    nn_to_b = parse_type('number, number -> bool')
+    bb_to_b = parse_type('bool, bool -> bool')
+    b_to_b = parse_type('bool -> bool')
+    any_list = parse_type('list[a]')
+    list_t = parse_type('a, list[a] -> list[a]')
 
     env = Environment()
     env.vars = {
