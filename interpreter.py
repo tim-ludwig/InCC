@@ -100,8 +100,8 @@ def eval(expr: Expression, env: Environment):
 
 
 def main(args):
-    n = TypeFunc('Number', [])
-    b = TypeFunc('Bool', [])
+    n = TypeFunc('number', [])
+    b = TypeFunc('bool', [])
     any = TypeScheme('a', TypeVar('a'))
     nn_to_n = TypeFunc('->', [n, n, n])
     nn_to_b = TypeFunc('->', [n, n, b])

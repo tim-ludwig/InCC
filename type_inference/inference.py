@@ -72,8 +72,8 @@ def algorithm_w(env: Environment, expr: Expression) -> (Substitution, Type):
 
 def _algorithm_w(env: Environment, expr: Expression) -> (Substitution, Type):
     match expr:
-        case NumberLiteral(value): return Substitution({}), TypeFunc('Number', [])
-        case BoolLiteral(value): return Substitution({}), TypeFunc('Bool', [])
+        case NumberLiteral(value): return Substitution({}), TypeFunc('number', [])
+        case BoolLiteral(value): return Substitution({}), TypeFunc('bool', [])
 
         case AssignExpression(name, expression):
             s, t = algorithm_w(env, expression)
@@ -118,7 +118,7 @@ def _algorithm_w(env: Environment, expr: Expression) -> (Substitution, Type):
             s, count_type = algorithm_w(env, count)
             s(env)
 
-            s_new = unify(count_type, TypeFunc('Number', []), f"count of loop hast to have type Number, has type {count_type}")
+            s_new = unify(count_type, TypeFunc('number', []), f"count of loop hast to have type number, has type {count_type}")
             s_new(env)
             s = s_new(s)
 
@@ -131,7 +131,7 @@ def _algorithm_w(env: Environment, expr: Expression) -> (Substitution, Type):
             s, cond_type = algorithm_w(env, condition)
             s(env)
 
-            s_new = unify(cond_type, TypeFunc('Bool', []), f"condition of while hast to have type Bool, has type {cond_type}")
+            s_new = unify(cond_type, TypeFunc('bool', []), f"condition of while hast to have type bool, has type {cond_type}")
             s_new(env)
             s = s_new(s)
 
@@ -148,7 +148,7 @@ def _algorithm_w(env: Environment, expr: Expression) -> (Substitution, Type):
             s_new(env)
             s = s_new(s)
 
-            s_new = unify(cond_type, TypeFunc('Bool', []), f"condition of do-while hast to have type Bool, has type {cond_type}")
+            s_new = unify(cond_type, TypeFunc('bool', []), f"condition of do-while hast to have type bool, has type {cond_type}")
             s_new(env)
             s = s_new(s)
 
@@ -158,7 +158,7 @@ def _algorithm_w(env: Environment, expr: Expression) -> (Substitution, Type):
             s, cond_type = algorithm_w(env, condition)
             s(env)
 
-            s_new = unify(cond_type, TypeFunc('Bool', []), f"condition of if hast to have type Bool, has type {cond_type}")
+            s_new = unify(cond_type, TypeFunc('bool', []), f"condition of if hast to have type bool, has type {cond_type}")
             s_new(env)
             s = s_new(s)
 
