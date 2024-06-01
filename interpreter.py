@@ -23,11 +23,15 @@ class Closure:
 
     def __call__(self, *arg_values):
         env = self.parent_env.push()
-        env.vars = {arg_name: Value(arg_value) for arg_name, arg_value in zip(self.arg_names, arg_values)}
+        env.create_local(*self.arg_names)
+
+        for arg_name, arg_value in zip(self.arg_names, arg_values):
+            env[arg_name].value = arg_value
+
         return eval(self.body, env)
 
     def __str__(self):
-        return f'Closure({", ".join(self.arg_names)})'
+        return f'fun'
 
 
 def eval(expr: Expression, env: Environment):
@@ -48,7 +52,7 @@ def eval(expr: Expression, env: Environment):
 
         case LocalExpression(assignment, body):
             env = env.push()
-            env.define_local(assignment.name, Value(None))
+            env.create_local(assignment.name)
             eval(assignment, env)
             return eval(body, env)
 

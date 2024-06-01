@@ -3,7 +3,7 @@ from type_inference.types import Type
 
 
 class Value:
-    def __init__(self, value: Any, type: Type=None, writeable=True):
+    def __init__(self, value: Any=None, type: Type=None, writeable=True):
         self.value = value
         self.type = type
         self.writeable = writeable
@@ -29,26 +29,23 @@ class Environment:
             return False
 
     def __getitem__(self, name):
-        if name in self.vars:
-            return self.vars[name]
-        elif self.parent:
-            return self.parent[name]
-        else:
-            raise KeyError(f"'{name}' not in env")
-
-    def __setitem__(self, name, value):
         env = self
-        while env.parent and name not in env.vars:
+        while env is not None and name not in env.vars:
             env = env.parent
 
-        env.vars[name] = value
+        if env is None:
+            env = self
+            env.vars[name] = Value()
 
-    def define_local(self, name, value):
-        self.vars[name] = value
+        return env.vars[name]
+
+    def create_local(self, *names: list[str]):
+        for name in names:
+            self.vars[name] = Value()
 
     def push(self):
         return Environment(self)
-    
+
     def pop(self):
         return self.parent
 
