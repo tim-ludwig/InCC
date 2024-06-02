@@ -24,7 +24,7 @@ precedence = [
     ['left', 'PLUS', 'MINUS'],
     ['left', 'TIMES', 'DIVIDE'],
     ['right', 'NOT', 'UMINUS', 'UPLUS'],
-    ['right', 'LPAREN'],
+    ['right', 'LPAREN', 'LBRACKET'],
 ]
 
 
