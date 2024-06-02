@@ -23,6 +23,9 @@ def instantiate(ty: Type) -> MonoType:
 
 def generalise(ty: Type, env: Environment) -> Type:
     fv = ty.free_vars() - env.free_type_vars()
+    if len(fv) == 0:
+        return ty
+
     renaming = {old: chr(new) for new, old in enumerate(fv, start=ord('a'))}
 
     s = Substitution({v: TypeVar(renaming[v]) for v in fv})
