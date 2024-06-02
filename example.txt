@@ -9,5 +9,9 @@
         } else {
             f(x - 1, x * res)
         }
-    in x -> f(x, 1)
+    in x -> f(x, 1);
+
+    fun map f, l ->
+        if l = nil then nil
+        else cons(f(head(l)), map(f, tail(l)))
 }
