@@ -1,3 +1,5 @@
+from unittest import case
+
 from environment import Environment, Value
 from syntaxtree.controlflow import IfExpression, LoopExpression, WhileExpression, DoWhileExpression
 from syntaxtree.functions import LambdaExpression, CallExpression
@@ -6,7 +8,7 @@ from syntaxtree.sequences import SequenceExpression
 from syntaxtree.syntaxtree import Expression
 from syntaxtree.variables import VariableExpression, AssignExpression, LocalExpression, LockExpression
 from type_system.substitution import Substitution
-from type_system.types import Type, MonoType, TypeScheme, TypeVar, TypeFunc
+from type_system.types import Type, MonoType, TypeScheme, TypeVar, TypeFunc, FunctionType
 
 
 def instantiate(ty: Type) -> MonoType:
@@ -37,7 +39,7 @@ def unify(t1: MonoType, t2: MonoType, hint: str = '') -> Substitution:
                     else:
                         return Substitution({name2: t1})
 
-                case TypeFunc():
+                case TypeFunc() | FunctionType():
                     if name1 in t2.free_vars():
                         raise TypeError('Infinite type on unify')
                     return Substitution({name1: t2})
@@ -48,15 +50,42 @@ def unify(t1: MonoType, t2: MonoType, hint: str = '') -> Substitution:
                     return unify(t2, t1, hint)
 
                 case TypeFunc(name2, args2):
-                    if name1 != name2 or len(args1) != len(args2):
-                        raise TypeError(f"Types '{t1}' and '{t2}' don't match.\n\tHint: {hint}")
-                    else:
+                    if name1 == name2 and len(args1) == len(args2):
                         s = Substitution({})
 
                         for arg1, arg2 in zip(args1, args2):
-                            s = s(unify(s(arg1), s(arg2), hint))
+                            s = unify(s(arg1), s(arg2), hint)(s)
 
                         return s
+
+        case FunctionType(ret1, args1, rest_arg1):
+            match t2:
+                case TypeVar():
+                    return unify(t2, t1, hint)
+
+                case FunctionType(ret2, args2, rest_arg2):
+                    if rest_arg1 == rest_arg2 and len(args1) == len(args2):
+                        s = unify(ret1, ret2, hint)
+
+                        for arg1, arg2 in zip(args1, args2):
+                            s = unify(s(arg1), s(arg2), hint)(s)
+
+                        return s
+
+                    if rest_arg1 and len(args1) - 1 <= len(args2):
+                        s = unify(ret1, ret2, hint)
+                        for i in range(len(args1) - 1):
+                            s = unify(s(args1[i]), s(args2[i]), hint)(s)
+
+                        for i in range(len(args1) - 1, len(args2)):
+                            s = unify(s(args1[-1]), s(args2[i]), hint)(s)
+
+                        return s
+
+                    if rest_arg2:
+                        unify(t2, t1, hint)
+
+    raise TypeError(f"Types '{t1}' and '{t2}' don't match.\n\tHint: {hint}")
 
 
 def infer_type(env: Environment, expr: Expression) -> Type:
@@ -176,15 +205,23 @@ def _algorithm_w(env: Environment, expr: Expression) -> (Substitution, Type):
 
             return s, s(then_type)
 
-        case LambdaExpression(arg_names, body):
+        case LambdaExpression(arg_names, body, rest_arg):
             env = env.push()
 
             arg_types = [TypeVar.new() for _ in range(len(arg_names))]
+            if rest_arg:
+                rest_type = arg_types[-1]
+                arg_types[-1] = TypeFunc('array', [rest_type])
+
             for arg_name, arg_type in zip(arg_names, arg_types):
                 env[arg_name].type = arg_type
 
             s, t1 = algorithm_w(env, body)
-            return s, s(TypeFunc('->', [*arg_types, t1]))
+
+            if rest_arg:
+                arg_types[-1] = rest_type
+
+            return s, s(FunctionType(t1, arg_types, rest_arg))
 
         case CallExpression(f, arg_exprs):
             s, func_type = algorithm_w(env, f)
@@ -198,6 +235,6 @@ def _algorithm_w(env: Environment, expr: Expression) -> (Substitution, Type):
                 arg_types.append(arg_type)
 
             ret_type = TypeVar.new()
-            s_new = unify(s(func_type), s(TypeFunc('->', [*arg_types, ret_type])), f"called value has to have type {generalise(func_type, env)}\n\t\targuments have types {', '.join(map(str, arg_types))}")
+            s_new = unify(s(func_type), s(FunctionType(ret_type, arg_types)), f"called value has to have type {generalise(func_type, env)}\n\t\targuments have types {', '.join(map(str, arg_types))}")
             s = s_new(s)
             return s, s(ret_type)

@@ -1,6 +1,8 @@
 import argparse
 from dataclasses import dataclass
 
+import numpy as np
+
 from parser import parser # type: ignore
 
 from environment import Environment, Value
@@ -21,13 +23,20 @@ class Closure:
     parent_env: Environment
     arg_names: list[str]
     body: Expression
+    rest_args: bool
 
     def __call__(self, *arg_values):
         env = self.parent_env.push()
         env.create_local(*self.arg_names)
 
-        for arg_name, arg_value in zip(self.arg_names, arg_values):
-            env[arg_name].value = arg_value
+        if self.rest_args:
+            for i in range(len(self.arg_names) - 1):
+                env[self.arg_names[i]].value = arg_values[i]
+
+            env[self.arg_names[-1]].value = np.array(arg_values[len(self.arg_names) - 1:])
+        else:
+            for arg_name, arg_value in zip(self.arg_names, arg_values):
+                env[arg_name].value = arg_value
 
         return eval(self.body, env)
 
@@ -91,8 +100,8 @@ def eval(expr: Expression, env: Environment):
             else:
                 return None
 
-        case LambdaExpression(arg_names, body):
-            return Closure(env, arg_names, body)
+        case LambdaExpression(arg_names, body, rest_args):
+            return Closure(env, arg_names, body, rest_args)
 
         case CallExpression(f, arg_exprs):
             callable = eval(f, env)
@@ -106,29 +115,29 @@ def main(args):
     bb_to_b = parse_type('bool, bool -> bool')
     b_to_b = parse_type('bool -> bool')
     any_list = parse_type('list[a]')
-    list_t = parse_type('a, list[a] -> list[a]')
+    list_t = parse_type('a... -> list[a]')
 
     env = Environment()
     env.vars = {
-        '+':    Value(lambda v1, v2: v1 + v2,         nn_to_n ),
-        '-':    Value(lambda v1, v2: v1 - v2,         nn_to_n ),
-        '*':    Value(lambda v1, v2: v1 * v2,         nn_to_n ),
-        '/':    Value(lambda v1, v2: v1 / v2,         nn_to_n ),
-        '<':    Value(lambda v1, v2: v1 < v2,         nn_to_b ),
-        '>':    Value(lambda v1, v2: v1 > v2,         nn_to_b ),
-        '<=':   Value(lambda v1, v2: v1 <= v2,        nn_to_b ),
-        '>=':   Value(lambda v1, v2: v1 >= v2,        nn_to_b ),
-        '=':    Value(lambda v1, v2: v1 == v2,        nn_to_b ),
-        '!=':   Value(lambda v1, v2: v1 != v2,        nn_to_b ),
-        'EQ':   Value(lambda v1, v2: v1 == v2,        bb_to_b ),
-        'NEQ':  Value(lambda v1, v2: v1 != v2,        bb_to_b ),
-        'XOR':  Value(lambda v1, v2: v1 != v2,        bb_to_b ),
-        'AND':  Value(lambda v1, v2: v1 and v2,       bb_to_b ),
-        'OR':   Value(lambda v1, v2: v1 or v2,        bb_to_b ),
-        'NAND': Value(lambda v1, v2: not (v1 and v2), bb_to_b ),
-        'NOR':  Value(lambda v1, v2: not (v1 or v2),  bb_to_b ),
-        'IMP':  Value(lambda v1, v2: not v1 or v2,    bb_to_b ),
-        'NOT':  Value(lambda v1:     not v1,          b_to_b  ),
+        '+':    Value(lambda v1, v2: v1 + v2,         nn_to_n),
+        '-':    Value(lambda v1, v2: v1 - v2,         nn_to_n),
+        '*':    Value(lambda v1, v2: v1 * v2,         nn_to_n),
+        '/':    Value(lambda v1, v2: v1 / v2,         nn_to_n),
+        '<':    Value(lambda v1, v2: v1 < v2,         nn_to_b),
+        '>':    Value(lambda v1, v2: v1 > v2,         nn_to_b),
+        '<=':   Value(lambda v1, v2: v1 <= v2,        nn_to_b),
+        '>=':   Value(lambda v1, v2: v1 >= v2,        nn_to_b),
+        '=':    Value(lambda v1, v2: v1 == v2,        nn_to_b),
+        '!=':   Value(lambda v1, v2: v1 != v2,        nn_to_b),
+        'EQ':   Value(lambda v1, v2: v1 == v2,        bb_to_b),
+        'NEQ':  Value(lambda v1, v2: v1 != v2,        bb_to_b),
+        'XOR':  Value(lambda v1, v2: v1 != v2,        bb_to_b),
+        'AND':  Value(lambda v1, v2: v1 and v2,       bb_to_b),
+        'OR':   Value(lambda v1, v2: v1 or v2,        bb_to_b),
+        'NAND': Value(lambda v1, v2: not (v1 and v2), bb_to_b),
+        'NOR':  Value(lambda v1, v2: not (v1 or v2),  bb_to_b),
+        'IMP':  Value(lambda v1, v2: not v1 or v2,    bb_to_b),
+        'NOT':  Value(lambda v1:     not v1,          b_to_b),
         'nil':  Value((),                             any_list),
         'list': Value(lambda v1, v2: (v1, v2),        list_t),
     }

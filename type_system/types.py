@@ -41,15 +41,30 @@ class TypeFunc(MonoType):
         return v
 
     def __str__(self):
-        if self.name == '->':
-            if len(self.args) == 1:
-                return f"-> {self.args[-1]}"
-
-            arg_strs = [f"({arg_type})" if isinstance(arg_type, TypeFunc) and arg_type.name == '->' else str(arg_type) for arg_type in self.args[:-1]]
-            return f"{', '.join(arg_strs)} -> {self.args[-1]}"
-
         a = '' if len(self.args) == 0 else '[' + ', '.join(map(str, self.args)) + ']'
         return self.name + a
+
+
+@dataclass
+class FunctionType(MonoType):
+    ret: MonoType
+    args: list[MonoType]
+    rest_arg: bool = False
+
+    def free_vars(self):
+        v = self.ret.free_vars()
+        for arg in self.args:
+            v |= arg.free_vars()
+
+        return v
+
+    def __str__(self):
+        if len(self.args) == 0:
+            return f"-> {self.ret}"
+
+        arg_strs = [f"({arg_type})" if isinstance(arg_type, TypeFunc) and arg_type.name == '->' else str(arg_type) for
+                    arg_type in self.args]
+        return f"{', '.join(arg_strs)}{'...' if self.rest_arg else ''} -> {self.ret}"
 
 
 @dataclass

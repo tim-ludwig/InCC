@@ -2,9 +2,9 @@ from ply import lex, yacc
 
 from environment import Environment
 from type_system.inference import generalise
-from type_system.types import TypeFunc, TypeVar
+from type_system.types import TypeFunc, TypeVar, FunctionType
 
-tokens = ['IDENT', 'LPAREN', 'RPAREN', 'LBRACKET', 'RBRACKET', 'RARROW', 'COMMA', 'TYPE_NAME']
+tokens = ['IDENT', 'LPAREN', 'RPAREN', 'LBRACKET', 'RBRACKET', 'RARROW', 'COMMA', 'TYPE_NAME', 'TRIPLE_DOT']
 known_types = {
     'number',
     'bool',
@@ -16,6 +16,7 @@ t_LBRACKET = r'\['
 t_RBRACKET = r'\]'
 t_RARROW = r'->'
 t_COMMA = r','
+t_TRIPLE_DOT = r'\.\.\.'
 
 t_ignore = ' \t\n'
 
@@ -56,9 +57,17 @@ def p_type_func(p):
 
 def p_func_type_func(p):
     """
-    type : type_list RARROW type
+    type : RARROW type
+         | type_list RARROW type
     """
-    p[0] = TypeFunc('->', [*p[1], p[3]])
+    p[0] = FunctionType(p[3], p[1] if len(p) == 4 else [])
+
+
+def p_func_type_func_rest_args(p):
+    """
+    type : type_list TRIPLE_DOT RARROW type
+    """
+    p[0] = FunctionType(p[4], p[1], True)
 
 
 def p_paren(p):

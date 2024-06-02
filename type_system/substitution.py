@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from environment import Environment, Value
-from type_system.types import TypeVar, Type, TypeFunc, TypeScheme, MonoType
+from type_system.types import TypeVar, Type, TypeFunc, TypeScheme, MonoType, FunctionType
 
 
 @dataclass
@@ -15,6 +15,9 @@ class Substitution:
 
             case TypeFunc(name, args):
                 return TypeFunc(name, [self.apply(arg) for arg in args])
+
+            case FunctionType(ret, args, rest_arg):
+                return FunctionType(self.apply(ret), list(map(self.apply, args)), rest_arg)
 
             case TypeScheme(bound_var, s):
                 return TypeScheme(bound_var, Substitution({var: rep for var, rep in self.subst.items() if var != bound_var}).apply(s))

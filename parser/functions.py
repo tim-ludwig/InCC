@@ -31,11 +31,18 @@ def p_expression_lambda(p):
         p[0] = LambdaExpression([], p[2])
 
 
+def p_expression_lambda_rest_arg(p):
+    """
+    lambda_expression : ident_list TRIPLE_DOT RIGHT_ARROW expression
+    """
+    p[0] = LambdaExpression(p[1], p[4], True)
+
+
 def p_expression_function(p):
     """
     expression : FUN IDENT lambda_expression
     """
-    #    fun f(x) -> body
+    #    fun f x -> body
     # => f := local f := x -> body in f
     f_assign_lmbd = AssignExpression(p[2], p[3])
     p[0] = AssignExpression(p[2], LocalExpression(f_assign_lmbd, VariableExpression(p[2])))

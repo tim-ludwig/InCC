@@ -6,6 +6,7 @@ from dataclasses import dataclass
 class LambdaExpression(Expression):
     arg_names: list[str]
     body: Expression
+    rest_arg: bool = False
 
 
 @dataclass
