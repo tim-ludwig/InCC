@@ -109,38 +109,60 @@ def eval(expr: Expression, env: Environment):
             return callable(*arg_values)
 
 
+def make_list(*elem):
+    if len(elem) == 0:
+        return ()
+    return elem[0], make_list(*elem[1:])
+
+
+def head(l):
+    return l[0]
+
+
+def tail(l):
+    return l[1]
+
+
+def make_array(*elem):
+    return np.array(elem)
+
+
+def define(env, name, val, ty):
+    env[name].value = val
+    env[name].type = parse_type(ty)
+
+
 def main(args):
-    nn_to_n = parse_type('number, number -> number')
-    nn_to_b = parse_type('number, number -> bool')
-    bb_to_b = parse_type('bool, bool -> bool')
-    b_to_b = parse_type('bool -> bool')
-    any_list = parse_type('list[a]')
-    list_t = parse_type('a... -> list[a]')
 
     env = Environment()
-    env.vars = {
-        '+':    Value(lambda v1, v2: v1 + v2,         nn_to_n),
-        '-':    Value(lambda v1, v2: v1 - v2,         nn_to_n),
-        '*':    Value(lambda v1, v2: v1 * v2,         nn_to_n),
-        '/':    Value(lambda v1, v2: v1 / v2,         nn_to_n),
-        '<':    Value(lambda v1, v2: v1 < v2,         nn_to_b),
-        '>':    Value(lambda v1, v2: v1 > v2,         nn_to_b),
-        '<=':   Value(lambda v1, v2: v1 <= v2,        nn_to_b),
-        '>=':   Value(lambda v1, v2: v1 >= v2,        nn_to_b),
-        '=':    Value(lambda v1, v2: v1 == v2,        nn_to_b),
-        '!=':   Value(lambda v1, v2: v1 != v2,        nn_to_b),
-        'EQ':   Value(lambda v1, v2: v1 == v2,        bb_to_b),
-        'NEQ':  Value(lambda v1, v2: v1 != v2,        bb_to_b),
-        'XOR':  Value(lambda v1, v2: v1 != v2,        bb_to_b),
-        'AND':  Value(lambda v1, v2: v1 and v2,       bb_to_b),
-        'OR':   Value(lambda v1, v2: v1 or v2,        bb_to_b),
-        'NAND': Value(lambda v1, v2: not (v1 and v2), bb_to_b),
-        'NOR':  Value(lambda v1, v2: not (v1 or v2),  bb_to_b),
-        'IMP':  Value(lambda v1, v2: not v1 or v2,    bb_to_b),
-        'NOT':  Value(lambda v1:     not v1,          b_to_b),
-        'nil':  Value((),                             any_list),
-        'list': Value(lambda v1, v2: (v1, v2),        list_t),
-    }
+    define(env, '+', lambda v1, v2: v1 + v2, 'number, number -> number')
+    define(env, '-', lambda v1, v2: v1 - v2, 'number, number -> number')
+    define(env, '*', lambda v1, v2: v1 * v2, 'number, number -> number')
+    define(env, '/', lambda v1, v2: v1 / v2, 'number, number -> number')
+
+    define(env, '<',  lambda v1, v2: v1 < v2,  'number, number -> bool')
+    define(env, '>',  lambda v1, v2: v1 > v2,  'number, number -> bool')
+    define(env, '<=', lambda v1, v2: v1 <= v2, 'number, number -> bool')
+    define(env, '>=', lambda v1, v2: v1 >= v2, 'number, number -> bool')
+    define(env, '=',  lambda v1, v2: v1 == v2, 'number, number -> bool')
+    define(env, '!=', lambda v1, v2: v1 != v2, 'number, number -> bool')
+
+    define(env, 'EQ',   lambda v1, v2: v1 == v2,        'bool, bool -> bool')
+    define(env, 'NEQ',  lambda v1, v2: v1 != v2,        'bool, bool -> bool')
+    define(env, 'XOR',  lambda v1, v2: v1 != v2,        'bool, bool -> bool')
+    define(env, 'AND',  lambda v1, v2: v1 and v2,       'bool, bool -> bool')
+    define(env, 'OR',   lambda v1, v2: v1 or v2,        'bool, bool -> bool')
+    define(env, 'NAND', lambda v1, v2: not (v1 and v2), 'bool, bool -> bool')
+    define(env, 'NOR',  lambda v1, v2: not (v1 or v2), 'bool, bool -> bool')
+    define(env, 'IMP',  lambda v1, v2: not v1 or v2,   'bool, bool -> bool')
+    define(env, 'NOT',  lambda v1: not v1,                   'bool -> bool')
+
+    define(env, 'list', make_list, 'a... -> list[a]')
+    define(env, 'nil',  (),                'list[a]')
+    define(env, 'head', head,         'list[a] -> a')
+    define(env, 'tail', tail,   'list[a] -> list[a]')
+
+    define(env, 'array', make_array, 'a... -> array[a]')
 
     if args.file:
         with (open(args.file, 'r') as f):
