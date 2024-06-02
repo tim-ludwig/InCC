@@ -3,7 +3,7 @@ from unittest import case
 from environment import Environment, Value
 from syntaxtree.controlflow import IfExpression, LoopExpression, WhileExpression, DoWhileExpression
 from syntaxtree.functions import LambdaExpression, CallExpression
-from syntaxtree.literals import BoolLiteral, NumberLiteral
+from syntaxtree.literals import BoolLiteral, NumberLiteral, StringLiteral, CharLiteral, ArrayLiteral
 from syntaxtree.sequences import SequenceExpression
 from syntaxtree.syntaxtree import Expression
 from syntaxtree.variables import VariableExpression, AssignExpression, LocalExpression, LockExpression
@@ -106,6 +106,22 @@ def _algorithm_w(env: Environment, expr: Expression) -> (Substitution, Type):
     match expr:
         case NumberLiteral(value): return Substitution({}), TypeFunc('number', [])
         case BoolLiteral(value): return Substitution({}), TypeFunc('bool', [])
+        case StringLiteral(value): return Substitution({}), TypeFunc('string', [])
+        case CharLiteral(value): return Substitution({}), TypeFunc('char', [])
+
+        case ArrayLiteral(elements):
+            elem_type = TypeVar.new()
+            s = Substitution({})
+            for elem in elements:
+                s_new, t = algorithm_w(env, elem)
+                s_new(env)
+                s = s_new(s)
+
+                s_new = unify(s(elem_type), s(t), 'Array elements have to be the same type')
+                s_new(env)
+                s = s_new(s)
+
+            return s, s(TypeFunc('array', [elem_type]))
 
         case AssignExpression(name, expression):
             s, t = algorithm_w(env, expression)

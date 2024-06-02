@@ -8,7 +8,7 @@ from parser import parser # type: ignore
 from environment import Environment, Value
 from parser.parser import parse_expr
 from syntaxtree.controlflow import LoopExpression, WhileExpression, DoWhileExpression, IfExpression
-from syntaxtree.literals import NumberLiteral, BoolLiteral
+from syntaxtree.literals import NumberLiteral, BoolLiteral, StringLiteral, CharLiteral, ArrayLiteral
 from syntaxtree.functions import LambdaExpression, CallExpression
 from syntaxtree.sequences import SequenceExpression
 
@@ -48,6 +48,9 @@ def eval(expr: Expression, env: Environment):
     match expr:
         case NumberLiteral(value): return float(value)
         case BoolLiteral(value): return value == 'TRUE'
+        case StringLiteral(value): return value
+        case CharLiteral(value): return value
+        case ArrayLiteral(elements): return make_array(*[eval(elem, env) for elem in elements])
 
         case AssignExpression(name, expression):
             res = eval(expression, env)
@@ -155,14 +158,15 @@ def main(args):
     define(env, 'NAND', lambda v1, v2: not (v1 and v2), 'bool, bool -> bool')
     define(env, 'NOR',  lambda v1, v2: not (v1 or v2), 'bool, bool -> bool')
     define(env, 'IMP',  lambda v1, v2: not v1 or v2,   'bool, bool -> bool')
-    define(env, 'NOT',  lambda v1: not v1,                   'bool -> bool')
+    define(env, 'NOT',  lambda v1: not v1,             'bool -> bool')
 
     define(env, 'list', make_list, 'a... -> list[a]')
-    define(env, 'nil',  (),                'list[a]')
-    define(env, 'head', head,         'list[a] -> a')
-    define(env, 'tail', tail,   'list[a] -> list[a]')
+    define(env, 'nil',  (),        'list[a]')
+    define(env, 'head', head,      'list[a] -> a')
+    define(env, 'tail', tail,      'list[a] -> list[a]')
 
-    define(env, 'array', make_array, 'a... -> array[a]')
+    define(env, 'array', make_array,                 'a... -> array[a]')
+    define(env, '[]',    lambda v1, v2: v1[int(v2)], 'array[a], number -> a')
 
     if args.file:
         with (open(args.file, 'r') as f):

@@ -10,3 +10,18 @@ class NumberLiteral(Expression):
 @dataclass
 class BoolLiteral(Expression):
     value: str
+
+
+@dataclass
+class StringLiteral(Expression):
+    value: str
+
+
+@dataclass
+class CharLiteral(Expression):
+    value: str
+
+
+@dataclass
+class ArrayLiteral(Expression):
+    elements: list[Expression]

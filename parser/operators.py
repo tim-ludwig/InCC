@@ -35,6 +35,13 @@ def p_expression_unary(p):
     p[0] = CallExpression(VariableExpression(p[1]),  [p[2]])
 
 
+def p_expression_access(p):
+    """
+    expression : expression LBRACKET expression RBRACKET
+    """
+    p[0] = CallExpression(VariableExpression('[]'), [p[1], p[3]])
+
+
 def p_expression_paren(p):
     """
     expression : LPAREN expression RPAREN
