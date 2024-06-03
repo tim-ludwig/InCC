@@ -14,6 +14,7 @@ from parser.functions import *
 precedence = [
     ['nonassoc', 'THEN'],
     ['nonassoc', 'ELSE', 'DO', 'WHILE', 'IN'],
+    ['left', 'COMMA'],
     ['right', 'ASSIGN'],
     ['right', 'RIGHT_ARROW'],
     ['left', 'OR', 'NOR', 'XOR'],
