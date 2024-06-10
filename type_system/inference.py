@@ -5,7 +5,7 @@ from syntaxtree.controlflow import IfExpression, LoopExpression, WhileExpression
 from syntaxtree.functions import LambdaExpression, CallExpression
 from syntaxtree.literals import BoolLiteral, NumberLiteral, StringLiteral, CharLiteral, ArrayLiteral
 from syntaxtree.sequences import SequenceExpression
-from syntaxtree.struct import StructExpression
+from syntaxtree.struct import StructExpression, MemberAccessExpression
 from syntaxtree.syntaxtree import Expression
 from syntaxtree.variables import VariableExpression, AssignExpression, LocalExpression, LockExpression
 from type_system.substitution import Substitution
@@ -269,6 +269,10 @@ def _algorithm_w(env: Environment, expr: Expression) -> (Substitution, Type):
                 s = s_new(s)
 
             return s, s(TypeFunc('struct', [v.type for v in env.vars.values()]))
+
+        case MemberAccessExpression(expr, member):
+            s, t = algorithm_w(env, expr)
+            return s, s(t.args[0])
 
         case _:
             raise NotImplementedError(expr)

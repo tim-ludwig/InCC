@@ -11,7 +11,7 @@ from syntaxtree.controlflow import LoopExpression, WhileExpression, DoWhileExpre
 from syntaxtree.literals import NumberLiteral, BoolLiteral, StringLiteral, CharLiteral, ArrayLiteral
 from syntaxtree.functions import LambdaExpression, CallExpression
 from syntaxtree.sequences import SequenceExpression
-from syntaxtree.struct import StructExpression
+from syntaxtree.struct import StructExpression, MemberAccessExpression
 
 from syntaxtree.syntaxtree import Expression
 from syntaxtree.variables import AssignExpression, VariableExpression, LockExpression, LocalExpression
@@ -125,6 +125,10 @@ def eval(expr: Expression, env: Environment):
                 eval(init_expr, env)
 
             return Struct(env.vars)
+
+        case MemberAccessExpression(expr, member):
+            struct = eval(expr, env)
+            return struct.vars[member].value
 
         case _:
             raise NotImplementedError(expr)

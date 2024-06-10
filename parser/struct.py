@@ -1,4 +1,4 @@
-from syntaxtree.struct import StructExpression
+from syntaxtree.struct import StructExpression, MemberAccessExpression
 
 
 def p_initializer_assign(p):
@@ -22,3 +22,10 @@ def p_expr_struct(p):
                | STRUCT LBRACE initializer_list RBRACE
     """
     p[0] = StructExpression([] if len(p) == 4 else p[3])
+
+
+def p_member_access(p):
+    """
+    expression : expression DOT IDENT
+    """
+    p[0] = MemberAccessExpression(p[1], p[3])

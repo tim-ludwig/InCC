@@ -7,3 +7,9 @@ from syntaxtree.variables import AssignExpression
 @dataclass
 class StructExpression(Expression):
     initializers: list[AssignExpression]
+
+
+@dataclass
+class MemberAccessExpression(Expression):
+    expr: Expression
+    member: str
