@@ -2,27 +2,30 @@ from ply import lex
 
 from lexer.literals import *
 from lexer.operators import *
+from lexer.struct import *
 from lexer.variables import *
 from lexer.sequences import *
 from lexer.controlflow import *
 from lexer.functions import *
 
 
-tokens = list(
-    lit_tokens
-    | expr_tokens
-    | var_tokens
-    | seq_tokens
-    | functions_tokens
-)
 reserved_words = set(
     lit_reserved_words
     | expr_reserved_words
     | var_reserved_words
     | controlflow_reserved_words
     | functions_reserved_words
+    | struct_reserved_words
 )
-tokens.extend(reserved_words)
+tokens = list(
+    lit_tokens
+    | expr_tokens
+    | var_tokens
+    | seq_tokens
+    | functions_tokens
+    | struct_tokens
+    | reserved_words
+)
 tokens.extend(['IDENT', 'COMMA'])
 
 

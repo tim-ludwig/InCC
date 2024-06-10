@@ -9,6 +9,7 @@ from parser.variables import *
 from parser.sequences import *
 from parser.controlflow import *
 from parser.functions import *
+from parser.struct import *
 
 
 precedence = [

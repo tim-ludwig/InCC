@@ -11,6 +11,7 @@ from syntaxtree.controlflow import LoopExpression, WhileExpression, DoWhileExpre
 from syntaxtree.literals import NumberLiteral, BoolLiteral, StringLiteral, CharLiteral, ArrayLiteral
 from syntaxtree.functions import LambdaExpression, CallExpression
 from syntaxtree.sequences import SequenceExpression
+from syntaxtree.struct import StructExpression
 
 from syntaxtree.syntaxtree import Expression
 from syntaxtree.variables import AssignExpression, VariableExpression, LockExpression, LocalExpression
@@ -44,6 +45,11 @@ class Closure:
         return f'fun'
 
 
+@dataclass
+class Struct:
+    vars: dict[str, Value]
+
+
 def eval(expr: Expression, env: Environment):
     match expr:
         case NumberLiteral(value): return float(value)
@@ -55,6 +61,7 @@ def eval(expr: Expression, env: Environment):
         case AssignExpression(name, expression):
             res = eval(expression, env)
             env[name].value = res
+            env[name].type = expression.type
             return res
 
         case VariableExpression(name):
@@ -110,6 +117,17 @@ def eval(expr: Expression, env: Environment):
             callable = eval(f, env)
             arg_values = [eval(arg_expr, env) for arg_expr in arg_exprs]
             return callable(*arg_values)
+
+        case StructExpression(initializers):
+            env = env.push()
+
+            for init_expr in initializers:
+                eval(init_expr, env)
+
+            return Struct(env.vars)
+
+        case _:
+            raise NotImplementedError(expr)
 
 
 def make_list(*elem):
@@ -181,8 +199,9 @@ def main(args):
             inp = input("> ")
             expr = parse_expr(inp)
             ty = infer_type(env, expr)
+            print(generalise(ty, env), end=': ')
             res = eval(expr, env)
-            print(f'{res} : {generalise(ty, env)}')
+            print(res)
 
 
 if __name__ == '__main__':

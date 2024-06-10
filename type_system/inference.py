@@ -5,6 +5,7 @@ from syntaxtree.controlflow import IfExpression, LoopExpression, WhileExpression
 from syntaxtree.functions import LambdaExpression, CallExpression
 from syntaxtree.literals import BoolLiteral, NumberLiteral, StringLiteral, CharLiteral, ArrayLiteral
 from syntaxtree.sequences import SequenceExpression
+from syntaxtree.struct import StructExpression
 from syntaxtree.syntaxtree import Expression
 from syntaxtree.variables import VariableExpression, AssignExpression, LocalExpression, LockExpression
 from type_system.substitution import Substitution
@@ -257,3 +258,17 @@ def _algorithm_w(env: Environment, expr: Expression) -> (Substitution, Type):
             s_new = unify(s(func_type), s(FunctionType(ret_type, arg_types)), f"called value has to have type {generalise(func_type, env)}\n\t\targuments have types {', '.join(map(str, arg_types))}")
             s = s_new(s)
             return s, s(ret_type)
+
+        case StructExpression(initializers):
+            env = env.push()
+            s = Substitution({})
+
+            for init_expr in initializers:
+                s_new, _ = algorithm_w(env, init_expr)
+                s_new(env)
+                s = s_new(s)
+
+            return s, s(TypeFunc('struct', [v.type for v in env.vars.values()]))
+
+        case _:
+            raise NotImplementedError(expr)
