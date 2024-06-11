@@ -68,6 +68,19 @@ class FunctionType(MonoType):
 
 
 @dataclass
+class StructType(MonoType):
+    member_types: dict[str, MonoType]
+
+    def free_vars(self):
+        v = set()
+
+        for member_type in self.member_types.values():
+            v |= member_type.free_vars()
+
+        return v
+
+
+@dataclass
 class TypeScheme(Type):
     bound_vars: list[str]
     t: Type

@@ -9,7 +9,7 @@ from syntaxtree.struct import StructExpression, MemberAccessExpression
 from syntaxtree.syntaxtree import Expression
 from syntaxtree.variables import VariableExpression, AssignExpression, LocalExpression, LockExpression
 from type_system.substitution import Substitution
-from type_system.types import Type, MonoType, TypeScheme, TypeVar, TypeFunc, FunctionType
+from type_system.types import Type, MonoType, TypeScheme, TypeVar, TypeFunc, FunctionType, StructType
 
 
 def instantiate(ty: Type) -> MonoType:
@@ -43,7 +43,7 @@ def unify(t1: MonoType, t2: MonoType, hint: str = '') -> Substitution:
                     else:
                         return Substitution({name2: t1})
 
-                case TypeFunc() | FunctionType():
+                case TypeFunc() | FunctionType() | StructType():
                     if name1 in t2.free_vars():
                         raise TypeError('Infinite type on unify')
                     return Substitution({name1: t2})
@@ -88,6 +88,20 @@ def unify(t1: MonoType, t2: MonoType, hint: str = '') -> Substitution:
 
                     if rest_arg2:
                         unify(t2, t1, hint)
+
+        case StructType(member_types1):
+            match t2:
+                case TypeVar():
+                    return unify(t2, t1, hint)
+
+                case StructType(member_types2):
+                    s = Substitution({})
+
+                    if member_types1.keys() == member_types2.keys():
+                        for name, t in member_types1.items():
+                            s = unify(s(t), s(member_types2[name]), hint)(s)
+
+                    return s
 
     raise TypeError(f"Types '{t1}' and '{t2}' don't match.\n\tHint: {hint}")
 
@@ -268,11 +282,11 @@ def _algorithm_w(env: Environment, expr: Expression) -> (Substitution, Type):
                 s_new(env)
                 s = s_new(s)
 
-            return s, s(TypeFunc('struct', [v.type for v in env.vars.values()]))
+            return s, s(StructType({name: v.type for name, v in env.vars.items()}))
 
         case MemberAccessExpression(expr, member):
             s, t = algorithm_w(env, expr)
-            return s, s(t.args[0])
+            return s, s(t.member_types[member])
 
         case _:
             raise NotImplementedError(expr)
