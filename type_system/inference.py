@@ -278,7 +278,14 @@ def _algorithm_w(env: Environment, expr: Expression) -> (Substitution, Type):
             s = Substitution({})
 
             for init_expr in initializers:
-                s_new, _ = algorithm_w(env, init_expr)
+                env.create_local(init_expr.name)
+                env[init_expr.name].type = TypeVar.new()
+
+                s_new, t = algorithm_w(env, init_expr)
+                s_new(env)
+                s = s_new(s)
+
+                s_new = unify(s(env[init_expr.name].type), s(t))
                 s_new(env)
                 s = s_new(s)
 
