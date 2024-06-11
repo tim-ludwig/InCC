@@ -1,4 +1,5 @@
 import argparse
+import sys
 from dataclasses import dataclass
 
 import numpy as np
@@ -120,6 +121,7 @@ def eval(expr: Expression, env: Environment):
 
         case StructExpression(initializers):
             env = env.push()
+            env.create_local(*[init_expr.name for init_expr in initializers])
 
             for init_expr in initializers:
                 eval(init_expr, env)
@@ -200,12 +202,17 @@ def main(args):
 
     if args.repl:
         while True:
-            inp = input("> ")
-            expr = parse_expr(inp)
-            ty = infer_type(env, expr)
-            print(generalise(ty, env), end=': ')
-            res = eval(expr, env)
-            print(res)
+            try:
+                inp = input("> ")
+                expr = parse_expr(inp)
+                ty = infer_type(env, expr)
+                print(generalise(ty, env), end=': ')
+                res = eval(expr, env)
+                print(res)
+            except (EOFError, KeyboardInterrupt):
+                break
+            except TypeError as terr:
+                print(terr)
 
 
 if __name__ == '__main__':
