@@ -62,7 +62,7 @@ class FunctionType(MonoType):
         if len(self.args) == 0:
             return f"-> {self.ret}"
 
-        arg_strs = [f"({arg_type})" if isinstance(arg_type, TypeFunc) and arg_type.name == '->' else str(arg_type) for
+        arg_strs = [f"({arg_type})" if isinstance(arg_type, FunctionType) else str(arg_type) for
                     arg_type in self.args]
         return f"{', '.join(arg_strs)}{'...' if self.rest_arg else ''} -> {self.ret}"
 
