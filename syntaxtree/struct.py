@@ -7,6 +7,7 @@ from syntaxtree.variables import AssignExpression
 @dataclass
 class StructExpression(Expression):
     initializers: list[AssignExpression]
+    parent_expr: Expression = None
 
 
 @dataclass

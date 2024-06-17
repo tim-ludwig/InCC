@@ -1,6 +1,7 @@
 import argparse
 import sys
 from dataclasses import dataclass
+from typing import Self
 
 import numpy as np
 
@@ -47,6 +48,7 @@ class Closure:
 @dataclass
 class Struct:
     vars: dict[str, Value]
+    parent: Self = None
 
 
 def eval(expr: Expression, env: Environment):
@@ -116,14 +118,16 @@ def eval(expr: Expression, env: Environment):
             arg_values = [eval(arg_expr, env) for arg_expr in arg_exprs]
             return callable(*arg_values)
 
-        case StructExpression(initializers):
+        case StructExpression(initializers, parent_expr):
+            parent = eval(parent_expr, env) if parent_expr else None
+
             env = env.push()
             env.create_local(*[init_expr.name for init_expr in initializers])
 
             for init_expr in initializers:
                 eval(init_expr, env)
 
-            return Struct(env.vars)
+            return Struct(env.vars, parent)
 
         case MemberAccessExpression(expr, member):
             struct = eval(expr, env)
