@@ -13,6 +13,7 @@ class Environment:
     def __init__(self, parent=None):
         self.parent = parent
         self.vars = {}
+        self.containing_struct = parent.containing_struct if parent else None
 
     def __contains__(self, name):
         if name in self.vars:

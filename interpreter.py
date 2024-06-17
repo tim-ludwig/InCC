@@ -49,6 +49,22 @@ class Struct:
     vars: dict[str, Value]
     parent: Self = None
 
+    def __contains__(self, name):
+        if name in self.vars:
+            return True
+        elif self.parent:
+            return name in self.parent
+        else:
+            return False
+
+    def __getitem__(self, name):
+        if name in self.vars:
+            return self.vars[name]
+        elif self.parent:
+            return self.parent[name]
+        else:
+            raise KeyError(name)
+
 
 def eval(expr: Expression, env: Environment):
     match expr:
@@ -64,7 +80,13 @@ def eval(expr: Expression, env: Environment):
             return res
 
         case VariableExpression(name):
-            return env[name].value
+            if name in env:
+                return env[name].value
+
+            if env.containing_struct:
+                return env.containing_struct[name].value
+
+            raise KeyError(f"Unknown variable {name}")
 
         case LockExpression(_, body):
             return eval(body, env)
@@ -120,15 +142,20 @@ def eval(expr: Expression, env: Environment):
             parent = eval(parent_expr, env) if parent_expr else None
 
             env = env.push(*[init_expr.name for init_expr in initializers])
+            env.containing_struct = Struct(env.vars, parent)
 
             for init_expr in initializers:
                 eval(init_expr, env)
 
-            return Struct(env.vars, parent)
+            return env.containing_struct
 
         case MemberAccessExpression(expr, member):
-            struct = eval(expr, env)
-            return struct.vars[member].value
+            struct = eval(expr, env) if expr else env.containing_struct
+
+            if member not in struct:
+                raise KeyError(f'Unknown member {member}')
+
+            return struct[member].value
 
         case _:
             raise NotImplementedError(expr)

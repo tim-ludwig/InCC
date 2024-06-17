@@ -1,7 +1,10 @@
 {
     fun counter v -> struct {
         val := v;
-        add := x -> val := val + x;
+        add := x -> val := val + x
+    };
+
+    fun better_counter v -> extend counter(v) {
         inc := -> add(1);
         dec := -> add(-1)
     };

@@ -34,6 +34,7 @@ def p_struct_extension(p):
 
 def p_member_access(p):
     """
-    expression : expression DOT IDENT
+    expression : DOT IDENT
+               | expression DOT IDENT
     """
-    p[0] = MemberAccessExpression(p[1], p[3])
+    p[0] = MemberAccessExpression(p[1], p[3]) if len(p) == 4 else MemberAccessExpression(None, p[2])
