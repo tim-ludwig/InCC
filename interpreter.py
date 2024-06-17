@@ -16,8 +16,6 @@ from syntaxtree.struct import StructExpression, MemberAccessExpression
 
 from syntaxtree.syntaxtree import Expression
 from syntaxtree.variables import AssignExpression, VariableExpression, LockExpression, LocalExpression
-from type_system.inference import generalise, infer_type
-from type_system.parser import parse_type
 
 
 @dataclass
@@ -62,7 +60,6 @@ def eval(expr: Expression, env: Environment):
         case AssignExpression(name, expression):
             res = eval(expression, env)
             env[name].value = res
-            env[name].type = expression.type
             return res
 
         case VariableExpression(name):
@@ -154,50 +151,48 @@ def make_array(*elem):
     return np.array(elem)
 
 
-def define(env, name, val, ty):
+def define(env, name, val):
     env[name].value = val
-    env[name].type = parse_type(ty)
 
 
 def main(args):
 
     env = Environment()
-    define(env, '+', lambda v1, v2: v1 + v2, 'number, number -> number')
-    define(env, '-', lambda v1, v2: v1 - v2, 'number, number -> number')
-    define(env, '*', lambda v1, v2: v1 * v2, 'number, number -> number')
-    define(env, '/', lambda v1, v2: v1 / v2, 'number, number -> number')
+    define(env, '+', lambda v1, v2: v1 + v2)
+    define(env, '-', lambda v1, v2: v1 - v2)
+    define(env, '*', lambda v1, v2: v1 * v2)
+    define(env, '/', lambda v1, v2: v1 / v2)
 
-    define(env, '<',  lambda v1, v2: v1 < v2,  'number, number -> bool')
-    define(env, '>',  lambda v1, v2: v1 > v2,  'number, number -> bool')
-    define(env, '<=', lambda v1, v2: v1 <= v2, 'number, number -> bool')
-    define(env, '>=', lambda v1, v2: v1 >= v2, 'number, number -> bool')
-    define(env, '=',  lambda v1, v2: v1 == v2, 'a, a -> bool')
-    define(env, '!=', lambda v1, v2: v1 != v2, 'a, a -> bool')
+    define(env, '<',  lambda v1, v2: v1 < v2)
+    define(env, '>',  lambda v1, v2: v1 > v2)
+    define(env, '<=', lambda v1, v2: v1 <= v2)
+    define(env, '>=', lambda v1, v2: v1 >= v2)
+    define(env, '=',  lambda v1, v2: v1 == v2)
+    define(env, '!=', lambda v1, v2: v1 != v2)
 
-    define(env, 'EQ',   lambda v1, v2: v1 == v2,        'bool, bool -> bool')
-    define(env, 'NEQ',  lambda v1, v2: v1 != v2,        'bool, bool -> bool')
-    define(env, 'XOR',  lambda v1, v2: v1 != v2,        'bool, bool -> bool')
-    define(env, 'AND',  lambda v1, v2: v1 and v2,       'bool, bool -> bool')
-    define(env, 'OR',   lambda v1, v2: v1 or v2,        'bool, bool -> bool')
-    define(env, 'NAND', lambda v1, v2: not (v1 and v2), 'bool, bool -> bool')
-    define(env, 'NOR',  lambda v1, v2: not (v1 or v2),  'bool, bool -> bool')
-    define(env, 'IMP',  lambda v1, v2: not v1 or v2,    'bool, bool -> bool')
-    define(env, 'NOT',  lambda v1: not v1,              'bool -> bool')
+    define(env, 'EQ',   lambda v1, v2: v1 == v2)
+    define(env, 'NEQ',  lambda v1, v2: v1 != v2)
+    define(env, 'XOR',  lambda v1, v2: v1 != v2)
+    define(env, 'AND',  lambda v1, v2: v1 and v2)
+    define(env, 'OR',   lambda v1, v2: v1 or v2)
+    define(env, 'NAND', lambda v1, v2: not (v1 and v2))
+    define(env, 'NOR',  lambda v1, v2: not (v1 or v2))
+    define(env, 'IMP',  lambda v1, v2: not v1 or v2)
+    define(env, 'NOT',  lambda v1: not v1)
 
-    define(env, 'list', make_list, 'a... -> list[a]')
-    define(env, 'cons', lambda v1, v2: (v1, v2), 'a, list[a] -> list[a]')
-    define(env, 'nil',  (),        'list[a]')
-    define(env, 'head', head,      'list[a] -> a')
-    define(env, 'tail', tail,      'list[a] -> list[a]')
+    define(env, 'list', make_list)
+    define(env, 'cons', lambda v1, v2: (v1, v2))
+    define(env, 'nil',  ())
+    define(env, 'head', head)
+    define(env, 'tail', tail)
 
-    define(env, 'array', make_array,                 'a... -> array[a]')
-    define(env, '[]',    lambda v1, v2: v1[int(v2)], 'array[a], number -> a')
+    define(env, 'array', make_array)
+    define(env, '[]',    lambda v1, v2: v1[int(v2)])
 
     if args.file:
         with (open(args.file, 'r') as f):
             inp = f.read()
             expr = parse_expr(inp)
-            infer_type(env, expr)
             eval(expr, env)
 
     if args.repl:
@@ -205,8 +200,6 @@ def main(args):
             try:
                 inp = input("> ")
                 expr = parse_expr(inp)
-                ty = infer_type(env, expr)
-                print(generalise(ty, env), end=': ')
                 res = eval(expr, env)
                 print(res)
             except (EOFError, KeyboardInterrupt):

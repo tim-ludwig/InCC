@@ -1,16 +1,14 @@
 from typing import Any
-from type_system.types import Type
 
 
 class Value:
-    def __init__(self, value: Any=None, type: Type=None, writeable=True):
+    def __init__(self, value: Any=None, writeable=True):
         self.value = value
-        self.type = type
         self.writeable = writeable
 
     def __str__(self):
-        return f'Value({str(self.value)}, t: {self.type})' if self.type else f'Value({str(self.value)})'
-    
+        return f'Value({str(self.value)})'
+
     def __repr__(self):
         return str(self)
 
@@ -48,17 +46,6 @@ class Environment:
 
     def pop(self):
         return self.parent
-
-    def free_type_vars(self):
-        v = set()
-
-        for val in self.vars.values():
-            v |= val.type.free_vars()
-
-        if self.parent:
-            v |= self.parent.free_type_vars()
-
-        return v
 
     def __str__(self):
         if self.parent:
