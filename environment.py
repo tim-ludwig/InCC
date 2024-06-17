@@ -1,16 +1,12 @@
-from typing import Any
+from collections import defaultdict
+from dataclasses import dataclass
+from typing import Any, Self
 
 
+@dataclass
 class Value:
-    def __init__(self, value: Any=None, writeable=True):
-        self.value = value
-        self.writeable = writeable
-
-    def __str__(self):
-        return f'Value({str(self.value)})'
-
-    def __repr__(self):
-        return str(self)
+    value: Any = None
+    writeable: bool = True
 
 
 class Environment:
