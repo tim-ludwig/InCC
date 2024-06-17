@@ -33,12 +33,13 @@ class Environment:
 
         return env.vars[name]
 
-    def create_local(self, *names: list[str]):
-        for name in names:
-            self.vars[name] = Value()
+    def push(self, *names):
+        env = Environment(self)
 
-    def push(self):
-        return Environment(self)
+        for name in names:
+            env.vars[name] = Value()
+
+        return env
 
     def pop(self):
         return self.parent

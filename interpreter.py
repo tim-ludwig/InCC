@@ -27,8 +27,7 @@ class Closure:
     rest_args: bool
 
     def __call__(self, *arg_values):
-        env = self.parent_env.push()
-        env.create_local(*self.arg_names)
+        env = self.parent_env.push(*self.arg_names)
 
         if self.rest_args:
             for i in range(len(self.arg_names) - 1):
@@ -71,8 +70,7 @@ def eval(expr: Expression, env: Environment):
             return eval(body, env)
 
         case LocalExpression(assignment, body):
-            env = env.push()
-            env.create_local(assignment.name)
+            env = env.push(assignment.name)
             eval(assignment, env)
             return eval(body, env)
 
@@ -121,8 +119,7 @@ def eval(expr: Expression, env: Environment):
         case StructExpression(initializers, parent_expr):
             parent = eval(parent_expr, env) if parent_expr else None
 
-            env = env.push()
-            env.create_local(*[init_expr.name for init_expr in initializers])
+            env = env.push(*[init_expr.name for init_expr in initializers])
 
             for init_expr in initializers:
                 eval(init_expr, env)
