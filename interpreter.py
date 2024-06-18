@@ -184,8 +184,8 @@ def define(env, name, val):
 
 
 def main(args):
-
     env = Environment()
+    
     define(env, '+', lambda v1, v2: v1 + v2)
     define(env, '-', lambda v1, v2: v1 - v2)
     define(env, '*', lambda v1, v2: v1 * v2)
@@ -232,13 +232,21 @@ def main(args):
                 print(res)
             except (EOFError, KeyboardInterrupt):
                 break
-            except TypeError as terr:
-                print(terr)
+            except Exception as e:
+                print(e)
+
+                if args.stop_on_error:
+                    break
 
 
 if __name__ == '__main__':
     argparser = argparse.ArgumentParser(prog='interpreter', description='Run the interpreter')
     argparser.add_argument('file', type=str, nargs='?', help='The file to interpret')
     argparser.add_argument('--repl', action='store_true', help='Run the interpreter in REPL mode')
+    argparser.add_argument('--stop-on-error', action='store_true', help='Stop the repl on error')
 
-    main(argparser.parse_args())
+    args = argparser.parse_args()
+    if args.stop_on_error and not args.repl:
+        argparser.error('--stop-on-error requires --repl')
+
+    main(args)
