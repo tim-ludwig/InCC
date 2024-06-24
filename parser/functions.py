@@ -22,20 +22,20 @@ def p_expression_lambda_(p):
 
 def p_expression_lambda(p):
     """
-    lambda_expression : RIGHT_ARROW expression
-                      | ident_list RIGHT_ARROW expression
+    lambda_expression : BACKSLASH RIGHT_ARROW expression
+                      | BACKSLASH ident_list RIGHT_ARROW expression
     """
-    if len(p) == 4:
-        p[0] = LambdaExpression(p[1], p[3])
+    if len(p) == 5:
+        p[0] = LambdaExpression(p[2], p[4])
     else:
-        p[0] = LambdaExpression([], p[2])
+        p[0] = LambdaExpression([], p[3])
 
 
 def p_expression_lambda_rest_arg(p):
     """
-    lambda_expression : ident_list TRIPLE_DOT RIGHT_ARROW expression
+    lambda_expression : BACKSLASH ident_list DOT DOT DOT RIGHT_ARROW expression
     """
-    p[0] = LambdaExpression(p[1], p[4], True)
+    p[0] = LambdaExpression(p[2], p[7], True)
 
 
 def p_expression_function(p):
@@ -51,15 +51,12 @@ def p_expression_function(p):
 def p_expr_list(p):
     """
     expr_list : expression
-              | IDENT
               | expression COMMA expr_list
-              | IDENT COMMA expr_list
     """
-    elem = p[1] if isinstance(p[1], Expression) else VariableExpression(p[1])
     if len(p) == 2:
-        p[0] = [elem]
+        p[0] = [p[1]]
     else:
-        p[0] = [elem, *p[3]]
+        p[0] = [p[1], *p[3]]
 
 
 def p_expression_call(p):
