@@ -1,15 +1,15 @@
 {
-    fun counter \v -> struct {
+    fun counter v -> struct {
         val := v;
         add := \x -> val := val + x
     };
 
-    fun better_counter \v -> extend counter(v) {
+    fun better_counter v -> extend counter(v) {
         inc := \ -> add(1);
         dec := \ -> add(-1)
     };
 
-    fun fact \x -> if x = 0 then 1 else x * fact(x - 1);
+    fun fact x -> if x = 0 then 1 else x * fact(x - 1);
 
     fac := local f := \x,res ->
         if x = 0 then {
@@ -19,11 +19,11 @@
         }
     in \x -> f(x, 1);
 
-    fun map \f,l ->
+    fun map f, l ->
         if l = nil then nil
         else cons(f(head(l)), map(f, tail(l)));
 
-    fun fold \v,f,l ->
+    fun fold v, f, l ->
         if l = nil then v
 	else f(head(l), fold(v, f, tail(l)));
 
