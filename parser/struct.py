@@ -32,9 +32,23 @@ def p_struct_extension(p):
     p[0] = StructExpression([] if len(p) == 5 else p[4], p[2])
 
 
+def p_dots(p):
+    """
+    dots : DOT
+         | DOT dots
+    """
+    if len(p) == 2:
+        p[0] = 0
+    else:
+        p[0] = 1 + p[2]
+
+
 def p_member_access(p):
     """
-    expression : DOT IDENT
-               | expression DOT IDENT
+    expression : dots IDENT
+               | expression dots IDENT
     """
-    p[0] = MemberAccessExpression(p[1], p[3]) if len(p) == 4 else MemberAccessExpression(None, p[2])
+    if len(p) == 3:
+        p[0] = MemberAccessExpression(None, p[2], p[1])
+    else:
+        p[0] = MemberAccessExpression(p[1], p[3], p[2])

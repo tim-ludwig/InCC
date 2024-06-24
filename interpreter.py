@@ -149,8 +149,11 @@ def eval(expr: Expression, env: Environment):
 
             return env.containing_struct
 
-        case MemberAccessExpression(expr, member):
+        case MemberAccessExpression(expr, member, up_count):
             struct = eval(expr, env) if expr else env.containing_struct
+
+            for _ in range(up_count):
+                struct = struct.parent
 
             if member not in struct:
                 raise KeyError(f'Unknown member {member}')

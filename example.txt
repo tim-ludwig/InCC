@@ -21,5 +21,8 @@
 
     fun map f, l ->
         if l = nil then nil
-        else cons(f(head(l)), map(f, tail(l)))
+        else cons(f(head(l)), map(f, tail(l)));
+
+    s := struct { a := 1 };
+    t := extend s { a := 2; f := -> .a; g := -> ..a }
 }

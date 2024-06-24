@@ -14,3 +14,4 @@ class StructExpression(Expression):
 class MemberAccessExpression(Expression):
     expr: Expression
     member: str
+    up_count: int
