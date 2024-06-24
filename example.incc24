@@ -27,8 +27,5 @@
         if l = nil then v
 	else f(head(l), fold(v, f, tail(l)));
 
-    filter := \f,l -> fold(nil, \h,r -> if f(h) then cons(h, r) else r, l);
-    
-    s := struct { a := 1 };
-    t := extend s { a := 2; f := \ -> .a; g := \ -> ..a }
+    fun filter f, l -> fold(nil, \h,r -> if f(h) then cons(h, r) else r, l)
 }
