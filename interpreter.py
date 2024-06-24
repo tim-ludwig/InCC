@@ -233,10 +233,10 @@ def main(args):
             except (EOFError, KeyboardInterrupt):
                 break
             except Exception as e:
-                print(e)
-
                 if args.stop_on_error:
-                    break
+                    raise e
+                else:
+                    print(e)
 
 
 if __name__ == '__main__':
