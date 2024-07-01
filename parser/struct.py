@@ -1,17 +1,10 @@
-from syntaxtree.struct import StructExpression, MemberAccessExpression
-
-
-def p_initializer_assign(p):
-    """
-    initializer : assign_expression
-    """
-    p[0] = p[1]
+from syntaxtree.struct import StructExpression, MemberAccessExpression, MemberAssignExpression
 
 
 def p_initializer_list(p):
     """
-    initializer_list : initializer
-                     | initializer SEMICOLON initializer_list
+    initializer_list : member_assign_expression
+                     | member_assign_expression SEMICOLON initializer_list
     """
     p[0] = [p[1]] if len(p) == 2 else [p[1], *p[3]]
 
@@ -52,3 +45,16 @@ def p_member_access(p):
         p[0] = MemberAccessExpression(None, p[2], p[1])
     else:
         p[0] = MemberAccessExpression(p[1], p[3], p[2])
+
+
+def p_member_assign(p):
+    """
+    expression : member_assign_expression
+    member_assign_expression : dots IDENT ASSIGN expression
+    """
+    if len(p) == 2:
+        p[0] = p[1]
+    else:
+        if p[1] != 0:
+            raise SyntaxError(f"Syntax error at token '.'")
+        p[0] = MemberAssignExpression(p[2], p[4])
