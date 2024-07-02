@@ -12,6 +12,7 @@ class Value:
 class Environment:
     def __init__(self, parent=None):
         self.parent = parent
+        self.containing_struct = parent.containing_struct if parent else None
         self.vars = {}
 
     def __contains__(self, name):

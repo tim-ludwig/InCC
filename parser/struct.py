@@ -1,5 +1,5 @@
 from syntaxtree.functions import LambdaExpression
-from syntaxtree.struct import StructExpression, MemberAccessExpression, MemberAssignExpression
+from syntaxtree.struct import StructExpression, MemberAccessExpression, MemberAssignExpression, ThisExpression
 from syntaxtree.variables import VariableExpression
 
 
@@ -58,7 +58,7 @@ def p_member_access(p):
                | expression dots IDENT
     """
     if len(p) == 3:
-        p[0] = MemberAccessExpression(None, p[2], p[1])
+        p[0] = MemberAccessExpression(ThisExpression(), p[2], p[1])
     else:
         p[0] = MemberAccessExpression(p[1], p[3], p[2])
 
@@ -75,3 +75,10 @@ def p_member_assign(p):
             raise SyntaxError(f"Syntax error at token '.'")
 
         p[0] = MemberAssignExpression(p[2], p[4])
+
+
+def p_this(p):
+    """
+    expression : THIS
+    """
+    p[0] = ThisExpression()

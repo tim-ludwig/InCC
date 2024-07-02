@@ -21,3 +21,8 @@ class MemberAccessExpression(Expression):
 class MemberAssignExpression(Expression):
     name: str
     expr: Expression
+
+
+@dataclass
+class ThisExpression(Expression):
+    pass

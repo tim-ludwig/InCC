@@ -13,7 +13,7 @@ from syntaxtree.controlflow import LoopExpression, WhileExpression, DoWhileExpre
 from syntaxtree.literals import NumberLiteral, BoolLiteral, StringLiteral, CharLiteral, ArrayLiteral
 from syntaxtree.functions import LambdaExpression, CallExpression
 from syntaxtree.sequences import SequenceExpression
-from syntaxtree.struct import StructExpression, MemberAccessExpression, MemberAssignExpression
+from syntaxtree.struct import StructExpression, MemberAccessExpression, MemberAssignExpression, ThisExpression
 
 from syntaxtree.syntaxtree import Expression
 from syntaxtree.variables import AssignExpression, VariableExpression, LockExpression, LocalExpression
@@ -22,7 +22,6 @@ from syntaxtree.variables import AssignExpression, VariableExpression, LockExpre
 @dataclass
 class Closure:
     parent_env: Environment
-    containing_struct: Environment
     arg_names: list[str]
     body: Expression
     rest_args: bool
@@ -39,22 +38,22 @@ class Closure:
             for arg_name, arg_value in zip(self.arg_names, arg_values):
                 env[arg_name].value = arg_value
 
-        return eval(self.body, env, self.containing_struct)
+        return eval(self.body, env)
 
     def __str__(self):
         return f'fun'
 
 
-def eval(expr: Expression, env: Environment, containing_struct: Environment):
+def eval(expr: Expression, env: Environment):
     match expr:
         case NumberLiteral(value): return float(value)
         case BoolLiteral(value): return value == 'TRUE'
         case StringLiteral(value): return value
         case CharLiteral(value): return value
-        case ArrayLiteral(elements): return make_array(*[eval(elem, env, containing_struct) for elem in elements])
+        case ArrayLiteral(elements): return make_array(*[eval(elem, env) for elem in elements])
 
         case AssignExpression(name, expression):
-            res = eval(expression, env, containing_struct)
+            res = eval(expression, env)
             env[name].value = res
             return res
 
@@ -65,70 +64,72 @@ def eval(expr: Expression, env: Environment, containing_struct: Environment):
             return env[name].value
 
         case LockExpression(_, body):
-            return eval(body, env, containing_struct)
+            return eval(body, env)
 
         case LocalExpression(assignment, body):
             env = env.push(assignment.name)
-            eval(assignment, env, containing_struct)
-            return eval(body, env, containing_struct)
+            eval(assignment, env)
+            return eval(body, env)
 
         case SequenceExpression(expressions):
             result = None
             for expression in expressions:
-                result = eval(expression, env, containing_struct)
+                result = eval(expression, env)
             return result
 
         case LoopExpression(count, body):
-            n = int(eval(count, env, containing_struct))
+            n = int(eval(count, env))
 
             result = None
             for _ in range(n):
-                result = eval(body, env, containing_struct)
+                result = eval(body, env)
             return result
 
         case WhileExpression(condition, body):
             result = None
-            while eval(condition, env, containing_struct):
-                result = eval(body, env, containing_struct)
+            while eval(condition, env):
+                result = eval(body, env)
             return result
 
         case DoWhileExpression(condition, body):
-            result = eval(body, env, containing_struct)
-            while eval(condition, env, containing_struct):
-                result = eval(body, env, containing_struct)
+            result = eval(body, env)
+            while eval(condition, env):
+                result = eval(body, env)
             return result
 
         case IfExpression(condition, then_body, else_body):
-            if eval(condition, env, containing_struct):
-                return eval(then_body, env, containing_struct)
+            if eval(condition, env):
+                return eval(then_body, env)
             elif else_body:
-                return eval(else_body, env, containing_struct)
+                return eval(else_body, env)
             else:
                 return None
 
         case LambdaExpression(arg_names, body, rest_args):
-            return Closure(env, containing_struct, arg_names, body, rest_args)
+            return Closure(env, arg_names, body, rest_args)
 
         case CallExpression(f, arg_exprs):
-            callable = eval(f, env, containing_struct)
-            arg_values = [eval(arg_expr, env, containing_struct) for arg_expr in arg_exprs]
+            callable = eval(f, env)
+            arg_values = [eval(arg_expr, env) for arg_expr in arg_exprs]
             return callable(*arg_values)
 
         case StructExpression(initializers, parent_expr):
             if parent_expr:
-                struct = eval(parent_expr, env, containing_struct).push()
+                struct = eval(parent_expr, env).push()
             else:
                 struct = Environment()
 
             struct.vars = {init_expr.name: Value() for init_expr in initializers}
+            env = env.push()
+            env.containing_struct = struct
 
             for init_expr in initializers:
-                eval(init_expr, env, struct)
+                eval(init_expr, env)
 
             return struct
 
         case MemberAccessExpression(expr, member, up_count):
-            struct = eval(expr, env, containing_struct) if expr else containing_struct
+            struct = eval(expr, env)
 
             for _ in range(up_count):
                 struct = struct.parent
@@ -139,12 +140,15 @@ def eval(expr: Expression, env: Environment, containing_struct: Environment):
             return struct[member].value
 
         case MemberAssignExpression(member, expr):
-            if not containing_struct or member not in containing_struct:
+            if not env.containing_struct or member not in env.containing_struct:
                 raise KeyError(f'Unknown member {member}')
 
-            val = eval(expr, env, containing_struct)
-            containing_struct[member].value = val
+            val = eval(expr, env)
+            env.containing_struct[member].value = val
             return val
+
+        case ThisExpression():
+            return env.containing_struct
 
         case _:
             raise NotImplementedError(expr)
@@ -213,14 +217,14 @@ def main(args):
             inp = f.read()
             print(inp)
             expr = parse_expr(inp)
-            eval(expr, env, None)
+            eval(expr, env)
 
     if args.repl:
         while True:
             try:
                 inp = input("> ")
                 expr = parse_expr(inp)
-                res = eval(expr, env, None)
+                res = eval(expr, env)
                 print(res)
             except (EOFError, KeyboardInterrupt):
                 break
