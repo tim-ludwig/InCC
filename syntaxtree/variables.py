@@ -15,11 +15,11 @@ class VariableExpression(Expression):
 
 @dataclass
 class LockExpression(Expression):
-    name: str
+    names: list[str]
     body: Expression
 
 
 @dataclass
 class LocalExpression(Expression):
-    assignment: AssignExpression
+    assignments: list[AssignExpression]
     body: Expression

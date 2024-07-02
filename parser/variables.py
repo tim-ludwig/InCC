@@ -16,15 +16,26 @@ def p_expression_assign(p):
     p[0] = p[1] if len(p) == 2 else AssignExpression(p[1], p[3])
 
 
+def p_assignment_list(p):
+    """
+    assignment_list : assign_expression
+                    | assign_expression COMMA assignment_list
+    """
+    if len(p) == 2:
+        p[0] = [p[1]]
+    else:
+        p[0] = [p[1], *p[3]]
+
+
 def p_lock(p):
     """
-    expression : LOCK IDENT IN expression
+    expression : LOCK ident_list IN expression
     """
     p[0] = LockExpression(p[2], p[4])
 
 
 def p_let(p):
     """
-    expression : LOCAL assign_expression IN expression
+    expression : LOCAL assignment_list IN expression
     """
     p[0] = LocalExpression(p[2], p[4])

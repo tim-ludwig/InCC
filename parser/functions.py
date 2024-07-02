@@ -55,7 +55,7 @@ def p_expression_function(p):
         case 9:
             lmbd_expr = LambdaExpression(p[3], p[8], True)
 
-    local_expr = LocalExpression(AssignExpression(p[2], lmbd_expr), VariableExpression(p[2]))
+    local_expr = LocalExpression([AssignExpression(p[2], lmbd_expr)], VariableExpression(p[2]))
 
     p[0] = AssignExpression(p[2], local_expr)
 
