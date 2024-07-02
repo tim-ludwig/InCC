@@ -2,7 +2,7 @@ struct_tokens = {
     'DOT'
 }
 struct_reserved_words = {
-    'STRUCT', 'EXTEND'
+    'STRUCT', 'EXTEND', 'SET'
 }
 
 t_DOT = r'\.'

@@ -1,12 +1,28 @@
+from syntaxtree.functions import LambdaExpression
 from syntaxtree.struct import StructExpression, MemberAccessExpression, MemberAssignExpression
+from syntaxtree.variables import VariableExpression
 
 
 def p_initializer_list(p):
     """
-    initializer_list : member_assign_expression
-                     | member_assign_expression SEMICOLON initializer_list
+    initializer_list : initializer
+                     | initializer SEMICOLON initializer_list
     """
-    p[0] = [p[1]] if len(p) == 2 else [p[1], *p[3]]
+    p[0] = p[1] if len(p) == 2 else [*p[1], *p[3]]
+
+
+def p_initializer(p):
+    """
+    initializer : member_assign_expression
+                | SET member_assign_expression
+    """
+    if len(p) == 2:
+        p[0] = [p[1]]
+    else:
+        x = p[2].name
+        name = f'set_{x}'
+        set_lmbd = LambdaExpression([x], MemberAssignExpression(x, VariableExpression(x)))
+        p[0] = [p[2], MemberAssignExpression(name, set_lmbd)]
 
 
 def p_expr_struct(p):
@@ -57,4 +73,5 @@ def p_member_assign(p):
     else:
         if p[1] != 0:
             raise SyntaxError(f"Syntax error at token '.'")
+
         p[0] = MemberAssignExpression(p[2], p[4])

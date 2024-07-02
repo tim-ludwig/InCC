@@ -25,18 +25,18 @@
   };
   print(r.g()); #3
   r.h(5);
-  print(r.g()) #5
+  print(r.g()); #5
 
   # optional:
-#  {
-#    a := struct {
-#      set .x := 1;
-##     .set_x := \x -> .x := x; # generated
-#      .y := 2
-#    };
-#    a.set_x(5); # allowed
-##   a.set_y(2); #! disallowed, set_y not generated
-#    a.x; #5, allowed
-#    a.y #2, allowed
-#  }
+  {
+    a := struct {
+      set .x := 1;
+#     .set_x := \x -> .x := x; # generated
+      .y := 2
+    };
+    a.set_x(5); # allowed
+#   a.set_y(2); #! disallowed, set_y not generated
+    print(a.x); #5, allowed
+    print(a.y) #2, allowed
+  }
 }
