@@ -12,6 +12,7 @@ from parser.parser import parse_expr
 from syntaxtree.controlflow import LoopExpression, WhileExpression, DoWhileExpression, IfExpression
 from syntaxtree.literals import NumberLiteral, BoolLiteral, StringLiteral, CharLiteral, ArrayLiteral
 from syntaxtree.functions import LambdaExpression, CallExpression
+from syntaxtree.operators import OperatorExpression
 from syntaxtree.sequences import SequenceExpression
 from syntaxtree.struct import StructExpression, MemberAccessExpression, MemberAssignExpression, ThisExpression
 
@@ -51,6 +52,10 @@ def eval(expr: Expression, env: Environment):
         case StringLiteral(value): return value
         case CharLiteral(value): return value
         case ArrayLiteral(elements): return make_array(*[eval(elem, env) for elem in elements])
+
+        case OperatorExpression(operator, operands):
+            operand_values = [eval(operand_exp, env) for operand_exp in operands]
+            return env[operator].value[len(operands)](*operand_values)
 
         case AssignExpression(name, expression):
             res = eval(expression, env)
@@ -182,27 +187,27 @@ def define(env, name, val):
 def main(args):
     env = Environment()
     
-    define(env, '+', lambda v1, v2: v1 + v2)
-    define(env, '-', lambda v1, v2: v1 - v2)
-    define(env, '*', lambda v1, v2: v1 * v2)
-    define(env, '/', lambda v1, v2: v1 / v2)
+    define(env, '+', {2: lambda v1, v2: v1 + v2, 1: lambda v: +v})
+    define(env, '-', {2: lambda v1, v2: v1 - v2, 1: lambda v: -v})
+    define(env, '*', {2: lambda v1, v2: v1 * v2})
+    define(env, '/', {2: lambda v1, v2: v1 / v2})
 
-    define(env, '<',  lambda v1, v2: v1 < v2)
-    define(env, '>',  lambda v1, v2: v1 > v2)
-    define(env, '<=', lambda v1, v2: v1 <= v2)
-    define(env, '>=', lambda v1, v2: v1 >= v2)
-    define(env, '=',  lambda v1, v2: v1 == v2)
-    define(env, '!=', lambda v1, v2: v1 != v2)
+    define(env, '<',  {2: lambda v1, v2: v1 < v2})
+    define(env, '>',  {2: lambda v1, v2: v1 > v2})
+    define(env, '<=', {2: lambda v1, v2: v1 <= v2})
+    define(env, '>=', {2: lambda v1, v2: v1 >= v2})
+    define(env, '=',  {2: lambda v1, v2: v1 == v2})
+    define(env, '!=', {2: lambda v1, v2: v1 != v2})
 
-    define(env, 'EQ',   lambda v1, v2: v1 == v2)
-    define(env, 'NEQ',  lambda v1, v2: v1 != v2)
-    define(env, 'XOR',  lambda v1, v2: v1 != v2)
-    define(env, 'AND',  lambda v1, v2: v1 and v2)
-    define(env, 'OR',   lambda v1, v2: v1 or v2)
-    define(env, 'NAND', lambda v1, v2: not (v1 and v2))
-    define(env, 'NOR',  lambda v1, v2: not (v1 or v2))
-    define(env, 'IMP',  lambda v1, v2: not v1 or v2)
-    define(env, 'NOT',  lambda v1: not v1)
+    define(env, 'EQ',   {2: lambda v1, v2: v1 == v2})
+    define(env, 'NEQ',  {2: lambda v1, v2: v1 != v2})
+    define(env, 'XOR',  {2: lambda v1, v2: v1 != v2})
+    define(env, 'AND',  {2: lambda v1, v2: v1 and v2})
+    define(env, 'OR',   {2: lambda v1, v2: v1 or v2})
+    define(env, 'NAND', {2: lambda v1, v2: not (v1 and v2)})
+    define(env, 'NOR',  {2: lambda v1, v2: not (v1 or v2)})
+    define(env, 'IMP',  {2: lambda v1, v2: not v1 or v2})
+    define(env, 'NOT',  {1: lambda v1: not v1})
 
     define(env, 'list', make_list)
     define(env, 'cons', lambda v1, v2: (v1, v2))
@@ -211,7 +216,7 @@ def main(args):
     define(env, 'tail', tail)
 
     define(env, 'array', make_array)
-    define(env, '[]',    lambda v1, v2: v1[int(v2)])
+    define(env, '[]',    {2: lambda v1, v2: v1[int(v2)]})
 
     define(env, 'print', lambda v: print(v))
 
