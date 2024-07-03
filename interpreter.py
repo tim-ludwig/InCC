@@ -143,11 +143,11 @@ def eval(expr: Expression, env: Environment):
             return struct[member].value
 
         case MemberAssignExpression(member, expr):
-            if not env.containing_struct or member not in env.containing_struct:
+            if not env.containing_struct or member not in env.containing_struct.vars:
                 raise KeyError(f'Unknown member {member}')
 
             val = eval(expr, env)
-            env.containing_struct[member].value = val
+            env.containing_struct.vars[member].value = val
             return val
 
         case ThisExpression():

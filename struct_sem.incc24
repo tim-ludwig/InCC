@@ -27,6 +27,15 @@
   r.h(5);
   print(r.g()); #5
 
+  # hinzugefügt: assign member of parent not known in child
+  u := struct {
+    .x := 1
+  };
+  v := extend u {
+    .set_x := \x -> .x := x
+  };
+# v.set_x(5); #!disallowed
+
   # optional:
   {
     a := struct {
