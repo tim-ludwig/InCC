@@ -9,7 +9,7 @@
 #   .set_px := \x -> ..x := x; #! disallowed
     .set_px := \x -> ..set_x(x);
     .set_x := \x -> .x := x
-  };
+  }
   t.set_x(2);
   print(t.x); #2
   print(t..x); #7
@@ -35,6 +35,17 @@
     .set_x := \x -> .x := x
   };
 # v.set_x(5); #!disallowed
+
+  w := struct {
+    .f := \ -> print("outer.f");
+    .inner := (\outer -> struct {
+      .f := \ -> print("inner.f");
+      .g := \ -> outer.f()
+    })(this)
+  };
+  w.f();
+  w.inner.f();
+  w.inner.g();
 
   # optional:
   {
