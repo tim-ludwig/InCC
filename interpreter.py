@@ -218,7 +218,7 @@ def main(args):
     define(env, '>',  {2: lambda v1, v2: v1 > v2})
     define(env, '<=', {2: lambda v1, v2: v1 <= v2})
     define(env, '>=', {2: lambda v1, v2: v1 >= v2})
-    define(env, '=',  {2: lambda v1, v2: v1 == v2})
+    define(env, '==',  {2: lambda v1, v2: v1 == v2})
     define(env, '!=', {2: lambda v1, v2: v1 != v2})
 
     define(env, 'EQ',   {2: lambda v1, v2: v1 == v2})

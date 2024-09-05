@@ -6,4 +6,4 @@ var_reserved_words = {
 }
 
 
-t_ASSIGN = ':='
+t_ASSIGN = '='
