@@ -56,4 +56,8 @@ t_ignore = ' \t'
 t_ignore_COMMENT = r'\#.*'
 
 
-lexer = lex.lex()
+def make_incc24_lexer():
+    return lex.lex()
+
+
+lexer = make_incc24_lexer()

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from lexer.lexer import make_incc24_lexer
 from parser import parser # type: ignore
 
 from environment import Environment, Value
@@ -181,6 +182,30 @@ def define(env, name, val):
     env[name].value = val
 
 
+def wrap_lexer(lexer):
+    lexer_struct = Environment()
+
+    def lexer_input(s):
+        lexer.input(s)
+
+    def wrap_token(t):
+        token_struct = Environment()
+        define(token_struct, 'type', t.type)
+        define(token_struct, 'value', t.value)
+        define(token_struct, 'lineno', t.lineno)
+        define(token_struct, 'lexpos', t.lexpos)
+        return token_struct
+
+    def lexer_token():
+        return wrap_token(lexer.token())
+
+
+    define(lexer_struct, 'input', lexer_input)
+    define(lexer_struct, 'token', lexer_token)
+
+    return lexer_struct
+
+
 def main(args):
     env = Environment()
     
@@ -216,6 +241,8 @@ def main(args):
     define(env, '[]',    {2: lambda v1, v2: v1[int(v2)]})
 
     define(env, 'print', lambda v: print(v))
+
+    define(env, 'make_incc24_lexer', lambda: wrap_lexer(make_incc24_lexer()))
 
     if args.file:
         with (open(args.file, 'r') as f):
