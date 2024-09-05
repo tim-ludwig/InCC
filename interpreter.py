@@ -1,7 +1,4 @@
-import argparse
-import sys
 from dataclasses import dataclass
-from typing import Self
 
 import numpy as np
 
@@ -241,16 +238,3 @@ def main(args):
                     raise e
                 else:
                     print(e)
-
-
-if __name__ == '__main__':
-    argparser = argparse.ArgumentParser(prog='interpreter', description='Run the interpreter')
-    argparser.add_argument('file', type=str, nargs='?', help='The file to interpret')
-    argparser.add_argument('--repl', action='store_true', help='Run the interpreter in REPL mode')
-    argparser.add_argument('--stop-on-error', action='store_true', help='Stop the repl on error')
-
-    args = argparser.parse_args()
-    if args.stop_on_error and not args.repl:
-        argparser.error('--stop-on-error requires --repl')
-
-    main(args)
