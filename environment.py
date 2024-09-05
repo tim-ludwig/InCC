@@ -25,11 +25,10 @@ class Environment:
 
     def __getitem__(self, name):
         env = self
-        while env is not None and name not in env.vars:
+        while env.parent is not None and name not in env.vars:
             env = env.parent
 
-        if env is None:
-            env = self
+        if name not in env.vars:
             env.vars[name] = Value()
 
         return env.vars[name]
