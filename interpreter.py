@@ -254,9 +254,9 @@ def main(args):
     if args.file:
         with (open(args.file, 'r') as f):
             inp = f.read()
-            print(inp)
             expr = parse_expr(inp)
-            eval(expr, env)
+            res = eval(expr, env)
+            print(res)
 
     if args.repl:
         while True:
