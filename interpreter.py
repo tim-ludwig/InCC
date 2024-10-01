@@ -9,7 +9,7 @@ from environment import Environment, Value
 from parser.parser import parse_expr
 from syntaxtree.controlflow import LoopExpression, WhileExpression, DoWhileExpression, IfExpression
 from syntaxtree.literals import NumberLiteral, BoolLiteral, StringLiteral, CharLiteral, ArrayLiteral
-from syntaxtree.functions import LambdaExpression, CallExpression
+from syntaxtree.functions import LambdaExpression, CallExpression, ProcedureExpression
 from syntaxtree.operators import OperatorExpression
 from syntaxtree.sequences import SequenceExpression
 from syntaxtree.struct import StructExpression, MemberAccessExpression, MemberAssignExpression, ThisExpression
@@ -24,9 +24,13 @@ class Closure:
     arg_names: list[str]
     body: Expression
     rest_args: bool
+    local_names: list[str] = None
 
     def __call__(self, *arg_values):
-        env = self.parent_env.push(*self.arg_names)
+        if self.local_names is None:
+            env = self.parent_env.push(*self.arg_names)
+        else:
+            env = self.parent_env.push(*self.arg_names, *self.local_names)
 
         if self.rest_args:
             for i in range(len(self.arg_names) - 1):
@@ -113,6 +117,9 @@ def eval(expr: Expression, env: Environment):
 
         case LambdaExpression(arg_names, body, rest_args):
             return Closure(env, arg_names, body, rest_args)
+
+        case ProcedureExpression(arg_names, local_names, body):
+            return Closure(env.root(), arg_names, body, False, local_names)
 
         case CallExpression(f, arg_exprs):
             callable = eval(f, env)

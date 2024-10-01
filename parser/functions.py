@@ -60,6 +60,34 @@ def p_expression_function(p):
     p[0] = AssignExpression(p[2], local_expr)
 
 
+def p_expression_proc0(p):
+    """
+    expression : PROC LPAREN ident_list RPAREN ident_list RIGHT_ARROW expression
+    """
+    p[0] = ProcedureExpression(p[3], p[5], p[7])
+
+
+def p_expression_proc1(p):
+    """
+    expression : PROC LPAREN RPAREN ident_list RIGHT_ARROW expression
+    """
+    p[0] = ProcedureExpression([], p[4], p[6])
+
+
+def p_expression_proc2(p):
+    """
+    expression : PROC LPAREN ident_list RPAREN RIGHT_ARROW expression
+    """
+    p[0] = ProcedureExpression(p[3], [], p[6])
+
+
+def p_expression_proc3(p):
+    """
+    expression : PROC LPAREN RPAREN RIGHT_ARROW expression
+    """
+    p[0] = ProcedureExpression([], [], p[5])
+
+
 def p_expression_call(p):
     """
     expression : expression LPAREN RPAREN

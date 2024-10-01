@@ -17,6 +17,13 @@ class FunctionExpression(Expression):
 
 
 @dataclass
+class ProcedureExpression(Expression):
+    arg_names: list[str]
+    local_names: list[str]
+    body: Expression
+
+
+@dataclass
 class CallExpression(Expression):
     f: Expression
     arg_exprs: list[Expression]

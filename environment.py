@@ -44,6 +44,14 @@ class Environment:
     def pop(self):
         return self.parent
 
+    def root(self):
+        env = self
+
+        while env.parent is not None:
+            env = env.parent
+
+        return env
+
     def __str__(self):
         if self.parent:
             return str(self.parent) + str(self.vars)
