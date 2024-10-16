@@ -1,8 +1,9 @@
-#! python3
+#! python
 
 import argparse
 
-import interpreter
+from interpreter import interpreter
+from compiler import compiler
 
 if __name__ == '__main__':
     argparser = argparse.ArgumentParser(prog='InCC24', description='CLI tool for the InCC24 language')
@@ -16,6 +17,8 @@ if __name__ == '__main__':
 
     action_compile = subparsers.add_parser('compile', help='run the compiler', aliases=['c'])
     action_compile.add_argument('file', type=str, help='The file to compile')
+    action_compile.add_argument('-o', dest='outfile', type=str, default='-', help='Set output file. - for stdout')
+    action_compile.add_argument('--emit', '-e', choices=['ir', 'asm', 'obj', 'exe'], help='Determine output stage. If unspecified, output stage is determined by type of output file.')
 
     args = argparser.parse_args()
 
@@ -27,4 +30,7 @@ if __name__ == '__main__':
             interpreter.main(args)
 
         case 'compile' | 'c':
-            argparser.error('not yet implemented')
+            if args.outfile == '-' and args.emit is None:
+                argparser.error('writing to stdout requires --emit')
+
+            compiler.main(args)

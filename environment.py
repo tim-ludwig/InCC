@@ -7,6 +7,9 @@ from typing import Any, Self
 class Value:
     value: Any = None
     writeable: bool = True
+    addr: int = None
+    scope: str = None
+    size: int = None
 
 
 class Environment:
@@ -51,6 +54,9 @@ class Environment:
             env = env.parent
 
         return env
+
+    def total_size(self):
+        return sum(val.size for val in self.vars.values())
 
     def __str__(self):
         if self.parent:
