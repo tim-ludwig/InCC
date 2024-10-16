@@ -3,14 +3,13 @@ from dataclasses import dataclass
 import numpy as np
 
 from lexer.lexer import make_incc24_lexer
-from parser import parser # type: ignore
 
 from environment import Environment, Value
 from parser.parser import parse_expr
 from syntaxtree.controlflow import LoopExpression, WhileExpression, DoWhileExpression, IfExpression
 from syntaxtree.literals import NumberLiteral, BoolLiteral, StringLiteral, CharLiteral, ArrayLiteral
 from syntaxtree.functions import LambdaExpression, CallExpression, ProcedureExpression
-from syntaxtree.operators import OperatorExpression
+from syntaxtree.operators import BinaryOperatorExpression, UnaryOperatorExpression
 from syntaxtree.sequences import SequenceExpression
 from syntaxtree.struct import StructExpression, MemberAccessExpression, MemberAssignExpression, ThisExpression
 
@@ -55,9 +54,38 @@ def eval(expr: Expression, env: Environment):
         case CharLiteral(value): return value
         case ArrayLiteral(elements): return make_array(*[eval(elem, env) for elem in elements])
 
-        case OperatorExpression(operator, operands):
-            operand_values = [eval(operand_exp, env) for operand_exp in operands]
-            return env[operator].value[len(operands)](*operand_values)
+        case UnaryOperatorExpression(operator, operand):
+            val = eval(operand, env)
+
+            match operator:
+                case '+': return +val
+                case '-' : return -val
+                case 'NOT': return not val
+
+        case BinaryOperatorExpression(operator, operands):
+            val0 = eval(operands[0], env)
+            val1 = eval(operands[1], env)
+
+            match operator:
+                case '+': return val0 + val1
+                case '-': return val0 - val1
+                case '*': return val0 * val1
+                case '/': return val0 / val1
+                case '<': return val0 < val1
+                case '>': return val0 > val1
+                case '<=': return val0 <= val1
+                case '>=': return val0 >= val1
+                case '==': return val0 == val1
+                case '!=': return val0 != val1
+                case 'EQ': return val0 == val1
+                case 'NEQ': return val0 != val1
+                case 'XOR': return val0 != val1
+                case 'AND': return val0 and val1
+                case 'OR': return val0 or val1
+                case 'NAND': return not (val0 and val1)
+                case 'NOR': return not (val0 or val1)
+                case 'IMP': return not val0 or val1
+                case '[]': return val0[int(val1)]
 
         case AssignExpression(name, expression):
             res = eval(expression, env)
@@ -215,28 +243,6 @@ def wrap_lexer(lexer):
 
 def main(args):
     env = Environment()
-    
-    define(env, '+', {2: lambda v1, v2: v1 + v2, 1: lambda v: +v})
-    define(env, '-', {2: lambda v1, v2: v1 - v2, 1: lambda v: -v})
-    define(env, '*', {2: lambda v1, v2: v1 * v2})
-    define(env, '/', {2: lambda v1, v2: v1 / v2})
-
-    define(env, '<',  {2: lambda v1, v2: v1 < v2})
-    define(env, '>',  {2: lambda v1, v2: v1 > v2})
-    define(env, '<=', {2: lambda v1, v2: v1 <= v2})
-    define(env, '>=', {2: lambda v1, v2: v1 >= v2})
-    define(env, '==',  {2: lambda v1, v2: v1 == v2})
-    define(env, '!=', {2: lambda v1, v2: v1 != v2})
-
-    define(env, 'EQ',   {2: lambda v1, v2: v1 == v2})
-    define(env, 'NEQ',  {2: lambda v1, v2: v1 != v2})
-    define(env, 'XOR',  {2: lambda v1, v2: v1 != v2})
-    define(env, 'AND',  {2: lambda v1, v2: v1 and v2})
-    define(env, 'OR',   {2: lambda v1, v2: v1 or v2})
-    define(env, 'NAND', {2: lambda v1, v2: not (v1 and v2)})
-    define(env, 'NOR',  {2: lambda v1, v2: not (v1 or v2)})
-    define(env, 'IMP',  {2: lambda v1, v2: not v1 or v2})
-    define(env, 'NOT',  {1: lambda v1: not v1})
 
     define(env, 'list', make_list)
     define(env, 'cons', lambda v1, v2: (v1, v2))
@@ -245,7 +251,6 @@ def main(args):
     define(env, 'tail', tail)
 
     define(env, 'array', make_array)
-    define(env, '[]',    {2: lambda v1, v2: v1[int(v2)]})
 
     define(env, 'print', lambda v: print(v))
 
