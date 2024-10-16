@@ -13,7 +13,7 @@ def p_expression_assign(p):
     expression : assign_expression
     assign_expression : IDENT ASSIGN expression
     """
-    p[0] = p[1] if len(p) == 2 else AssignExpression(p[1], p[3])
+    p[0] = p[1] if len(p) == 2 else AssignExpression(VariableExpression(p[1]), p[3])
 
 
 def p_assignment_list(p):

@@ -87,9 +87,9 @@ def eval(expr: Expression, env: Environment):
                 case 'IMP': return not val0 or val1
                 case '[]': return val0[int(val1)]
 
-        case AssignExpression(name, expression):
+        case AssignExpression(var, expression):
             res = eval(expression, env)
-            env[name].value = res
+            env[var.name].value = res
             return res
 
         case VariableExpression(name):

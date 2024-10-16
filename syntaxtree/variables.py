@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 @dataclass
 class AssignExpression(Expression):
-    name: str
+    var: Expression
     expression: Expression
 
 

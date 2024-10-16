@@ -10,6 +10,7 @@ from syntaxtree.operators import BinaryOperatorExpression, UnaryOperatorExpressi
 from syntaxtree.sequences import SequenceExpression
 from syntaxtree.variables import AssignExpression, VariableExpression
 
+
 unop_inst = {
     '-': ('neg',)
 }
@@ -45,9 +46,7 @@ def code_r(expr, env):
                 *code_r(operands[1], env),
                 binop_inst[operator],
             ]
-
-        
-        case AssignExpression(name, expr):
+        case AssignExpression(VariableExpression(name) as var, expr):
             if name not in env:
                 env[name].address = make_global(8)
                 env[name].scope = 'global'
@@ -55,12 +54,12 @@ def code_r(expr, env):
 
             return [
                 *code_r(expr, env),
-                ('loadc', str(env[name].address)),
+                *code_l(var, env),
                 ('store',)
             ]
-        case VariableExpression(name):
+        case VariableExpression(name) as var:
             return [
-                ('loadc', str(env[name].address)),
+                *code_l(var, env),
                 ('load',)
             ]
         case SequenceExpression(exprs):
@@ -79,6 +78,10 @@ def code(expr, env):
 
 def code_l(expr, env):
     match expr:
+        case VariableExpression(name):
+            return [
+                ('loadc', str(env[name].address)),
+            ]
         case _:
             raise NotImplementedError(expr)
 
