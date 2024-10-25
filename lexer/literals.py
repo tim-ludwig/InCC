@@ -5,7 +5,7 @@ lit_reserved_words = {
     'TRUE', 'FALSE'
 }
 
-t_NUMBER = r'-?\d+(\.\d*)?|\.\d+'
+t_NUMBER = r'\d+(\.\d*)?|\.\d+'
 t_LBRACKET = r'\['
 t_RBRACKET = r'\]'
 

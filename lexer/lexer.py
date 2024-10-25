@@ -56,6 +56,10 @@ t_ignore = ' \t'
 t_ignore_COMMENT = r'\#.*'
 
 
+def t_error(t):
+    raise SyntaxError(f"Illegal character '{t.value[0]}'")
+
+
 def make_incc24_lexer():
     return lex.lex()
 

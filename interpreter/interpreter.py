@@ -102,7 +102,7 @@ def eval(expr: Expression, env: Environment):
             return eval(body, env)
 
         case LocalExpression(assignments, body):
-            env = env.push(*[assignment.name for assignment in assignments])
+            env = env.push(*[assignment.var.name for assignment in assignments])
 
             for assignment in assignments:
                 eval(assignment, env)

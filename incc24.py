@@ -19,6 +19,7 @@ if __name__ == '__main__':
     action_compile.add_argument('file', type=str, help='The file to compile')
     action_compile.add_argument('-o', dest='outfile', type=str, default='-', help='Set output file. - for stdout')
     action_compile.add_argument('--emit', '-e', choices=['ir', 'asm', 'obj', 'exe'], help='Determine output stage. If unspecified, output stage is determined by type of output file.')
+    action_compile.add_argument('--keep-asm', action='store_true', help="don't delete the intermediate asm file")
 
     args = argparser.parse_args()
 
