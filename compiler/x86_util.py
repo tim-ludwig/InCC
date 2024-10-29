@@ -60,6 +60,8 @@ def x86_start(env):
         global main
         main:
           push  rbp                 ; unnötig, weil es den Wert 1 enthält, trotzem notwendig, weil sonst segfault
+          mov   rbx,rsp             ; store start of CMa stack in rbx
+          sub   rbx,8               ; " 
           sub   rsp,{env.total_size():<16}; Platz für globale Variablen
           mov   rax,rsp             ; rsp zeigt auf den geretteten rbp
           sub   rax,qword 8         ; neuer rbp sollte ein wort darüber liegen
