@@ -139,7 +139,7 @@ def code_r(expr, env):
             proc_l = make_unique_label('proc')
             endproc_l = make_unique_label('endproc')
 
-            env = env.push(*(arg_names + local_names))
+            env = env.root().push(*(arg_names + local_names))
 
             addr = -16
             for arg_name in arg_names:
