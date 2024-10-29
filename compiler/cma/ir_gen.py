@@ -32,7 +32,12 @@ def make_global(size):
 
 
 label_count = dict()
-def make_unique_label(label):
+def make_unique_label(*label):
+    if len(label) > 1:
+        return [make_unique_label(l) for l in label]
+
+    label = label[0]
+
     global label_count
     label_count[label] = label_count.get(label, 0) + 1
     return label + str(label_count[label] - 1)
@@ -78,10 +83,7 @@ def code_r(expr, env):
             instructions += code_r(exprs[-1], env)
             return instructions
         case IfExpression(condition, then_expr, else_expr):
-            if_l = make_unique_label('if')
-            then_l = make_unique_label('then')
-            else_l = make_unique_label('else')
-            endif_l = make_unique_label('endif')
+            if_l, then_l, else_l, endif_l = make_unique_label('if', 'then', 'else', 'endif')
             return [
                 label(if_l),
                 *code_r(condition, env),
@@ -94,8 +96,7 @@ def code_r(expr, env):
                 label(endif_l),
             ]
         case WhileExpression(condition, body):
-            while_l = make_unique_label('while')
-            endwhile_l = make_unique_label('endwhile')
+            while_l, endwhile_l = make_unique_label('while', 'end_while')
             return [
                 loadc(0),
                 label(while_l),
@@ -107,8 +108,7 @@ def code_r(expr, env):
                 label(endwhile_l),
             ]
         case LoopExpression(count, body):
-            loop_l = make_unique_label('loop')
-            endloop_l = make_unique_label('endloop')
+            loop_l, endloop_l = make_unique_label('loop', 'endloop')
             return [
                 loadc(0),
                 *code_r(count, env),
@@ -125,8 +125,7 @@ def code_r(expr, env):
                 pop(),
             ]
         case DoWhileExpression(condition, body):
-            dowhile_l = make_unique_label('dowhile')
-            enddowhile_l = make_unique_label('enddowhile')
+            dowhile_l, enddowhile_l = make_unique_label('dowhile', 'enddowhile')
             return [
                 label(dowhile_l),
                 *code_r(body, env),
@@ -136,8 +135,7 @@ def code_r(expr, env):
                 label(enddowhile_l),
             ]
         case ProcedureExpression(arg_names, local_names, body):
-            proc_l = make_unique_label('proc')
-            endproc_l = make_unique_label('endproc')
+            proc_l, endproc_l = make_unique_label('proc', 'endproc')
 
             env = env.root().push(*(arg_names + local_names))
 
