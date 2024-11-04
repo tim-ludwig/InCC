@@ -7,6 +7,7 @@ from lexer.variables import *
 from lexer.sequences import *
 from lexer.controlflow import *
 from lexer.functions import *
+from lexer.module import *
 
 
 reserved_words = set(
@@ -16,6 +17,7 @@ reserved_words = set(
     | controlflow_reserved_words
     | functions_reserved_words
     | struct_reserved_words
+    | module_reserved_words
 )
 tokens = list(
     lit_tokens

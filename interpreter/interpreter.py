@@ -9,6 +9,7 @@ from parser.parser import parse_expr
 from syntaxtree.controlflow import LoopExpression, WhileExpression, DoWhileExpression, IfExpression
 from syntaxtree.literals import NumberLiteral, BoolLiteral, StringLiteral, CharLiteral, ArrayLiteral
 from syntaxtree.functions import LambdaExpression, CallExpression, ProcedureExpression
+from syntaxtree.module import ImportExpression
 from syntaxtree.operators import BinaryOperatorExpression, UnaryOperatorExpression
 from syntaxtree.sequences import SequenceExpression
 from syntaxtree.struct import StructExpression, MemberAccessExpression, MemberAssignExpression, ThisExpression
@@ -147,7 +148,7 @@ def eval(expr: Expression, env: Environment):
             return Closure(env, arg_names, body, rest_args)
 
         case ProcedureExpression(arg_names, local_names, body):
-            return Closure(env.root(), arg_names, body, False, local_names)
+            return Closure(define_built_ins(env.root().push()), arg_names, body, False, local_names)
 
         case CallExpression(f, arg_exprs):
             callable = eval(f, env)
@@ -191,6 +192,12 @@ def eval(expr: Expression, env: Environment):
         case ThisExpression():
             return env.containing_struct
 
+        case ImportExpression(path):
+            with open(path, 'r') as f:
+                env = Environment()
+                eval(parse_expr(f.read()), define_built_ins(env.push()))
+                return env
+
         case _:
             raise NotImplementedError(expr)
 
@@ -223,7 +230,12 @@ def wrap_lexer(lexer):
     def lexer_input(s):
         lexer.input(s)
 
-    def wrap_token(t):
+    def lexer_next():
+        t = lexer.token()
+
+        if t is None:
+            return ()
+
         token_struct = Environment()
         define(token_struct, 'type', t.type)
         define(token_struct, 'value', t.value)
@@ -231,30 +243,31 @@ def wrap_lexer(lexer):
         define(token_struct, 'lexpos', t.lexpos)
         return token_struct
 
-    def lexer_token():
-        return wrap_token(lexer.token())
-
-
     define(lexer_struct, 'input', lexer_input)
-    define(lexer_struct, 'token', lexer_token)
+    define(lexer_struct, 'next', lexer_next)
 
     return lexer_struct
 
 
-def main(args):
-    env = Environment()
-
+def define_built_ins(env):
     define(env, 'list', make_list)
     define(env, 'cons', lambda v1, v2: (v1, v2))
-    define(env, 'nil',  ())
+    define(env, 'nil', ())
     define(env, 'head', head)
     define(env, 'tail', tail)
 
     define(env, 'array', make_array)
 
-    define(env, 'print', lambda v: print(v))
+    define(env, 'print', print)
 
     define(env, 'make_incc24_lexer', lambda: wrap_lexer(make_incc24_lexer()))
+
+    return env
+
+
+def main(args):
+    global_vars = Environment()
+    env = define_built_ins(global_vars.push())
 
     if args.file:
         with (open(args.file, 'r') as f):
