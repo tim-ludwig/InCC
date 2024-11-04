@@ -1,5 +1,3 @@
-from compiler.cma.instruction import operator, loadc, store, load, pop, label, jumpz, jump, dup, swap, mark, call, \
-    slide, enter, alloc, loadrc, ret
 from syntaxtree.controlflow import IfExpression, WhileExpression, LoopExpression, DoWhileExpression
 from syntaxtree.functions import ProcedureExpression, CallExpression
 from syntaxtree.literals import NumberLiteral
@@ -8,19 +6,19 @@ from syntaxtree.sequences import SequenceExpression
 from syntaxtree.variables import AssignExpression, VariableExpression
 
 unop_inst = {
-    '-': operator('neg')
+    '-': ('neg',)
 }
 binop_inst = {
-    '+': operator('add'),
-    '-': operator('sub'),
-    '*': operator('mul'),
-    '/': operator('div'),
-    '<':  operator('le'),
-    '>': operator('gr'),
-    '<=': operator('leq'),
-    '>=': operator('geq'),
-    '==': operator('eq'),
-    '!=': operator('neq'),
+    '+': ('add',),
+    '-': ('sub',),
+    '*': ('mul',),
+    '/': ('div',),
+    '<':  ('le',),
+    '>': ('gr',),
+    '<=': ('leq',),
+    '>=': ('geq',),
+    '==': ('eq',),
+    '!=': ('neq',),
 }
 
 
@@ -47,7 +45,7 @@ def code_r(expr, env):
     match expr:
         case NumberLiteral(value):
             return [
-                loadc(value)
+                ('loadc', value)
             ]
         case UnaryOperatorExpression(op, operand):
             return [
@@ -69,12 +67,12 @@ def code_r(expr, env):
             return [
                 *code_r(expr, env),
                 *code_l(var, env),
-                store()
+                ('store',)
             ]
         case VariableExpression(name) as var:
             return [
                 *code_l(var, env),
-                load()
+                ('load',)
             ]
         case SequenceExpression(exprs):
             instructions = []
@@ -85,54 +83,54 @@ def code_r(expr, env):
         case IfExpression(condition, then_expr, else_expr):
             if_l, then_l, else_l, endif_l = make_unique_label('if', 'then', 'else', 'endif')
             return [
-                label(if_l),
+                ('label', if_l),
                 *code_r(condition, env),
-                jumpz(else_l),
-                label(then_l),
+                ('jumpz', else_l),
+                ('label', then_l),
                 *code_r(then_expr, env),
-                jump(endif_l),
-                label(else_l),
+                ('jump', endif_l),
+                ('label', else_l),
                 *code_r(else_expr, env),
-                label(endif_l),
+                ('label', endif_l),
             ]
         case WhileExpression(condition, body):
             while_l, endwhile_l = make_unique_label('while', 'end_while')
             return [
-                loadc(0),
-                label(while_l),
+                ('loadc', 0),
+                ('label', while_l),
                 *code_r(condition, env),
-                jumpz(endwhile_l),
-                pop(),
+                ('jumpz', endwhile_l),
+                ('pop',),
                 code_r(body, env),
-                jump(while_l),
-                label(endwhile_l),
+                ('jump', while_l),
+                ('label', endwhile_l),
             ]
         case LoopExpression(count, body):
             loop_l, endloop_l = make_unique_label('loop', 'endloop')
             return [
-                loadc(0),
+                ('loadc', 0),
                 *code_r(count, env),
-                label(loop_l),
-                dup(),
-                jumpz(endloop_l),
-                operator('dec'),
-                swap(),
-                pop(),
+                ('label', loop_l),
+                ('dup',),
+                ('jumpz', endloop_l),
+                ('dec',),
+                ('swap',),
+                ('pop',),
                 *code_r(body, env),
-                swap(),
-                jump(loop_l),
-                label(endloop_l),
-                pop(),
+                ('swap',),
+                ('jump', loop_l),
+                ('label', endloop_l),
+                ('pop',),
             ]
         case DoWhileExpression(condition, body):
             dowhile_l, enddowhile_l = make_unique_label('dowhile', 'enddowhile')
             return [
-                label(dowhile_l),
+                ('label', dowhile_l),
                 *code_r(body, env),
                 *code_r(condition, env),
-                jumpz(enddowhile_l),
-                jump(dowhile_l),
-                label(enddowhile_l),
+                ('jumpz', enddowhile_l),
+                ('jump', dowhile_l),
+                ('label', enddowhile_l),
             ]
         case ProcedureExpression(arg_names, local_names, body):
             proc_l, endproc_l = make_unique_label('proc', 'endproc')
@@ -154,19 +152,19 @@ def code_r(expr, env):
                 addr += 8
 
             return [
-                jump(endproc_l),
-                label(proc_l),
+                ('jump', endproc_l),
+                ('label', proc_l),
 
-                enter(),
-                alloc(sum([v.size for v in env.vars.values() if v.scope == 'local'])),
+                ('enter',),
+                ('alloc', sum([v.size for v in env.vars.values() if v.scope == 'local'])),
                 *code_r(body, env),
-                loadrc(-16),
-                store(),
-                pop(),
-                ret(),
+                ('loadrc', -16),
+                ('store',),
+                ('pop',),
+                ('ret',),
 
-                label(endproc_l),
-                loadc(proc_l),
+                ('label', endproc_l),
+                ('loadc', proc_l),
             ]
         case CallExpression(f, arg_exprs):
             args = []
@@ -175,33 +173,33 @@ def code_r(expr, env):
 
             return [
                 *args,
-                mark(),
+                ('mark',),
                 *code_r(f, env),
-                call(),
-                pop(),
-                slide(8 * len(arg_exprs) - 8, 8),
+                ('call',),
+                ('pop',),
+                ('slide', 8 * len(arg_exprs) - 8, 8),
             ]
         case None:
             return [
-                loadc(0),
+                ('loadc', 0),
             ]
         case _:
             raise NotImplementedError(expr)
 
 
 def code(expr, env):
-    return [*code_r(expr, env), pop()]
+    return [*code_r(expr, env), ('pop',)]
 
 
 def code_l(expr, env):
     match expr:
         case VariableExpression(name) if env[name].scope == 'global':
             return [
-                loadc(env[name].address),
+                ('loadc', env[name].address),
             ]
         case VariableExpression(name):
             return [
-                loadrc(env[name].address),
+                ('loadrc', env[name].address),
             ]
         case _:
             raise NotImplementedError(expr)

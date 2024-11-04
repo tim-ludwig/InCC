@@ -1,7 +1,5 @@
 import builtins
 
-from compiler.cma.instruction import pop, loadc, operator, load, store, label, jump, jumpz, dup, swap, enter, alloc, \
-    loadrc, ret, mark, call, slide
 from compiler.x86_util import format_code
 
 op_inst = {
@@ -28,25 +26,25 @@ def asm_gen(ir):
         return asm
 
     match ir:
-        case loadc(val):
+        case ('loadc', val):
             # language=nasm
             asm = f"""
                 mov   rax, qword {val}
                 push  rax
             """
-        case pop():
+        case ('pop',):
             # language=nasm
             asm = """
                 pop   rax
             """
-        case dup():
+        case ('dup',):
             # language=nasm
             asm = """
                 pop   rax
                 push  rax
                 push  rax
             """
-        case swap():
+        case ('swap',):
             # language=nasm
             asm = """
                 pop   rcx
@@ -54,14 +52,14 @@ def asm_gen(ir):
                 push  rcx
                 push  rax
             """
-        case operator('neg' | 'inc' | 'dec' as op,):
+        case ('neg' | 'inc' | 'dec' as op,):
             # language=nasm
             asm = f"""
                 pop   rax
                 {op_inst[op]:<5} rax
                 push  rax
             """
-        case operator('div' | 'mul' as op):
+        case ('div' | 'mul' as op,):
             # language=nasm
             asm = f"""
                 pop   rcx
@@ -69,7 +67,7 @@ def asm_gen(ir):
                 {op:<5} rcx
                 push  rax
             """
-        case operator('le' | 'gr' | 'leq' | 'geq' | 'eq' | 'neq' as op):
+        case ('le' | 'gr' | 'leq' | 'geq' | 'eq' | 'neq' as op,):
             # language=nasm
             asm = f"""
                 pop   rcx
@@ -79,7 +77,7 @@ def asm_gen(ir):
                 movzx rax, al
                 push rax
             """
-        case operator(op):
+        case ('add' | 'sub' as op,):
             # language=nasm
             asm = f"""
                 pop   rcx
@@ -87,7 +85,7 @@ def asm_gen(ir):
                 {op_inst[op]:<5} rax, rcx
                 push  rax
             """
-        case load():
+        case ('load',):
             # language=nasm
             asm = """
                 pop   rdx
@@ -96,7 +94,7 @@ def asm_gen(ir):
                 mov   rax, [rdx]
                 push  rax
             """
-        case store():
+        case ('store',):
             # language=nasm
             asm = """
                 pop   rdx
@@ -105,42 +103,42 @@ def asm_gen(ir):
                 mov   rax, [rsp]
                 mov   [rdx], rax
             """
-        case label(name):
+        case ('label', name):
             # language=nasm
             asm = f"""
                 {name}:
             """
-        case jump(lbl):
+        case ('jump', lbl):
             # language=nasm
             asm = f"""
                 jmp   {lbl}
             """
-        case jumpz(lbl):
+        case ('jumpz', lbl):
             # language=nasm
             asm = f"""
                 pop   rax
                 test  rax, rax
                 je    {lbl}
             """
-        case enter():
+        case ('enter',):
             # language=nasm
             asm = f"""
                 mov   rbp, rbx
                 sub   rbp, rsp            
             """
-        case alloc(size):
+        case ('alloc', size):
             # language=nasm
             asm = f"""
                 sub   rsp, qword {size}            
             """
-        case loadrc(offset):
+        case ('loadrc', offset):
             # language=nasm
             asm = f"""
                 mov   rax, rbp
                 add   rax, qword {offset}
                 push  rax
             """
-        case ret():
+        case ('ret',):
             # language=nasm
             asm = f"""
                 mov   rsp, rbx             ; restore stack pointer to prev frame 
@@ -150,18 +148,18 @@ def asm_gen(ir):
                 mov   rbp, [rax+8]         ; " rbp <- [rbx - rbp + 8]
                 ret
             """
-        case mark():
+        case ('mark',):
             # language=nasm
             asm = f"""
                 push  rbp
             """
-        case call():
+        case ('call',):
             # language=nasm
             asm = f"""
                 pop   rax
                 call  rax
             """
-        case slide(discard, 8):
+        case ('slide', discard, 8):
             # language=asm
             asm = f"""
                 pop   rax
@@ -171,7 +169,7 @@ def asm_gen(ir):
         case _:
             raise NotImplementedError(ir)
 
-    if type(ir) == label:
+    if ir[0] == 'label':
         return asm.strip() + '\n'
 
     return f';;; {ir}\n' + asm.strip() + '\n'
