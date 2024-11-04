@@ -2,8 +2,8 @@ import os
 import subprocess
 
 from compiler.cma.ir_gen import code_r
-from compiler.cma.x86_gen import asm_gen
-from compiler.x86_util import x86_program, format_code
+from compiler.cma.x86_gen import asm_gen, x86_program
+from compiler.x86_util import format_code
 from environment import Environment
 from parser.parser import parse_expr
 
