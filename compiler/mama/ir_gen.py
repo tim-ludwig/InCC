@@ -1,5 +1,3 @@
-from tkinter import Variable
-
 from syntaxtree.controlflow import IfExpression
 from syntaxtree.literals import NumberLiteral
 from syntaxtree.operators import BinaryOperatorExpression, UnaryOperatorExpression
