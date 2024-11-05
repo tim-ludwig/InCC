@@ -47,7 +47,7 @@ def ir_to_text(instructions):
             case (mnemonic,):
                 line = f'    {mnemonic}'
             case (mnemonic, *args):
-                line = f'    {mnemonic:<8}{", ".join(args)}'
+                line = f'    {mnemonic:<8}{", ".join(map(str, args))}'
         lines.append(line)
 
     return '\n'.join(lines)
