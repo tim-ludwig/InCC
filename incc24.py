@@ -1,6 +1,7 @@
 #! python
 
 import argparse
+from random import choices
 
 from interpreter import interpreter
 from compiler import compiler
@@ -18,6 +19,7 @@ if __name__ == '__main__':
     action_compile = subparsers.add_parser('compile', help='run the compiler', aliases=['c'])
     action_compile.add_argument('file', type=str, help='The file to compile')
     action_compile.add_argument('-o', dest='outfile', type=str, default='-', help='Set output file. - for stdout')
+    action_compile.add_argument('--vm', type=str, choices=['cma', 'mama'], default='mama', help='which VM to use')
     action_compile.add_argument('--emit', '-e', choices=['ir', 'asm', 'obj', 'exe'], help='Determine output stage. If unspecified, output stage is determined by type of output file.')
     action_compile.add_argument('--keep-asm', action='store_true', help="don't delete the intermediate asm file")
 

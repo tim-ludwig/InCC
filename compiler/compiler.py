@@ -1,20 +1,31 @@
 import os
 import subprocess
 
-from compiler.cma.ir_gen import code_r
-from compiler.cma.x86_gen import asm_gen, x86_program
+from compiler.cma.ir_gen import code_r as cma_code_r
+from compiler.cma.x86_gen import x86_program as cma_x86_program, asm_gen as cma_asm_gen
+from compiler.mama.ir_gen import code_b as mama_code_b
+from compiler.mama.x86_gen import x86_program as mama_x86_program, asm_gen as mama_asm_gen
+
 from compiler.x86_util import format_code
 from environment import Environment
 from parser.parser import parse_expr
 
 
-def ast_to_ir(ast):
+def ast_to_ir(ast, vm):
     env = Environment()
-    return code_r(ast, env), env
+    match vm:
+        case 'cma':
+            return cma_code_r(ast, env), env
+        case 'mama':
+            return mama_code_b(ast, env, 0), env
 
 
-def ir_to_asm(ir, env):
-    return x86_program(asm_gen(ir), env)
+def ir_to_asm(ir, env, vm):
+    match vm:
+        case 'cma':
+            return cma_x86_program(cma_asm_gen(ir), env)
+        case 'mama':
+            return mama_x86_program(mama_asm_gen(ir), env)
 
 
 def asm_to_obj(asm_file, obj_file):
@@ -28,7 +39,18 @@ def obj_to_bin(obj_file, bin_file):
 
 
 def ir_to_text(instructions):
-    return '\n'.join([str(inst) for inst in instructions])
+    lines = []
+    for inst in instructions:
+        match inst:
+            case ('label', name):
+                line = f'{name}:'
+            case (mnemonic,):
+                line = f'    {mnemonic}'
+            case (mnemonic, *args):
+                line = f'    {mnemonic:<8}{", ".join(args)}'
+        lines.append(line)
+
+    return '\n'.join(lines)
 
 
 def output_text(args, text):
@@ -52,7 +74,7 @@ def main(args):
             raise NotImplementedError("unknown file type")
 
     match args.outfile.split('.'):
-        case [*_, 'cma']:
+        case [*_, 'cma' | 'mama']:
             to_stage = 'ir'
         case [*_, 's']:
             to_stage = 'asm'
@@ -74,10 +96,10 @@ def main(args):
             ast = parse_expr(f.read())
 
         # convert source to intermediate representation
-        ir, env = ast_to_ir(ast)
+        ir, env = ast_to_ir(ast, args.vm)
 
     if to_stage == 'ir':
-        output_text(args, format_code(ir_to_text(ir)))
+        output_text(args, ir_to_text(ir))
         return
 
     # provide assembly in file
@@ -85,7 +107,7 @@ def main(args):
         asm_file = args.file
     elif ir is not None:
         # convert intermediate representation to assembly
-        asm = ir_to_asm(ir, env)
+        asm = ir_to_asm(ir, env, args.vm)
 
         if to_stage == 'asm':
             output_text(args, asm)
