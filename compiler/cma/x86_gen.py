@@ -64,6 +64,7 @@ def asm_gen(ir):
             asm = f"""
                 pop   rcx
                 pop   rax
+                cdq
                 {op:<5} rcx
                 push  rax
             """
