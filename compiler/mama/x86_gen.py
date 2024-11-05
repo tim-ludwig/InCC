@@ -1,6 +1,6 @@
 import builtins
 
-from compiler.x86_util import format_code
+from compiler.util import format_code
 
 op_inst = {
     'neg': 'neg',

@@ -42,3 +42,15 @@ def format_code(c):
         c = c.splitlines()
 
     return "".join([format_line(l) for l in c])
+
+
+label_count = dict()
+def make_unique_label(*label):
+    if len(label) > 1:
+        return [make_unique_label(l) for l in label]
+
+    label = label[0]
+
+    global label_count
+    label_count[label] = label_count.get(label, 0) + 1
+    return label + str(label_count[label] - 1)

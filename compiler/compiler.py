@@ -6,7 +6,7 @@ from compiler.cma.x86_gen import x86_program as cma_x86_program, asm_gen as cma_
 from compiler.mama.ir_gen import code_b as mama_code_b
 from compiler.mama.x86_gen import x86_program as mama_x86_program, asm_gen as mama_asm_gen
 
-from compiler.x86_util import format_code
+from compiler.util import format_code
 from environment import Environment
 from parser.parser import parse_expr
 

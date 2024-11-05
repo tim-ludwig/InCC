@@ -1,3 +1,4 @@
+from compiler.util import make_unique_label
 from syntaxtree.controlflow import IfExpression
 from syntaxtree.literals import NumberLiteral
 from syntaxtree.operators import BinaryOperatorExpression, UnaryOperatorExpression
@@ -18,18 +19,6 @@ binop_inst = {
     '==': ('eq',),
     '!=': ('neq',),
 }
-
-
-label_count = dict()
-def make_unique_label(*label):
-    if len(label) > 1:
-        return [make_unique_label(l) for l in label]
-
-    label = label[0]
-
-    global label_count
-    label_count[label] = label_count.get(label, 0) + 1
-    return label + str(label_count[label] - 1)
 
 
 def code_b(expr, env, kp):
