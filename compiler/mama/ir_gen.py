@@ -1,9 +1,9 @@
-from syntaxtree.controlflow import IfExpression, WhileExpression, LoopExpression, DoWhileExpression
-from syntaxtree.functions import ProcedureExpression, CallExpression
+from tkinter import Variable
+
+from syntaxtree.controlflow import IfExpression
 from syntaxtree.literals import NumberLiteral
 from syntaxtree.operators import BinaryOperatorExpression, UnaryOperatorExpression
-from syntaxtree.sequences import SequenceExpression
-from syntaxtree.variables import AssignExpression, VariableExpression
+from syntaxtree.variables import LocalExpression, VariableExpression
 
 unop_inst = {
     '-': ('neg',)
@@ -36,6 +36,8 @@ def make_unique_label(*label):
 
 def code_b(expr, env, kp):
     match expr:
+        case IfExpression() | LocalExpression():
+            return code_c(expr, env, kp, code_b)
         case NumberLiteral(value):
             return [
                 ('loadc', value)
@@ -51,8 +53,8 @@ def code_b(expr, env, kp):
                 *code_b(operands[1], env, kp + 1),
                 binop_inst[operator],
             ]
-        case IfExpression():
-            return code_c(expr, env, kp, code_b)
+        case VariableExpression():
+            return [*code_v(expr, env, kp), ('getbasic',)]
         case None:
             return [
                 ('loadc', 0),
@@ -63,10 +65,12 @@ def code_b(expr, env, kp):
 
 def code_v(expr, env, kp):
     match expr:
+        case IfExpression() | LocalExpression():
+            return code_c(expr, env, kp, code_v)
         case NumberLiteral() | UnaryOperatorExpression() | BinaryOperatorExpression():
             return [*code_b(expr, env, kp), ('mkbasic',)]
-        case IfExpression():
-            return code_c(expr, env, kp, code_v)
+        case VariableExpression(name):
+            return [('pushloc', env[name].addr)]
         case None:
             return [
                 ('loadc', 0),
@@ -89,6 +93,25 @@ def code_c(expr, env, kp, code_x):
                 ('label', else_l),
                 *code_x(else_body, env, kp),
                 ('label', endif_l),
+            ]
+        case LocalExpression(assignments, body):
+            env2 = env.push()
+
+            variables = []
+            N = len(assignments)
+            for i in range(N):
+                assignment = assignments[i]
+                val = env2[assignment.var.name]
+                val.scope = 'local'
+                val.addr = kp + i + 1
+                val.size = 1
+
+                variables += code_v(assignment.expression, env, kp + i)
+
+            return [
+                *variables,
+                *code_x(body, env2, kp + N),
+                ('slide', N),
             ]
         case _:
             raise NotImplementedError(expr)

@@ -103,6 +103,36 @@ def asm_gen(ir):
                 test  rax, rax
                 je    {lbl}
             """
+        case ('mkbasic',):
+            # language=nasm
+            asm = f"""
+                mov   rdi, 16
+                call  malloc
+                mov   rdx, rax
+                pop   rax
+                mov   qword [rdx], 'B'
+                mov   qword [rdx + 8], rax
+                push  rdx
+            """
+        case ('slide', discard):
+            # language=nasm
+            asm = f"""
+                pop   rax
+                add   rsp, {8 * discard}
+                push  rax
+            """
+        case ('pushloc', offset):
+            # language=nasm
+            asm = f"""
+                push  qword [rbp - 8*{offset}]
+            """
+        case ('getbasic',):
+            # language=nasm
+            asm = f"""
+                pop   rdx
+                mov   rax, [rdx + 8]
+                push  rax
+            """
         case _:
             raise NotImplementedError(ir)
 
