@@ -193,13 +193,15 @@ def code(expr, env):
 
 def code_l(expr, env):
     match expr:
-        case VariableExpression(name) if env[name].scope == 'global':
+        case VariableExpression(name) if name in env and env[name].scope == 'global':
             return [
                 ('loadc', env[name].address),
             ]
-        case VariableExpression(name):
+        case VariableExpression(name) if name in env:
             return [
                 ('loadrc', env[name].address),
             ]
+        case VariableExpression(name):
+            raise KeyError(f'unknown variable {name}')
         case _:
             raise NotImplementedError(expr)

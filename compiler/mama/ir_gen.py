@@ -67,8 +67,10 @@ def code_v(expr, env, kp):
             return code_c(expr, env, kp, code_v)
         case NumberLiteral() | UnaryOperatorExpression() | BinaryOperatorExpression():
             return [*code_b(expr, env, kp), ('mkbasic',)]
-        case VariableExpression(name):
+        case VariableExpression(name) if name in env:
             return [('pushloc', env[name].addr)]
+        case VariableExpression(name):
+            raise KeyError(f'unknown variable {name}')
         case None:
             return [
                 ('loadc', 0),
