@@ -84,11 +84,11 @@ def code_c(expr, env, kp, code_x):
                 *code_b(condition, env, kp),
                 ('jumpz', else_l),
                 ('label', then_l),
-                *code_c(then_body, env, kp, code_x),
+                *code_x(then_body, env, kp),
                 ('jump', endif_l),
                 ('label', else_l),
-                *code_c(else_body, env, kp, code_x),
+                *code_x(else_body, env, kp),
                 ('label', endif_l),
             ]
         case _:
-            return code_x(expr, env, kp)
+            raise NotImplementedError(expr)
