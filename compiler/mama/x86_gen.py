@@ -127,7 +127,7 @@ def x86_start(env):
         SECTION  .text
         global main
         main:
-          enter 0, 0                ; unnötig, weil es den Wert 1 enthält, trotzem notwendig, weil sonst segfault
+          enter 0, 0
     """)
 
 
