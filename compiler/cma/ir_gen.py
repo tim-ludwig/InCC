@@ -49,9 +49,7 @@ def code_r(expr, env):
             ]
         case AssignExpression(VariableExpression(name) as var, expr):
             if name not in env:
-                env[name].address = make_global(8)
-                env[name].scope = 'global'
-                env[name].size = 8
+                env[name] = {'scope': 'global', 'address': make_global(8), 'size': 8}
 
             return [
                 *code_r(expr, env),
@@ -124,20 +122,16 @@ def code_r(expr, env):
         case ProcedureExpression(arg_names, local_names, body):
             proc_l, endproc_l = make_unique_label('proc', 'endproc')
 
-            env = env.root().push(*(arg_names + local_names))
+            env = env.root().push(*arg_names, *local_names)
 
             addr = -16
             for arg_name in arg_names:
-                env[arg_name].scope = 'argument'
-                env[arg_name].size = 8
-                env[arg_name].address = addr
+                env[arg_name] = {'scope': 'argument', 'address': addr, 'size': 8}
                 addr -= 8
 
             addr = 8
             for local_name in local_names:
-                env[local_name].scope = 'local'
-                env[local_name].size = 8
-                env[local_name].address = addr
+                env[local_name] = {'scope': 'local', 'address': addr, 'size': 8}
                 addr += 8
 
             return [
@@ -145,7 +139,7 @@ def code_r(expr, env):
                 ('label', proc_l),
 
                 ('enter',),
-                ('alloc', sum([v.size for v in env.vars.values() if v.scope == 'local'])),
+                ('alloc', sum([v['size'] for v in env.vars.values() if v['scope'] == 'local'])),
                 *code_r(body, env),
                 ('loadrc', -16),
                 ('store',),
@@ -184,11 +178,11 @@ def code_l(expr, env):
     match expr:
         case VariableExpression(name) if name in env and env[name].scope == 'global':
             return [
-                ('loadc', env[name].address),
+                ('loadc', env[name]['address']),
             ]
         case VariableExpression(name) if name in env:
             return [
-                ('loadrc', env[name].address),
+                ('loadrc', env[name]['address']),
             ]
         case VariableExpression(name):
             raise KeyError(f'unknown variable {name}')

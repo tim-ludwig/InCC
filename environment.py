@@ -2,15 +2,6 @@ from dataclasses import dataclass
 from typing import Any, Self
 
 
-@dataclass
-class Value:
-    value: Any = None
-    writeable: bool = True
-    addr: int = None
-    scope: str = None
-    size: int = None
-
-
 class Environment:
     def __init__(self, parent=None):
         self.parent = parent
@@ -30,16 +21,21 @@ class Environment:
         while env.parent is not None and name not in env.vars:
             env = env.parent
 
-        if name not in env.vars:
-            env.vars[name] = Value()
-
         return env.vars[name]
+
+    def __setitem__(self, name, value):
+        env = self
+        while env.parent is not None and name not in env.vars:
+            env = env.parent
+
+        env.vars[name] = value
+
 
     def push(self, *names):
         env = Environment(self)
 
         for name in names:
-            env.vars[name] = Value()
+            env.vars[name] = None
 
         return env
 

@@ -57,7 +57,7 @@ def code_v(expr, env, kp):
         case NumberLiteral() | UnaryOperatorExpression() | BinaryOperatorExpression():
             return [*code_b(expr, env, kp), ('mkbasic',)]
         case VariableExpression(name) if name in env:
-            return [('pushloc', env[name].addr)]
+            return [('pushloc', env[name]['address'])]
         case VariableExpression(name):
             raise KeyError(f'unknown variable {name}')
         case None:
@@ -90,10 +90,7 @@ def code_c(expr, env, kp, code_x):
             N = len(assignments)
             for i in range(N):
                 assignment = assignments[i]
-                val = env2[assignment.var.name]
-                val.scope = 'local'
-                val.addr = kp + i + 1
-                val.size = 1
+                env2[assignment.var.name] = {'scope': 'local', 'address': kp + i + 1}
 
                 variables += code_v(assignment.expression, env, kp + i)
 

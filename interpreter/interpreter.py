@@ -4,7 +4,7 @@ import numpy as np
 
 from lexer.lexer import make_incc24_lexer
 
-from environment import Environment, Value
+from environment import Environment
 from parser.parser import parse_expr
 from syntaxtree.controlflow import LoopExpression, WhileExpression, DoWhileExpression, IfExpression
 from syntaxtree.literals import NumberLiteral, BoolLiteral, StringLiteral, CharLiteral, ArrayLiteral
@@ -34,12 +34,12 @@ class Closure:
 
         if self.rest_args:
             for i in range(len(self.arg_names) - 1):
-                env[self.arg_names[i]].value = arg_values[i]
+                env[self.arg_names[i]] = arg_values[i]
 
-            env[self.arg_names[-1]].value = np.array(arg_values[len(self.arg_names) - 1:])
+            env[self.arg_names[-1]] = np.array(arg_values[len(self.arg_names) - 1:])
         else:
             for arg_name, arg_value in zip(self.arg_names, arg_values):
-                env[arg_name].value = arg_value
+                env[arg_name] = arg_value
 
         return eval(self.body, env)
 
@@ -90,14 +90,14 @@ def eval(expr: Expression, env: Environment):
 
         case AssignExpression(var, expression):
             res = eval(expression, env)
-            env[var.name].value = res
+            env[var.name] = res
             return res
 
         case VariableExpression(name):
             if name not in env:
                 raise KeyError(f"Unknown variable {name}")
 
-            return env[name].value
+            return env[name]
 
         case LockExpression(_, body):
             return eval(body, env)
@@ -161,7 +161,7 @@ def eval(expr: Expression, env: Environment):
             else:
                 struct = Environment()
 
-            struct.vars = {init_expr.name: Value() for init_expr in initializers}
+            struct.vars = {init_expr.name: None for init_expr in initializers}
             env = env.push()
             env.containing_struct = struct
 
@@ -179,14 +179,14 @@ def eval(expr: Expression, env: Environment):
             if member not in struct:
                 raise KeyError(f'Unknown member {member}')
 
-            return struct[member].value
+            return struct[member]
 
         case MemberAssignExpression(member, expr):
             if not env.containing_struct or member not in env.containing_struct.vars:
                 raise KeyError(f'Unknown member {member}')
 
             val = eval(expr, env)
-            env.containing_struct.vars[member].value = val
+            env.containing_struct.vars[member] = val
             return val
 
         case ThisExpression():
@@ -222,7 +222,7 @@ def make_array(*elem):
 
 
 def define(env, name, val):
-    env[name].value = val
+    env[name] = val
 
 
 def wrap_lexer(lexer):
