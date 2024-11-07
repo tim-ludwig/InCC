@@ -54,9 +54,6 @@ class Environment:
 
         return env
 
-    def total_size(self):
-        return sum(val.size for val in self.vars.values())
-
     def __str__(self):
         if self.parent:
             return str(self.parent) + str(self.vars)

@@ -194,7 +194,7 @@ def x86_start(env):
           push  rbp                 ; unnötig, weil es den Wert 1 enthält, trotzem notwendig, weil sonst segfault
           mov   rbx,rsp             ; store start of CMa stack in rbx
           sub   rbx,8               ; " 
-          sub   rsp,{env.total_size():<16}; Platz für globale Variablen
+          sub   rsp,{8 * len(env.vars):<16}; Platz für globale Variablen
           mov   rax,rsp             ; rsp zeigt auf den geretteten rbp
           sub   rax,qword 8         ; neuer rbp sollte ein wort darüber liegen
           mov   rbp,rax             ; set frame pointer to current (empty) stack pointer
@@ -211,7 +211,7 @@ def x86_final(env):
           push  rbp                 ; set up stack frame, must be alligned
           call  printf              ; Call C function
           pop   rbp                 ; restore stack
-          add   rsp,{env.total_size()}
+          add   rsp,{8 * len(env.vars)}
           ;;; Rueckkehr zum aufrufenden Kontext
           pop   rbp                 ; original rbp ist last thing on the stack
           mov   rax,0               ; return 0
