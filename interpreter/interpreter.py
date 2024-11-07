@@ -14,7 +14,7 @@ from syntaxtree.operators import BinaryOperatorExpression, UnaryOperatorExpressi
 from syntaxtree.sequences import SequenceExpression
 from syntaxtree.struct import StructExpression, MemberAccessExpression, MemberAssignExpression, ThisExpression
 
-from syntaxtree.syntaxtree import Expression
+from syntaxtree.syntaxtree import Expression, TrapExpression
 from syntaxtree.variables import AssignExpression, VariableExpression, LockExpression, LocalExpression
 
 
@@ -197,7 +197,8 @@ def eval(expr: Expression, env: Environment):
                 env = Environment()
                 eval(parse_expr(f.read()), define_built_ins(env.push()))
                 return env
-
+        case TrapExpression():
+            return None
         case _:
             raise NotImplementedError(expr)
 

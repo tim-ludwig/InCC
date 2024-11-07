@@ -19,6 +19,7 @@ reserved_words = set(
     | struct_reserved_words
     | module_reserved_words
 )
+reserved_words.add('TRAP')
 tokens = list(
     lit_tokens
     | expr_tokens

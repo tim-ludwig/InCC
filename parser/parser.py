@@ -35,6 +35,14 @@ def p_error(p):
     raise SyntaxError(f"Syntax error at token {p}")
 
 
+def p_trap(p):
+    """
+    expression : TRAP
+    """
+    p[0] = TrapExpression()
+
+
+
 parser = yacc.yacc(start='expression')
 
 
