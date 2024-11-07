@@ -198,6 +198,12 @@ def eval(expr: Expression, env: Environment):
                 eval(parse_expr(f.read()), define_built_ins(env.push()))
                 return env
         case TrapExpression():
+            print('========== VAR DUMP ==========')
+            e = env
+            while e is not None:
+                for name, value in e.vars.items():
+                    print(f'{name:<24} = {value}')
+                e = e.parent
             return None
         case _:
             raise NotImplementedError(expr)
