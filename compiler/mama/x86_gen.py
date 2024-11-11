@@ -18,6 +18,16 @@ op_inst = {
     'neq': 'setne',
 }
 
+
+def malloc(n):
+    # language=nasm
+    return f"""
+        mov   rdi, 8*{n}
+        call  malloc
+        mov   rdx, rax
+    """
+
+
 def asm_gen(ir):
     if type(ir) == builtins.list:
         asm = ''
@@ -106,12 +116,9 @@ def asm_gen(ir):
         case ('mkbasic',):
             # language=nasm
             asm = f"""
-                mov   rdi, 8*2
-                call  malloc
-                mov   rdx, rax
-                pop   rax
+                {malloc(2)}
                 mov   qword [rdx], 'B'
-                mov   qword [rdx + 8*1], rax
+                pop   qword [rdx + 8*1]
                 push  rdx
             """
         case ('slide', discard):
