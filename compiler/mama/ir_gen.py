@@ -49,7 +49,7 @@ def free_vars(expr):
             return free_vars(body) - set(arg_names)
 
         case CallExpression(f, args):
-            return free_vars(f) | {free_vars(arg) for arg in args}
+            return free_vars(f) | {v for arg in args for v in free_vars(arg)}
 
 def code_b(expr, env, kp):
     match expr:
