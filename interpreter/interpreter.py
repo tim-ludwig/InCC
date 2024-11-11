@@ -235,7 +235,7 @@ def make_array(*elem):
 
 
 def define(env, name, val):
-    env[name] = val
+    env.vars[name] = val
 
 
 def wrap_lexer(lexer):
