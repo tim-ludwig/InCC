@@ -131,7 +131,7 @@ def asm_gen(ir):
         case ('pushloc', offset):
             # language=nasm
             asm = f"""
-                push  qword [rbp + 8*{offset}]
+                push  qword [rsp + 8*{offset}]
             """
         case ('getbasic',):
             # language=nasm
