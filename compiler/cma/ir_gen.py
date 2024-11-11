@@ -176,7 +176,7 @@ def code(expr, env):
 
 def code_l(expr, env):
     match expr:
-        case VariableExpression(name) if name in env and env[name].scope == 'global':
+        case VariableExpression(name) if name in env and env[name]['scope'] == 'global':
             return [
                 ('loadc', env[name]['address']),
             ]
