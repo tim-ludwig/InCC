@@ -1,8 +1,9 @@
 from compiler.util import make_unique_label
 from syntaxtree.controlflow import IfExpression
+from syntaxtree.functions import CallExpression, LambdaExpression
 from syntaxtree.literals import NumberLiteral
 from syntaxtree.operators import BinaryOperatorExpression, UnaryOperatorExpression
-from syntaxtree.variables import LocalExpression, VariableExpression
+from syntaxtree.variables import LocalExpression, VariableExpression, AssignExpression
 
 unop_inst = {
     '-': ('neg',)
@@ -20,6 +21,35 @@ binop_inst = {
     '!=': ('neq',),
 }
 
+
+def free_vars(expr):
+    match expr:
+        case NumberLiteral(_):
+            return set()
+
+        case UnaryOperatorExpression(_, operand):
+            return free_vars(operand)
+
+        case BinaryOperatorExpression(_, (left, right)):
+            return free_vars(left) | free_vars(right)
+
+        case AssignExpression(var, expression):
+            return  free_vars(var) | free_vars(expression)
+
+        case VariableExpression(name):
+            return {name}
+
+        case IfExpression(condition, then_body, else_body):
+            return free_vars(condition) | free_vars(then_body) | free_vars(else_body)
+
+        case LocalExpression(assignments, body):
+            return free_vars(body) - {assignment.var.name for assignment in assignments}
+
+        case LambdaExpression(arg_names, body, _):
+            return free_vars(body) - set(arg_names)
+
+        case CallExpression(f, args):
+            return free_vars(f) | {free_vars(arg) for arg in args}
 
 def code_b(expr, env, kp):
     match expr:
