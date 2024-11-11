@@ -42,11 +42,13 @@ def asm_gen(ir):
                 mov   rax, qword {val}
                 push  rax
             """
+
         case ('pop', ):
             # language=nasm
             asm = """
                 pop   rax
             """
+
         case ('dup', ):
             # language=nasm
             asm = """
@@ -54,6 +56,7 @@ def asm_gen(ir):
                 push  rax
                 push  rax
             """
+
         case ('swap', ):
             # language=nasm
             asm = """
@@ -62,6 +65,7 @@ def asm_gen(ir):
                 push  rcx
                 push  rax
             """
+
         case ('neg' | 'inc' | 'dec' as op, ):
             # language=nasm
             asm = f"""
@@ -69,6 +73,7 @@ def asm_gen(ir):
                 {op_inst[op]:<5} rax
                 push  rax
             """
+
         case ('div' | 'mul' as op, ):
             # language=nasm
             asm = f"""
@@ -78,6 +83,7 @@ def asm_gen(ir):
                 {op_inst[op]:<5} rcx
                 push  rax
             """
+
         case ('le' | 'gr' | 'leq' | 'geq' | 'eq' | 'neq' as op, ):
             # language=nasm
             asm = f"""
@@ -88,6 +94,7 @@ def asm_gen(ir):
                 movzx rax, al
                 push rax
             """
+
         case ('add' | 'sub' as op, ):
             # language=nasm
             asm = f"""
@@ -96,16 +103,19 @@ def asm_gen(ir):
                 {op_inst[op]:<5} rax, rcx
                 push  rax
             """
+
         case ('label', name):
             # language=nasm
             asm = f"""
                 {name}:
             """
+
         case ('jump', lbl):
             # language=nasm
             asm = f"""
                 jmp   {lbl}
             """
+
         case ('jumpz', lbl):
             # language=nasm
             asm = f"""
@@ -113,6 +123,7 @@ def asm_gen(ir):
                 test  rax, rax
                 je    {lbl}
             """
+
         case ('mkbasic',):
             # language=nasm
             asm = f"""
@@ -121,6 +132,7 @@ def asm_gen(ir):
                 pop   qword [rdx + 8*1]
                 push  rdx
             """
+
         case ('slide', discard):
             # language=nasm
             asm = f"""
@@ -128,6 +140,7 @@ def asm_gen(ir):
                 add   rsp, 8*{discard}
                 push  rax
             """
+
         case ('pushloc', offset):
             # language=nasm
             asm = f"""
@@ -139,6 +152,7 @@ def asm_gen(ir):
             asm = f"""
                 push  qword [rbx + 8*(2 + {offset})]
             """
+
         case ('getbasic',):
             # language=nasm
             asm = f"""
@@ -146,6 +160,7 @@ def asm_gen(ir):
                 mov   rax, [rdx + 8*1]
                 push  rax
             """
+
         case ('mkvec', n):
             asm = malloc(n + 2) + "\n".join([
                 # language=nasm
@@ -198,7 +213,7 @@ def asm_gen(ir):
                 mov   rax, [rdx + 8*1]
                 jmp   rax
             """
-
+            
         case _:
             raise NotImplementedError(ir)
 

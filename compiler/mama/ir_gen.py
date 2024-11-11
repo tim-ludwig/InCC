@@ -55,27 +55,33 @@ def code_b(expr, env, kp):
     match expr:
         case IfExpression() | LocalExpression():
             return code_c(expr, env, kp, code_b)
+
         case NumberLiteral(value):
             return [
                 ('loadc', value)
             ]
+
         case UnaryOperatorExpression(operator, operand):
             return [
                 *code_b(operand, env, kp),
                 unop_inst[operator],
             ]
+
         case BinaryOperatorExpression(operator, operands):
             return [
                 *code_b(operands[0], env, kp),
                 *code_b(operands[1], env, kp + 1),
                 binop_inst[operator],
             ]
+
         case VariableExpression() | CallExpression():
             return [*code_v(expr, env, kp), ('getbasic',)]
+
         case None:
             return [
                 ('loadc', 0),
             ]
+
         case _:
             raise NotImplementedError(expr)
 
@@ -84,14 +90,19 @@ def code_v(expr, env, kp):
     match expr:
         case IfExpression() | LocalExpression():
             return code_c(expr, env, kp, code_v)
+
         case NumberLiteral() | UnaryOperatorExpression() | BinaryOperatorExpression():
             return [*code_b(expr, env, kp), ('mkbasic',)]
+
         case VariableExpression(name) if name in env and env[name]['scope'] == 'local':
             return [('pushloc', kp - env[name]['address'])]
+
         case VariableExpression(name) if name in env and env[name]['scope'] == 'global':
             return [('pushglob', env[name]['address'])]
+
         case VariableExpression(name):
             raise KeyError(f'unknown variable {name}')
+
         case CallExpression(f, arg_exprs):
             ret_l = make_unique_label('ret')
             m = len(arg_exprs)
@@ -107,6 +118,7 @@ def code_v(expr, env, kp):
                 ('apply',),
                 ('label', ret_l),
             ]
+
         case LambdaExpression(arg_names, body, _):
             fun_l, after_l = make_unique_label('fun', 'after')
             free_v = list(free_vars(expr))
@@ -131,10 +143,12 @@ def code_v(expr, env, kp):
                 ('popenv',),
                 ('label', after_l),
             ]
+
         case None:
             return [
                 ('loadc', 0),
             ]
+
         case _:
             raise NotImplementedError(expr)
 
@@ -154,6 +168,7 @@ def code_c(expr, env, kp, code_x):
                 *code_x(else_body, env, kp),
                 ('label', endif_l),
             ]
+
         case LocalExpression(assignments, body):
             env2 = env.push()
 
@@ -170,5 +185,6 @@ def code_c(expr, env, kp, code_x):
                 *code_x(body, env2, kp + N),
                 ('slide', N),
             ]
+
         case _:
             raise NotImplementedError(expr)
