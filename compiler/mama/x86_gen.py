@@ -133,6 +133,12 @@ def asm_gen(ir):
             asm = f"""
                 push  qword [rsp + 8*{offset}]
             """
+
+        case ('pushglob', offset):
+            # language=nasm
+            asm = f"""
+                push  qword [rbx + 8*(2 + {offset})]
+            """
         case ('getbasic',):
             # language=nasm
             asm = f"""
@@ -140,6 +146,59 @@ def asm_gen(ir):
                 mov   rax, [rdx + 8*1]
                 push  rax
             """
+        case ('mkvec', n):
+            asm = malloc(n + 2) + "\n".join([
+                # language=nasm
+                f"pop   qword [rdx + 8*(2 + {n - 1 - i})]" for i in range(n)
+            ])
+            # language=nasm
+            asm += f"""
+                mov   qword [rdx + 8*1], {n}
+                mov   qword [rdx], 'V'
+                push  rdx
+            """
+
+        case ('mkfunval', addr):
+            # language=nasm
+            asm = f"""
+                {malloc(4)}
+                mov   qword [rdx], 'F'
+                mov   qword [rdx + 8*1], {addr}
+                mov   qword [rdx + 8*2], 0
+                pop   qword [rdx + 8*3]
+                push  rdx
+            """
+
+        case ('popenv',):
+            # language=nasm
+            asm = f"""
+                mov   rbx, [rbp + 8*2]
+                pop   qword [rbp + 8*2]
+                lea   rsp, [rbp + 8*2]
+                mov   rax, [rbp]
+                mov   rbp, [rbp + 8*1]
+                jmp   rax
+            """
+
+        case ('mark', ret):
+            # language=nasm
+            asm = f"""
+                push  rbx
+                push  rbp
+                lea   rax, [rel {ret}]
+                push  rax
+                mov   rbp, rsp
+            """
+
+        case ('apply',):
+            # language=nasm
+            asm = f"""
+                pop   rdx
+                mov   rbx, [rdx + 8*3]
+                mov   rax, [rdx + 8*1]
+                jmp   rax
+            """
+
         case _:
             raise NotImplementedError(ir)
 

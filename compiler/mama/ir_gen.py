@@ -70,7 +70,7 @@ def code_b(expr, env, kp):
                 *code_b(operands[1], env, kp + 1),
                 binop_inst[operator],
             ]
-        case VariableExpression():
+        case VariableExpression() | CallExpression():
             return [*code_v(expr, env, kp), ('getbasic',)]
         case None:
             return [
@@ -86,10 +86,51 @@ def code_v(expr, env, kp):
             return code_c(expr, env, kp, code_v)
         case NumberLiteral() | UnaryOperatorExpression() | BinaryOperatorExpression():
             return [*code_b(expr, env, kp), ('mkbasic',)]
-        case VariableExpression(name) if name in env:
+        case VariableExpression(name) if name in env and env[name]['scope'] == 'local':
             return [('pushloc', kp - env[name]['address'])]
+        case VariableExpression(name) if name in env and env[name]['scope'] == 'global':
+            return [('pushglob', env[name]['address'])]
         case VariableExpression(name):
             raise KeyError(f'unknown variable {name}')
+        case CallExpression(f, arg_exprs):
+            ret_l = make_unique_label('ret')
+            m = len(arg_exprs)
+            args = []
+
+            for i in range(m):
+                args += code_v(arg_exprs[m - 1 - i], env, kp + 3 + i)
+
+            return [
+                ('mark', ret_l),
+                *args,
+                *code_v(f, env, kp + 3 + m),
+                ('apply',),
+                ('label', ret_l),
+            ]
+        case LambdaExpression(arg_names, body, _):
+            fun_l, after_l = make_unique_label('fun', 'after')
+            free_v = list(free_vars(expr))
+            free_v_code = []
+            m = len(free_v)
+
+            env2 = env.push(*arg_names, *free_v)
+            for i in range(m):
+                free_v_code += code_v(VariableExpression(free_v[i]), env, kp + i)
+                env2[free_v[i]] = {'scope': 'global', 'address': i}
+
+            for i in range(len(arg_names)):
+                env2[arg_names[i]] = {'scope': 'local', 'address': -i}
+
+            return [
+                *free_v_code,
+                ('mkvec', m),
+                ('mkfunval', fun_l),
+                ('jump', after_l),
+                ('label', fun_l),
+                *code_v(body, env2, 0),
+                ('popenv',),
+                ('label', after_l),
+            ]
         case None:
             return [
                 ('loadc', 0),
