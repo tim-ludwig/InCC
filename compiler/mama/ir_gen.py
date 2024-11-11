@@ -170,15 +170,20 @@ def code_c(expr, env, kp, code_x):
             ]
 
         case LocalExpression(assignments, body):
-            env2 = env.push()
+            env2 = env.push(*[assignment.var.name for assignment in assignments])
 
-            variables = []
             N = len(assignments)
             for i in range(N):
                 assignment = assignments[i]
                 env2[assignment.var.name] = {'scope': 'local', 'address': kp + i + 1}
 
-                variables += code_v(assignment.expression, env, kp + i)
+            variables = [('alloc', N)]
+            for i in range(N):
+                assignment = assignments[i]
+                variables += [
+                    *code_v(assignment.expression, env2, kp + N),
+                    ('rewrite', N - i),
+                ]
 
             return [
                 *variables,

@@ -213,7 +213,29 @@ def asm_gen(ir):
                 mov   rax, [rdx + 8*1]
                 jmp   rax
             """
-            
+
+        case ('alloc', n):
+            # language=nasm
+            asm = (malloc(4) + """
+                mov   qword [rdx], 'F'
+                mov   qword [rdx + 8*1], 0
+                mov   qword [rdx + 8*2], 0
+                mov   qword [rdx + 8*3], 0
+                push  rdx""") * n
+
+        case ('rewrite', j):
+            # language=nasm
+            asm = f"""
+                mov   rcx, [rsp + 8*{j}]
+                pop   rdx
+                mov   qword rax, [rdx + 8*1]
+                mov   qword [rcx + 8*1], rax
+                mov   qword rax, [rdx + 8*2]
+                mov   qword [rcx + 8*2], rax
+                mov   qword rax, [rdx + 8*3]
+                mov   qword [rcx + 8*3], rax
+            """
+
         case _:
             raise NotImplementedError(ir)
 
