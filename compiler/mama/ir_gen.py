@@ -57,7 +57,7 @@ def code_v(expr, env, kp):
         case NumberLiteral() | UnaryOperatorExpression() | BinaryOperatorExpression():
             return [*code_b(expr, env, kp), ('mkbasic',)]
         case VariableExpression(name) if name in env:
-            return [('pushloc', env[name]['address'])]
+            return [('pushloc', kp - env[name]['address'])]
         case VariableExpression(name):
             raise KeyError(f'unknown variable {name}')
         case None:
