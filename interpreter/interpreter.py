@@ -197,13 +197,20 @@ def eval(expr: Expression, env: Environment):
                 env = Environment()
                 eval(parse_expr(f.read()), define_built_ins(env.push()))
                 return env
+
         case TrapExpression():
-            print('========== VAR DUMP ==========')
-            e = env
-            while e is not None:
-                for name, value in e.vars.items():
-                    print(f'{name:<24} = {value}')
-                e = e.parent
+            while True:
+                match input('stopped on trap> ').split(' '):
+                    case ['c']: break
+                    case ['v' | 'var' | 'vars']:
+                        print('========== VAR DUMP ==========')
+                        e = env
+                        while e is not None:
+                            for name, value in e.vars.items():
+                                print(f'{name:<24} = {value}')
+                            e = e.parent
+                    case ['$' | 'e' | 'eval', *text]:
+                        print(eval(parse_expr(' '.join(text)), env))
             return None
         case _:
             raise NotImplementedError(expr)
