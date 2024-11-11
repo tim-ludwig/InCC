@@ -106,31 +106,31 @@ def asm_gen(ir):
         case ('mkbasic',):
             # language=nasm
             asm = f"""
-                mov   rdi, 16
+                mov   rdi, 8*2
                 call  malloc
                 mov   rdx, rax
                 pop   rax
                 mov   qword [rdx], 'B'
-                mov   qword [rdx + 8], rax
+                mov   qword [rdx + 8*1], rax
                 push  rdx
             """
         case ('slide', discard):
             # language=nasm
             asm = f"""
                 pop   rax
-                add   rsp, {8 * discard}
+                add   rsp, 8*{discard}
                 push  rax
             """
         case ('pushloc', offset):
             # language=nasm
             asm = f"""
-                push  qword [rbp + {8 * offset}]
+                push  qword [rbp + 8*{offset}]
             """
         case ('getbasic',):
             # language=nasm
             asm = f"""
                 pop   rdx
-                mov   rax, [rdx + 8]
+                mov   rax, [rdx + 8*1]
                 push  rax
             """
         case _:
