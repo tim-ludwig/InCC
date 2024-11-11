@@ -244,8 +244,17 @@ def wrap_lexer(lexer):
     def lexer_input(s):
         lexer.input(s)
 
+    l = None
+    def lexer_has_next():
+        nonlocal l
+        if l is None:
+            l = lexer.token()
+
+        return l is not None
+
     def lexer_next():
-        t = lexer.token()
+        nonlocal l
+        t = l if l is not None else lexer.token()
 
         if t is None:
             return ()
@@ -259,6 +268,7 @@ def wrap_lexer(lexer):
 
     define(lexer_struct, 'input', lexer_input)
     define(lexer_struct, 'next', lexer_next)
+    define(lexer_struct, 'has_next', lexer_has_next)
 
     return lexer_struct
 
