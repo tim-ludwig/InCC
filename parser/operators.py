@@ -22,7 +22,7 @@ def p_expression_binary(p):
                | expression IMP expression
                | expression XOR expression
     """
-    p[0] = BinaryOperatorExpression(p[2],  (p[1], p[3]))
+    p[0] = BinaryOperatorExpression(p.linespan(0), p[2],  (p[1], p[3]))
 
 
 def p_expression_unary(p):
@@ -31,14 +31,14 @@ def p_expression_unary(p):
                | PLUS expression %prec UPLUS
                | MINUS expression %prec UMINUS
     """
-    p[0] = UnaryOperatorExpression(p[1],  p[2])
+    p[0] = UnaryOperatorExpression(p.linespan(0), p[1],  p[2])
 
 
 def p_expression_access(p):
     """
     expression : expression LBRACKET expression RBRACKET
     """
-    p[0] = BinaryOperatorExpression('[]', (p[1], p[3]))
+    p[0] = BinaryOperatorExpression(p.linespan(0), '[]', (p[1], p[3]))
 
 
 def p_expression_paren(p):

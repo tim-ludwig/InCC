@@ -21,8 +21,8 @@ def p_initializer(p):
     else:
         x = p[2].name
         name = f'set_{x}'
-        set_lmbd = LambdaExpression([x], MemberAssignExpression(x, VariableExpression(x)))
-        p[0] = [p[2], MemberAssignExpression(name, set_lmbd)]
+        set_lmbd = LambdaExpression(p.linespan(0), [x], MemberAssignExpression(p.linespan(0), x, VariableExpression(p.linespan(0), x)))
+        p[0] = [p[2], MemberAssignExpression(p.linespan(0), name, set_lmbd)]
 
 
 def p_expr_struct(p):
@@ -30,7 +30,7 @@ def p_expr_struct(p):
     expression : STRUCT LBRACE RBRACE
                | STRUCT LBRACE initializer_list RBRACE
     """
-    p[0] = StructExpression([] if len(p) == 4 else p[3])
+    p[0] = StructExpression(p.linespan(0), [] if len(p) == 4 else p[3])
 
 
 def p_struct_extension(p):
@@ -38,7 +38,7 @@ def p_struct_extension(p):
     expression : EXTEND expression LBRACE RBRACE
                | EXTEND expression LBRACE initializer_list RBRACE
     """
-    p[0] = StructExpression([] if len(p) == 5 else p[4], p[2])
+    p[0] = StructExpression(p.linespan(0), [] if len(p) == 5 else p[4], p[2])
 
 
 def p_dots(p):
@@ -58,9 +58,9 @@ def p_member_access(p):
                | expression dots IDENT
     """
     if len(p) == 3:
-        p[0] = MemberAccessExpression(ThisExpression(), p[2], p[1])
+        p[0] = MemberAccessExpression(p.linespan(0), ThisExpression(p.linespan(0)), p[2], p[1])
     else:
-        p[0] = MemberAccessExpression(p[1], p[3], p[2])
+        p[0] = MemberAccessExpression(p.linespan(0), p[1], p[3], p[2])
 
 
 def p_member_assign(p):
@@ -74,11 +74,11 @@ def p_member_assign(p):
         if p[1] != 0:
             raise SyntaxError(f"Syntax error at token '.'")
 
-        p[0] = MemberAssignExpression(p[2], p[4])
+        p[0] = MemberAssignExpression(p.linespan(0), p[2], p[4])
 
 
 def p_this(p):
     """
     expression : THIS
     """
-    p[0] = ThisExpression()
+    p[0] = ThisExpression(p.linespan(0))

@@ -32,22 +32,22 @@ def make_global(size):
 
 def code_r(expr, env):
     match expr:
-        case NumberLiteral(value):
+        case NumberLiteral(_, value):
             return [
                 ('loadc', value)
             ]
-        case UnaryOperatorExpression(op, operand):
+        case UnaryOperatorExpression(_, op, operand):
             return [
                 *code_r(operand, env),
                 unop_inst[op],
             ]
-        case BinaryOperatorExpression(op, operands):
+        case BinaryOperatorExpression(_, op, operands):
             return [
                 *code_r(operands[0], env),
                 *code_r(operands[1], env),
                 binop_inst[op],
             ]
-        case AssignExpression(VariableExpression(name) as var, expr):
+        case AssignExpression(_, VariableExpression(_, name) as var, expr):
             if name not in env:
                 env[name] = {'scope': 'global', 'address': make_global(8), 'size': 8}
 
@@ -56,18 +56,18 @@ def code_r(expr, env):
                 *code_l(var, env),
                 ('store',)
             ]
-        case VariableExpression(name) as var:
+        case VariableExpression(_, name) as var:
             return [
                 *code_l(var, env),
                 ('load',)
             ]
-        case SequenceExpression(exprs):
+        case SequenceExpression(_, exprs):
             instructions = []
             for expr in exprs[:-1]:
                 instructions += code(expr, env)
             instructions += code_r(exprs[-1], env)
             return instructions
-        case IfExpression(condition, then_expr, else_expr):
+        case IfExpression(_, condition, then_expr, else_expr):
             if_l, then_l, else_l, endif_l = make_unique_label('if', 'then', 'else', 'endif')
             return [
                 ('label', if_l),
@@ -80,7 +80,7 @@ def code_r(expr, env):
                 *code_r(else_expr, env),
                 ('label', endif_l),
             ]
-        case WhileExpression(condition, body):
+        case WhileExpression(_, condition, body):
             while_l, endwhile_l = make_unique_label('while', 'end_while')
             return [
                 ('loadc', 0),
@@ -92,7 +92,7 @@ def code_r(expr, env):
                 ('jump', while_l),
                 ('label', endwhile_l),
             ]
-        case LoopExpression(count, body):
+        case LoopExpression(_, count, body):
             loop_l, endloop_l = make_unique_label('loop', 'endloop')
             return [
                 ('loadc', 0),
@@ -109,7 +109,7 @@ def code_r(expr, env):
                 ('label', endloop_l),
                 ('pop',),
             ]
-        case DoWhileExpression(condition, body):
+        case DoWhileExpression(_, condition, body):
             dowhile_l, enddowhile_l = make_unique_label('dowhile', 'enddowhile')
             return [
                 ('label', dowhile_l),
@@ -119,7 +119,7 @@ def code_r(expr, env):
                 ('jump', dowhile_l),
                 ('label', enddowhile_l),
             ]
-        case ProcedureExpression(arg_names, local_names, body):
+        case ProcedureExpression(_, arg_names, local_names, body):
             proc_l, endproc_l = make_unique_label('proc', 'endproc')
 
             env = env.root().push(*arg_names, *local_names)
@@ -149,7 +149,7 @@ def code_r(expr, env):
                 ('label', endproc_l),
                 ('loadc', proc_l),
             ]
-        case CallExpression(f, arg_exprs):
+        case CallExpression(_, f, arg_exprs):
             args = []
             for arg_expr in arg_exprs[::-1]:
                 args += code_r(arg_expr, env)
@@ -176,15 +176,15 @@ def code(expr, env):
 
 def code_l(expr, env):
     match expr:
-        case VariableExpression(name) if name in env and env[name]['scope'] == 'global':
+        case VariableExpression(_, name) if name in env and env[name]['scope'] == 'global':
             return [
                 ('loadc', env[name]['address']),
             ]
-        case VariableExpression(name) if name in env:
+        case VariableExpression(_, name) if name in env:
             return [
                 ('loadrc', env[name]['address']),
             ]
-        case VariableExpression(name):
+        case VariableExpression(_, name):
             raise KeyError(f'unknown variable {name}')
         case _:
             raise NotImplementedError(expr)

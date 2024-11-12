@@ -1,7 +1,7 @@
 # type: ignore
 # ignore name conflict
 from ply import yacc
-from lexer.lexer import tokens, lexer
+from lexer.lexer import tokens, lexer, make_incc24_lexer
 
 from parser.literals import *
 from parser.operators import *
@@ -39,12 +39,11 @@ def p_trap(p):
     """
     expression : TRAP
     """
-    p[0] = TrapExpression()
-
+    p[0] = TrapExpression(p.linespan(0))
 
 
 parser = yacc.yacc(start='expression')
 
 
 def parse_expr(text: str) -> Expression:
-    return parser.parse(input=text, lexer=lexer)
+    return parser.parse(input=text, lexer=make_incc24_lexer(), tracking=True)

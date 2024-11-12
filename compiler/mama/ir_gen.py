@@ -24,31 +24,31 @@ binop_inst = {
 
 def free_vars(expr):
     match expr:
-        case NumberLiteral(_):
+        case NumberLiteral(_, _):
             return set()
 
-        case UnaryOperatorExpression(_, operand):
+        case UnaryOperatorExpression(_, _, operand):
             return free_vars(operand)
 
-        case BinaryOperatorExpression(_, (left, right)):
+        case BinaryOperatorExpression(_, _, (left, right)):
             return free_vars(left) | free_vars(right)
 
-        case AssignExpression(var, expression):
+        case AssignExpression(_, var, expression):
             return  free_vars(var) | free_vars(expression)
 
-        case VariableExpression(name):
+        case VariableExpression(_, name):
             return {name}
 
-        case IfExpression(condition, then_body, else_body):
+        case IfExpression(_, condition, then_body, else_body):
             return free_vars(condition) | free_vars(then_body) | free_vars(else_body)
 
-        case LocalExpression(assignments, body):
+        case LocalExpression(_, assignments, body):
             return free_vars(body) - {assignment.var.name for assignment in assignments}
 
-        case LambdaExpression(arg_names, body, _):
+        case LambdaExpression(_, arg_names, body, _):
             return free_vars(body) - set(arg_names)
 
-        case CallExpression(f, args):
+        case CallExpression(_, f, args):
             return free_vars(f) | {v for arg in args for v in free_vars(arg)}
 
 def code_b(expr, env, kp):
@@ -56,18 +56,18 @@ def code_b(expr, env, kp):
         case IfExpression() | LocalExpression():
             return code_c(expr, env, kp, code_b)
 
-        case NumberLiteral(value):
+        case NumberLiteral(_, value):
             return [
                 ('loadc', value)
             ]
 
-        case UnaryOperatorExpression(operator, operand):
+        case UnaryOperatorExpression(_, operator, operand):
             return [
                 *code_b(operand, env, kp),
                 unop_inst[operator],
             ]
 
-        case BinaryOperatorExpression(operator, operands):
+        case BinaryOperatorExpression(_, operator, operands):
             return [
                 *code_b(operands[0], env, kp),
                 *code_b(operands[1], env, kp + 1),
@@ -94,16 +94,16 @@ def code_v(expr, env, kp):
         case NumberLiteral() | UnaryOperatorExpression() | BinaryOperatorExpression():
             return [*code_b(expr, env, kp), ('mkbasic',)]
 
-        case VariableExpression(name) if name in env and env[name]['scope'] == 'local':
+        case VariableExpression(_, name) if name in env and env[name]['scope'] == 'local':
             return [('pushloc', kp - env[name]['address'])]
 
-        case VariableExpression(name) if name in env and env[name]['scope'] == 'global':
+        case VariableExpression(_, name) if name in env and env[name]['scope'] == 'global':
             return [('pushglob', env[name]['address'])]
 
-        case VariableExpression(name):
+        case VariableExpression(_, name):
             raise KeyError(f'unknown variable {name}')
 
-        case CallExpression(f, arg_exprs):
+        case CallExpression(_, f, arg_exprs):
             ret_l = make_unique_label('ret')
             m = len(arg_exprs)
             args = []
@@ -119,7 +119,7 @@ def code_v(expr, env, kp):
                 ('label', ret_l),
             ]
 
-        case LambdaExpression(arg_names, body, _):
+        case LambdaExpression(_, arg_names, body, _):
             fun_l, after_l = make_unique_label('fun', 'after')
             free_v = list(free_vars(expr))
             free_v_code = []
@@ -127,7 +127,7 @@ def code_v(expr, env, kp):
 
             env2 = env.push(*arg_names, *free_v)
             for i in range(m):
-                free_v_code += code_v(VariableExpression(free_v[i]), env, kp + i)
+                free_v_code += code_v(VariableExpression(None, free_v[i]), env, kp + i)
                 env2[free_v[i]] = {'scope': 'global', 'address': i}
 
             for i in range(len(arg_names)):
@@ -155,7 +155,7 @@ def code_v(expr, env, kp):
 
 def code_c(expr, env, kp, code_x):
     match expr:
-        case IfExpression(condition, then_body, else_body):
+        case IfExpression(_, condition, then_body, else_body):
             if_l, then_l, else_l, endif_l = make_unique_label('if', 'then', 'else', 'endif')
             return [
                 ('label', if_l),
@@ -169,7 +169,7 @@ def code_c(expr, env, kp, code_x):
                 ('label', endif_l),
             ]
 
-        case LocalExpression(assignments, body):
+        case LocalExpression(_, assignments, body):
             env2 = env.push(*[assignment.var.name for assignment in assignments])
 
             N = len(assignments)

@@ -13,4 +13,4 @@ def p_sequence(p):
     """
     expression : LBRACE sequence RBRACE
     """
-    p[0] = SequenceExpression(p[2])
+    p[0] = SequenceExpression(p.linespan(0), p[2])

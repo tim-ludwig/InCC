@@ -49,13 +49,13 @@ class Closure:
 
 def eval(expr: Expression, env: Environment):
     match expr:
-        case NumberLiteral(value): return float(value)
-        case BoolLiteral(value): return value == 'TRUE'
-        case StringLiteral(value): return value
-        case CharLiteral(value): return value
-        case ArrayLiteral(elements): return make_array(*[eval(elem, env) for elem in elements])
+        case NumberLiteral(_, value): return float(value)
+        case BoolLiteral(_, value): return value == 'TRUE'
+        case StringLiteral(_, value): return value
+        case CharLiteral(_, value): return value
+        case ArrayLiteral(_, elements): return make_array(*[eval(elem, env) for elem in elements])
 
-        case UnaryOperatorExpression(operator, operand):
+        case UnaryOperatorExpression(_, operator, operand):
             val = eval(operand, env)
 
             match operator:
@@ -63,7 +63,7 @@ def eval(expr: Expression, env: Environment):
                 case '-' : return -val
                 case 'NOT': return not val
 
-        case BinaryOperatorExpression(operator, operands):
+        case BinaryOperatorExpression(_, operator, operands):
             val0 = eval(operands[0], env)
             val1 = eval(operands[1], env)
 
@@ -88,21 +88,21 @@ def eval(expr: Expression, env: Environment):
                 case 'IMP': return not val0 or val1
                 case '[]': return val0[int(val1)]
 
-        case AssignExpression(var, expression):
+        case AssignExpression(_, var, expression):
             res = eval(expression, env)
             env[var.name] = res
             return res
 
-        case VariableExpression(name):
+        case VariableExpression(_, name):
             if name not in env:
                 raise KeyError(f"Unknown variable {name}")
 
             return env[name]
 
-        case LockExpression(_, body):
+        case LockExpression(_, _, body):
             return eval(body, env)
 
-        case LocalExpression(assignments, body):
+        case LocalExpression(_, assignments, body):
             env = env.push(*[assignment.var.name for assignment in assignments])
 
             for assignment in assignments:
@@ -110,13 +110,13 @@ def eval(expr: Expression, env: Environment):
 
             return eval(body, env)
 
-        case SequenceExpression(expressions):
+        case SequenceExpression(_, expressions):
             result = None
             for expression in expressions:
                 result = eval(expression, env)
             return result
 
-        case LoopExpression(count, body):
+        case LoopExpression(_, count, body):
             n = int(eval(count, env))
 
             result = None
@@ -124,19 +124,19 @@ def eval(expr: Expression, env: Environment):
                 result = eval(body, env)
             return result
 
-        case WhileExpression(condition, body):
+        case WhileExpression(_, condition, body):
             result = None
             while eval(condition, env):
                 result = eval(body, env)
             return result
 
-        case DoWhileExpression(condition, body):
+        case DoWhileExpression(_, condition, body):
             result = eval(body, env)
             while eval(condition, env):
                 result = eval(body, env)
             return result
 
-        case IfExpression(condition, then_body, else_body):
+        case IfExpression(_, condition, then_body, else_body):
             if eval(condition, env):
                 return eval(then_body, env)
             elif else_body:
@@ -144,18 +144,18 @@ def eval(expr: Expression, env: Environment):
             else:
                 return None
 
-        case LambdaExpression(arg_names, body, rest_args):
+        case LambdaExpression(_, arg_names, body, rest_args):
             return Closure(env, arg_names, body, rest_args)
 
-        case ProcedureExpression(arg_names, local_names, body):
+        case ProcedureExpression(_, arg_names, local_names, body):
             return Closure(define_built_ins(env.root().push()), arg_names, body, False, local_names)
 
-        case CallExpression(f, arg_exprs):
+        case CallExpression(_, f, arg_exprs):
             callable = eval(f, env)
             arg_values = [eval(arg_expr, env) for arg_expr in arg_exprs]
             return callable(*arg_values)
 
-        case StructExpression(initializers, parent_expr):
+        case StructExpression(_, initializers, parent_expr):
             if parent_expr:
                 struct = eval(parent_expr, env).push()
             else:
@@ -170,7 +170,7 @@ def eval(expr: Expression, env: Environment):
 
             return struct
 
-        case MemberAccessExpression(expr, member, up_count):
+        case MemberAccessExpression(_, expr, member, up_count):
             struct = eval(expr, env)
 
             for _ in range(up_count):
@@ -181,7 +181,7 @@ def eval(expr: Expression, env: Environment):
 
             return struct[member]
 
-        case MemberAssignExpression(member, expr):
+        case MemberAssignExpression(_, member, expr):
             if not env.containing_struct or member not in env.containing_struct.vars:
                 raise KeyError(f'Unknown member {member}')
 
@@ -189,18 +189,18 @@ def eval(expr: Expression, env: Environment):
             env.containing_struct.vars[member] = val
             return val
 
-        case ThisExpression():
+        case ThisExpression(_):
             return env.containing_struct
 
-        case ImportExpression(path):
+        case ImportExpression(_, path):
             with open(path, 'r') as f:
                 env = Environment()
                 eval(parse_expr(f.read()), define_built_ins(env.push()))
                 return env
 
-        case TrapExpression():
+        case TrapExpression(pos):
             while True:
-                match input('stopped on trap> ').split(' '):
+                match input(f'stopped in line {pos[0]}> ').split(' '):
                     case ['c']: break
                     case ['v' | 'var' | 'vars']:
                         print('========== VAR DUMP ==========')
