@@ -44,7 +44,10 @@ class Closure:
         return eval(self.body, env)
 
     def __str__(self):
-        return f'fun'
+        return f'fun(' + ', '.join(map(str, self.arg_names)) + ('...' if self.rest_args else '') + ')'
+
+    def __repr__(self):
+        return str(self)
 
 
 def eval(expr: Expression, env: Environment):
