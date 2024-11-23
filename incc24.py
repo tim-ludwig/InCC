@@ -1,7 +1,6 @@
 #! python
 
 import argparse
-from random import choices
 
 from interpreter import interpreter
 from compiler import compiler
