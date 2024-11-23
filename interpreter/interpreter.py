@@ -5,7 +5,7 @@ import numpy as np
 from lexer.lexer import make_incc24_lexer
 
 from environment import Environment
-from parser.parser import parse_expr
+from parser.parser import parse_expr, parse_file
 from syntaxtree.controlflow import LoopExpression, WhileExpression, DoWhileExpression, IfExpression
 from syntaxtree.literals import NumberLiteral, BoolLiteral, StringLiteral, CharLiteral, ArrayLiteral
 from syntaxtree.functions import LambdaExpression, CallExpression, ProcedureExpression
@@ -51,6 +51,10 @@ class Closure:
 
 
 def eval(expr: Expression, env: Environment):
+    global dbg
+    if dbg.should_stop(expr, env):
+        dbg.debugger_stop(expr, env)
+
     match expr:
         case NumberLiteral(_, value): return float(value)
         case BoolLiteral(_, value): return value == 'TRUE'
@@ -196,27 +200,47 @@ def eval(expr: Expression, env: Environment):
             return env.containing_struct
 
         case ImportExpression(_, path):
-            with open(path, 'r') as f:
-                env = Environment()
-                eval(parse_expr(f.read()), define_built_ins(env.push()))
-                return env
+            env = Environment()
+            eval(parse_file(path), define_built_ins(env.push()))
+            return env
 
-        case TrapExpression(pos):
-            while True:
-                match input(f'stopped in line {pos[0]}> ').split(' '):
-                    case ['c']: break
-                    case ['v' | 'var' | 'vars']:
-                        print('========== VAR DUMP ==========')
-                        e = env
-                        while e is not None:
-                            for name, value in e.vars.items():
-                                print(f'{name:<24} = {value}')
-                            e = e.parent
-                    case ['$' | 'e' | 'eval', *text]:
-                        print(eval(parse_expr(' '.join(text)), env))
+        case TrapExpression(_):
             return None
+
         case _:
             raise NotImplementedError(expr)
+
+
+class Debugger:
+    def __init__(self):
+        self.stepping = False
+        self.stopped = False
+
+    def should_stop(self, expr, env):
+        return not self.stopped and (type(expr) == TrapExpression or self.stepping)
+
+    def debugger_stop(self, expr, env):
+        self.stepping = True
+        self.stopped = True
+
+        while True:
+            match input(f'{expr.position[0]} line {expr.position[1]}> ').split(' '):
+                case ['s']:
+                    break
+                case ['c']:
+                    self.stepping = False
+                    break
+                case ['v' | 'var' | 'vars']:
+                    print('========== VAR DUMP ==========')
+                    e = env
+                    while e is not None:
+                        for name, value in e.vars.items():
+                            print(f'{name:<24} = {value}')
+                        e = e.parent
+                case ['$' | 'e' | 'eval', *text]:
+                    print(eval(parse_expr(' '.join(text)), env))
+
+        self.stopped = False
 
 
 def make_list(*elem):
@@ -293,15 +317,15 @@ def define_built_ins(env):
 
 
 def main(args):
+    global dbg
     global_vars = Environment()
     env = define_built_ins(global_vars.push())
 
     if args.file:
-        with (open(args.file, 'r') as f):
-            inp = f.read()
-            expr = parse_expr(inp)
-            res = eval(expr, env)
-            print(res)
+        dbg = Debugger()
+        expr = parse_file(args.file)
+        res = eval(expr, env)
+        print(res)
 
     if args.repl:
         while True:
