@@ -250,10 +250,14 @@ class Debugger:
         self.stopped = False
 
 
+def cons(a, b):
+    return (a, b)
+
+
 def make_list(*elem):
     if len(elem) == 0:
         return ()
-    return elem[0], make_list(*elem[1:])
+    return cons(elem[0], make_list(*elem[1:]))
 
 
 def head(l):
@@ -262,6 +266,10 @@ def head(l):
 
 def tail(l):
     return l[1]
+
+
+def concat(a, b):
+    return cons(head(a), concat(tail(a), b)) if a != () else b
 
 
 def make_array(*elem):
@@ -309,10 +317,11 @@ def wrap_lexer(lexer):
 
 def define_built_ins(env):
     define(env, 'list', make_list)
-    define(env, 'cons', lambda v1, v2: (v1, v2))
+    define(env, 'cons', cons)
     define(env, 'nil', ())
     define(env, 'head', head)
     define(env, 'tail', tail)
+    define(env, 'concat', concat)
 
     define(env, 'array', make_array)
 
