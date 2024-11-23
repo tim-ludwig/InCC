@@ -51,6 +51,9 @@ def free_vars(expr):
         case CallExpression(_, f, args):
             return free_vars(f) | {v for arg in args for v in free_vars(arg)}
 
+        case _:
+            raise NotImplementedError(expr)
+
 def code_b(expr, env, kp):
     match expr:
         case IfExpression() | LocalExpression():
