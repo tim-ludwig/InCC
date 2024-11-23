@@ -3,7 +3,7 @@ from typing import Tuple
 
 @dataclass
 class Expression:
-    line_span: Tuple[int, int]
+    position: Tuple[int, int] | Tuple[str, int, int]
     pass
 
 
