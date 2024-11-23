@@ -215,6 +215,7 @@ class Debugger:
     def __init__(self):
         self.stepping = False
         self.stopped = False
+        self.watching = {}
 
     def should_stop(self, expr, env):
         return not self.stopped and (type(expr) == TrapExpression or self.stepping)
@@ -224,6 +225,9 @@ class Debugger:
         self.stopped = True
 
         while True:
+            for text, e in self.watching.items():
+                print(text, '=', eval(e, env))
+
             match input(f'{expr.position[0]} line {expr.position[1]}> ').split(' '):
                 case ['s']:
                     break
@@ -237,6 +241,9 @@ class Debugger:
                         for name, value in e.vars.items():
                             print(f'{name:<24} = {value}')
                         e = e.parent
+                case ['w', *text]:
+                    text = ' '.join(text)
+                    self.watching[text] = parse_expr(text)
                 case ['$' | 'e' | 'eval', *text]:
                     print(eval(parse_expr(' '.join(text)), env))
 
