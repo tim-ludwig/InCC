@@ -272,6 +272,16 @@ def concat(a, b):
     return cons(head(a), concat(tail(a), b)) if a != () else b
 
 
+def reverse(a):
+    def rev(a, t):
+        return rev(tail(a), cons(head(a), t)) if a != () else t
+    return rev(a, ())
+
+
+def list_map(f, l):
+    return cons(f(head(l)), list_map(f, tail(l))) if l != () else ()
+
+
 def make_array(*elem):
     return np.array(elem)
 
@@ -322,6 +332,9 @@ def define_built_ins(env):
     define(env, 'head', head)
     define(env, 'tail', tail)
     define(env, 'concat', concat)
+    define(env, 'reverse', reverse)
+    define(env, 'map', list_map)
+
 
     define(env, 'array', make_array)
 
