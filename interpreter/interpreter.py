@@ -350,8 +350,8 @@ def main(args):
     global_vars = Environment()
     env = define_built_ins(global_vars.push())
 
+    dbg = Debugger()
     if args.file:
-        dbg = Debugger()
         expr = parse_file(args.file)
         res = eval(expr, env)
         print(res)
