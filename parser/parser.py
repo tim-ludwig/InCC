@@ -61,6 +61,10 @@ def parse_file(path: str) -> Expression:
             case ArrayLiteral(_, elements):
                 for elem in elements:
                     annotate_file(elem, path)
+            case DictLiteral(_, elements):
+                for key, value in elements:
+                    annotate_file(key, path)
+                    annotate_file(value, path)
 
             case UnaryOperatorExpression(_, operator, operand):
                 annotate_file(operand, path)

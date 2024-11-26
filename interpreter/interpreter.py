@@ -7,7 +7,7 @@ from lexer.lexer import make_incc24_lexer
 from environment import Environment
 from parser.parser import parse_expr, parse_file
 from syntaxtree.controlflow import LoopExpression, WhileExpression, DoWhileExpression, IfExpression
-from syntaxtree.literals import NumberLiteral, BoolLiteral, StringLiteral, CharLiteral, ArrayLiteral
+from syntaxtree.literals import NumberLiteral, BoolLiteral, StringLiteral, CharLiteral, ArrayLiteral, DictLiteral
 from syntaxtree.functions import LambdaExpression, CallExpression, ProcedureExpression
 from syntaxtree.module import ImportExpression
 from syntaxtree.operators import BinaryOperatorExpression, UnaryOperatorExpression
@@ -61,6 +61,7 @@ def eval(expr: Expression, env: Environment):
         case StringLiteral(_, value): return value
         case CharLiteral(_, value): return value
         case ArrayLiteral(_, elements): return make_array(*[eval(elem, env) for elem in elements])
+        case DictLiteral(_, elements): return {eval(key, env) : eval(value, env) for key, value in elements}
 
         case UnaryOperatorExpression(_, operator, operand):
             val = eval(operand, env)
@@ -93,7 +94,10 @@ def eval(expr: Expression, env: Environment):
                 case 'NAND': return not (val0 and val1)
                 case 'NOR': return not (val0 or val1)
                 case 'IMP': return not val0 or val1
-                case '[]': return val0[int(val1)]
+                case '[]':
+                    if type(val0) != dict:
+                        val1 = int(val1)
+                    return val0[val1]
 
         case AssignExpression(_, var, expression):
             res = eval(expression, env)

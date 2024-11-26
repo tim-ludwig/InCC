@@ -25,3 +25,8 @@ class CharLiteral(Expression):
 @dataclass
 class ArrayLiteral(Expression):
     elements: list[Expression]
+
+
+@dataclass
+class DictLiteral(Expression):
+    elements: list[Tuple[Expression, Expression]]
