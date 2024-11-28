@@ -104,9 +104,9 @@ def eval(expr: Expression, env: Environment):
             env[var.name] = res
             return res
 
-        case VariableExpression(_, name):
+        case VariableExpression(pos, name):
             if name not in env:
-                raise KeyError(f"Unknown variable {name}")
+                raise KeyError(f"Unknown variable {name} in {pos[0]}:{pos[1]}")
 
             return env[name]
 
@@ -181,20 +181,20 @@ def eval(expr: Expression, env: Environment):
 
             return struct
 
-        case MemberAccessExpression(_, expr, member, up_count):
+        case MemberAccessExpression(pos, expr, member, up_count):
             struct = eval(expr, env)
 
             for _ in range(up_count):
                 struct = struct.parent
 
             if member not in struct:
-                raise KeyError(f'Unknown member {member}')
+                raise KeyError(f'Unknown member {member} in {pos[0]}:{pos[1]}')
 
             return struct[member]
 
-        case MemberAssignExpression(_, member, expr):
+        case MemberAssignExpression(pos, member, expr):
             if not env.containing_struct or member not in env.containing_struct.vars:
-                raise KeyError(f'Unknown member {member}')
+                raise KeyError(f'Unknown member {member} in {pos[0]}:{pos[1]}')
 
             val = eval(expr, env)
             env.containing_struct.vars[member] = val
