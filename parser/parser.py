@@ -137,6 +137,9 @@ def parse_file(path: str) -> Expression:
                 raise NotImplementedError(expr)
 
     with open(path) as f:
-        expr = parse_expr(f.read())
-        annotate_file(expr, path)
-        return expr
+        try:
+            expr = parse_expr(f.read())
+            annotate_file(expr, path)
+            return expr
+        except SyntaxError as e:
+            raise SyntaxError(e.msg + " in " + path)
