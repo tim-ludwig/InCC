@@ -204,9 +204,7 @@ def eval(expr: Expression, env: Environment):
             return env.containing_struct
 
         case ImportExpression(_, path):
-            env = Environment()
-            eval(parse_file(path), define_built_ins(env.push()))
-            return env
+            return eval(parse_file(path), define_built_ins(Environment()))
 
         case TrapExpression(_):
             return None
