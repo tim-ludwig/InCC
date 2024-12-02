@@ -50,6 +50,23 @@ class Closure:
         return str(self)
 
 
+class Dictionary(Environment):
+    dictionary: dict
+
+    def __init__(self, dictionary: dict):
+        super().__init__()
+        self.dictionary = dictionary
+        self.vars = {
+            'keys': lambda: self.dictionary.keys(),
+            'contains_key': lambda x: x in self.dictionary,
+        }
+
+    def get_element(self, key):
+        if key not in self.dictionary:
+            raise KeyError(key)
+        return self.dictionary[key]
+
+
 def eval(expr: Expression, env: Environment):
     global dbg
     if dbg.should_stop(expr, env):
@@ -61,7 +78,7 @@ def eval(expr: Expression, env: Environment):
         case StringLiteral(_, value): return value
         case CharLiteral(_, value): return value
         case ArrayLiteral(_, elements): return make_array(*[eval(elem, env) for elem in elements])
-        case DictLiteral(_, elements): return {eval(key, env) : eval(value, env) for key, value in elements}
+        case DictLiteral(_, elements): return Dictionary({eval(key, env) : eval(value, env) for key, value in elements})
 
         case UnaryOperatorExpression(_, operator, operand):
             val = eval(operand, env)
@@ -95,9 +112,9 @@ def eval(expr: Expression, env: Environment):
                 case 'NOR': return not (val0 or val1)
                 case 'IMP': return not val0 or val1
                 case '[]':
-                    if type(val0) != dict:
-                        val1 = int(val1)
-                    return val0[val1]
+                    if type(val0) == Dictionary:
+                        return val0.get_element(val1)
+                    return val0[int(val1)]
 
         case AssignExpression(_, var, expression):
             res = eval(expression, env)
@@ -336,7 +353,6 @@ def define_built_ins(env):
     define(env, 'concat', concat)
     define(env, 'reverse', reverse)
     define(env, 'map', list_map)
-
 
     define(env, 'array', make_array)
 
