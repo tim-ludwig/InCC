@@ -168,5 +168,27 @@ def code_c(expr, env, kp, code_x):
                 ('label', enddowhile_l),
             ]
 
-        case LocalExpression():
+        case LocalExpression(_, assignments, body):
+            env2 = env.push(*[assignment.var.name for assignment in assignments])
+
+            N = len(assignments)
+            for i in range(N):
+                assignment = assignments[i]
+                env2[assignment.var.name] = {'scope': 'local', 'address': kp + i + 1}
+
+            variables = [('alloc', N)]
+            for i in range(N):
+                assignment = assignments[i]
+                variables += [
+                    *code_v(assignment, env2, kp + N),
+                    ('pop',),
+                ]
+
+            return [
+                *variables,
+                *code_x(body, env2, kp + N),
+                ('slide', N),
+            ]
+
+        case _:
             raise NotImplementedError(expr)

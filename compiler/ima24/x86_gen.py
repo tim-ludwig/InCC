@@ -26,7 +26,7 @@ def malloc(n):
         mov   rdi, 8*{n}
         call  malloc
         mov   rdx, rax
-    """
+    """.strip()
 
 
 def asm_gen(ir):
@@ -115,8 +115,7 @@ def asm_gen(ir):
                 {malloc(2)}
                 mov qword [rdx], 0
                 mov qword [rdx + 1*8], 0
-                push rdx
-            """ * n
+                push rdx""" * n
 
         case ('mkvec', n):
             asm = malloc(n + 1) + "\n".join([
@@ -139,6 +138,20 @@ def asm_gen(ir):
             # language=nasm
             asm = f"""
                 push  qword [r12 + 8*(1 + {addr})]
+            """
+
+        case ('pushloc', addr):
+            # language=nasm
+            asm = f"""
+                push  qword [rbp - 8*{addr}]
+            """
+
+        case ('slide', n):
+            # language=nasm
+            asm = f"""
+                pop   rax
+                add   rsp, 8*{n}
+                push  rax
             """
 
         case ('mkind', t):
