@@ -97,3 +97,17 @@ def p_expression_call(p):
         p[0] = CallExpression(p.linespan(0), p[1], [])
     else:
         p[0] = CallExpression(p.linespan(0), p[1], p[3])
+
+
+def p_expression_ret(p):
+    """
+    expression : RETURN expression
+    """
+    p[0] = ReturnExpression(p.linespan(0), p[2])
+
+
+def p_expression_quit(p):
+    """
+    expression : QUIT expression
+    """
+    p[0] = QuitExpression(p.linespan(0), p[2])

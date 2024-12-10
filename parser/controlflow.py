@@ -36,3 +36,10 @@ def p_if(p):
                | IF expression THEN expression ELSE expression
     """
     p[0] = IfExpression(p.linespan(0), p[2], p[4], p[6] if len(p) == 7 else None)
+
+
+def p_repeat(p):
+    """
+    expression : REPEAT expression
+    """
+    p[0] = RepeatExpression(p.linespan(0), p[2])

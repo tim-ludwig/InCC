@@ -21,8 +21,8 @@ def ast_to_ir(ast, vm):
         case 'mama':
             return mama_code_b(ast, env, 0), env, None
         case 'ima24':
-            lb = dict()
-            return ima24_code_b(ast, env, 0, lb), env, lb
+            info = {'lb': dict()}
+            return ima24_code_b(ast, env, 0, info), env, info['lb']
 
 
 def ir_to_asm(ir, env, lb, vm):

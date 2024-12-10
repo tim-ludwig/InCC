@@ -27,3 +27,13 @@ class ProcedureExpression(Expression):
 class CallExpression(Expression):
     f: Expression
     arg_exprs: list[Expression]
+
+
+@dataclass
+class ReturnExpression(Expression):
+    val: Expression
+
+
+@dataclass
+class QuitExpression(Expression):
+    val: Expression

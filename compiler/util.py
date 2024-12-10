@@ -1,8 +1,8 @@
 import builtins
 import re
 
-from syntaxtree.controlflow import IfExpression, WhileExpression, LoopExpression, DoWhileExpression
-from syntaxtree.functions import LambdaExpression, CallExpression
+from syntaxtree.controlflow import IfExpression, WhileExpression, LoopExpression, DoWhileExpression, RepeatExpression
+from syntaxtree.functions import LambdaExpression, CallExpression, ReturnExpression, QuitExpression
 from syntaxtree.literals import NumberLiteral
 from syntaxtree.operators import UnaryOperatorExpression, BinaryOperatorExpression
 from syntaxtree.sequences import SequenceExpression
@@ -92,20 +92,23 @@ def free_vars(expr):
         case CallExpression(_, f, args):
             return free_vars(f) | {v for arg in args for v in free_vars(arg)}
 
+        case ReturnExpression(_, val) | QuitExpression(_, val):
+            return free_vars(val)
+
         case SequenceExpression(_, expressions):
             return {v for expr in expressions for v in free_vars(expr)}
 
         case IfExpression(_, condition, then_expr, else_expr):
             return free_vars(condition) | free_vars(then_expr) | free_vars(else_expr)
 
-        case WhileExpression(_, condition, body):
-            return free_vars(condition) | free_vars(body)
+        case WhileExpression(_, c, body) | LoopExpression(_, c, body) | DoWhileExpression(_, c, body):
+            return free_vars(c) | free_vars(body)
 
-        case LoopExpression(_, count, body):
-            return free_vars(count) | free_vars(body)
+        case RepeatExpression(_, body):
+            return free_vars(body)
 
-        case DoWhileExpression(_, condition, body):
-            return free_vars(condition) | free_vars(body)
+        case None:
+            return set()
 
         case _:
             raise NotImplementedError(expr)

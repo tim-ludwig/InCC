@@ -25,3 +25,8 @@ class IfExpression(Expression):
     condition: Expression
     then_body: Expression
     else_body: Expression
+
+
+@dataclass
+class RepeatExpression(Expression):
+    body: Expression

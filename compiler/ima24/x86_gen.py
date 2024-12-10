@@ -250,6 +250,16 @@ def asm_gen(ir):
                 jmp   [rdx]                  ; jump to F-Objects entry point
             """
 
+        case ('cleansp', kp):
+            # language=nasm
+            asm = f"""
+                pop   rax
+                mov   rbx, rbp
+                sub   rbx, qword 8*{kp}
+                mov   rsp, rbx
+                push  rax
+            """
+
         case _:
             raise NotImplementedError(ir)
 
