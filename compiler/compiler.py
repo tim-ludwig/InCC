@@ -45,19 +45,29 @@ def obj_to_bin(obj_file, bin_file):
     return res.returncode
 
 
-def ir_to_text(instructions):
+def ir_to_text(instructions, lb):
+    if not lb:
+        lines = []
+        for inst in instructions:
+            match inst:
+                case ('label', name):
+                    line = f'{name}:'
+                case (mnemonic, ):
+                    line = f'    {mnemonic}'
+                case (mnemonic, *args):
+                    line = f'    {mnemonic:<8}{", ".join(map(str, args))}'
+                case str():
+                    line = inst
+            lines.append(line)
+        lines.append('')
+        return lines
+
     lines = []
-    for inst in instructions:
-        match inst:
-            case ('label', name):
-                line = f'{name}:'
-            case (mnemonic,):
-                line = f'    {mnemonic}'
-            case (mnemonic, *args):
-                line = f'    {mnemonic:<8}{", ".join(map(str, args))}'
-            case str():
-                line = inst
-        lines.append(line)
+    for l, b in lb.items():
+        for line in ir_to_text(b, None):
+            lines.append(line)
+    lines.append('main:')
+    lines += ir_to_text(instructions, None)
 
     return '\n'.join(lines)
 
@@ -108,7 +118,7 @@ def main(args):
         ir, env, lb = ast_to_ir(ast, args.vm)
 
     if to_stage == 'ir':
-        output_text(args, ir_to_text(ir))
+        output_text(args, ir_to_text(ir, lb))
         return
 
     # provide assembly in file

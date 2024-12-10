@@ -263,8 +263,7 @@ def lambda_bodies(lb):
     return "".join([
 f"""
 global {l}
-{l}:
-{asm_gen(b)}"""
+{format_code(asm_gen(b))}"""
         for l, b in lb.items()
     ])
 
@@ -277,7 +276,7 @@ SECTION .data               ; Data section, initialized variables
 i64_fmt:db  "%lld", 10, 0 ; printf format for printing an int64
 
 SECTION  .text
-{format_code(lambda_bodies(lb))}
+{lambda_bodies(lb)}
 global main
 main:
         enter 0, 0

@@ -113,6 +113,7 @@ def code_v(expr, env, kp, lb):
                 env2[arg_names[i]] = {'scope': 'formal', 'address': i}
 
             body_inst = [
+                ('label', fun_l),
                 *code_v(body, env2, 0, lb),
                 ('return', 0),
             ]
