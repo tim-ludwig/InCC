@@ -64,8 +64,8 @@ def ir_to_text(instructions, lb):
 
     lines = []
     for l, b in lb.items():
-        for line in ir_to_text(b, None):
-            lines.append(line)
+        lines += ir_to_text(b, None)
+
     lines.append('main:')
     lines += ir_to_text(instructions, None)
 
