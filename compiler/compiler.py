@@ -5,6 +5,8 @@ from compiler.cma.ir_gen import code_r as cma_code_r
 from compiler.cma.x86_gen import x86_program as cma_x86_program, asm_gen as cma_asm_gen
 from compiler.mama.ir_gen import code_b as mama_code_b
 from compiler.mama.x86_gen import x86_program as mama_x86_program, asm_gen as mama_asm_gen
+from compiler.ima24.ir_gen import code_b as ima24_code_b
+from compiler.ima24.x86_gen import x86_program as ima24_x86_program, asm_gen as ima24_asm_gen
 
 from compiler.util import format_code
 from environment import Environment
@@ -18,6 +20,8 @@ def ast_to_ir(ast, vm):
             return cma_code_r(ast, env), env
         case 'mama':
             return mama_code_b(ast, env, 0), env
+        case 'ima24':
+            return ima24_code_b(ast, env, 0), env
 
 
 def ir_to_asm(ir, env, vm):
@@ -26,6 +30,8 @@ def ir_to_asm(ir, env, vm):
             return cma_x86_program(cma_asm_gen(ir), env)
         case 'mama':
             return mama_x86_program(mama_asm_gen(ir), env)
+        case 'ima24':
+            return ima24_x86_program(ima24_asm_gen(ir), env)
 
 
 def asm_to_obj(asm_file, obj_file):
@@ -48,6 +54,8 @@ def ir_to_text(instructions):
                 line = f'    {mnemonic}'
             case (mnemonic, *args):
                 line = f'    {mnemonic:<8}{", ".join(map(str, args))}'
+            case str():
+                line = inst
         lines.append(line)
 
     return '\n'.join(lines)

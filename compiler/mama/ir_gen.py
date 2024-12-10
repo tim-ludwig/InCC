@@ -1,4 +1,4 @@
-from compiler.util import make_unique_label
+from compiler.util import make_unique_label, free_vars
 from syntaxtree.controlflow import IfExpression
 from syntaxtree.functions import CallExpression, LambdaExpression
 from syntaxtree.literals import NumberLiteral
@@ -20,39 +20,6 @@ binop_inst = {
     '==': ('eq',),
     '!=': ('neq',),
 }
-
-
-def free_vars(expr):
-    match expr:
-        case NumberLiteral(_, _):
-            return set()
-
-        case UnaryOperatorExpression(_, _, operand):
-            return free_vars(operand)
-
-        case BinaryOperatorExpression(_, _, (left, right)):
-            return free_vars(left) | free_vars(right)
-
-        case AssignExpression(_, var, expression):
-            return  free_vars(var) | free_vars(expression)
-
-        case VariableExpression(_, name):
-            return {name}
-
-        case IfExpression(_, condition, then_body, else_body):
-            return free_vars(condition) | free_vars(then_body) | free_vars(else_body)
-
-        case LocalExpression(_, assignments, body):
-            return free_vars(body) - {assignment.var.name for assignment in assignments}
-
-        case LambdaExpression(_, arg_names, body, _):
-            return free_vars(body) - set(arg_names)
-
-        case CallExpression(_, f, args):
-            return free_vars(f) | {v for arg in args for v in free_vars(arg)}
-
-        case _:
-            raise NotImplementedError(expr)
 
 def code_b(expr, env, kp):
     match expr:

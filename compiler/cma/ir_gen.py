@@ -116,6 +116,7 @@ def code_r(expr, env):
                 *code_r(body, env),
                 *code_r(condition, env),
                 ('jumpz', enddowhile_l),
+                ('pop',),
                 ('jump', dowhile_l),
                 ('label', enddowhile_l),
             ]

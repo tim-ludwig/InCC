@@ -7,5 +7,12 @@ class Expression:
     pass
 
 
+@dataclass
+class Program(Expression):
+    expr: Expression
+    pass
+
+
+@dataclass
 class TrapExpression(Expression):
     pass

@@ -31,6 +31,13 @@ precedence = [
 ]
 
 
+def p_program(p):
+    """
+    program : expression
+    """
+    p[0] = Program(p.linespan(0), p[1])
+
+
 def p_error(p):
     raise SyntaxError(f"Syntax error at token {p}")
 
@@ -42,7 +49,7 @@ def p_trap(p):
     p[0] = TrapExpression(p.linespan(0))
 
 
-parser = yacc.yacc(start='expression')
+parser = yacc.yacc(start='program')
 
 
 def parse_expr(text: str) -> Expression:
