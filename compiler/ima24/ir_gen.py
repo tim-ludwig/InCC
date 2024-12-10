@@ -29,7 +29,7 @@ def code_b(expr, env, kp):
         case SequenceExpression() | IfExpression() | WhileExpression() | DoWhileExpression() | LoopExpression() | LocalExpression():
             return code_c(expr, env, kp, code_b)
 
-        case AssignExpression():
+        case VariableExpression() | AssignExpression() | CallExpression():
             return [
                 *code_v(expr, env, kp),
                 ('getbasic',),
@@ -67,9 +67,6 @@ def code_b(expr, env, kp):
                 binop_inst[operator],
             ]
 
-        case VariableExpression():
-            return [*code_v(expr, env, kp), ('getbasic',)]
-
         case _:
             raise NotImplementedError(expr)
 
@@ -95,8 +92,58 @@ def code_v(expr, env, kp):
         case VariableExpression(_, name) if name in env and env[name]['scope'] == 'global':
             return [('pushglob', env[name]['address'])]
 
+        case VariableExpression(_, name) if name in env and env[name]['scope'] == 'formal':
+            return [('pushform', env[name]['address'])]
+
         case VariableExpression(_, name):
             raise KeyError(f'unknown variable {name}')
+
+        case LambdaExpression(_, arg_names, body, _):
+            fun_l, after_l = make_unique_label('fun', 'after')
+            free_v = list(free_vars(expr))
+            free_v_code = []
+            m = len(free_v)
+
+            env2 = env.push(*arg_names, *free_v)
+            for i in range(m):
+                free_v_code += code_v(VariableExpression(None, free_v[i]), env, kp + i)
+                env2[free_v[i]] = {'scope': 'global', 'address': i}
+
+            for i in range(len(arg_names)):
+                env2[arg_names[i]] = {'scope': 'formal', 'address': i}
+
+            return [
+                *free_v_code,
+                ('mkvec', m),
+                ('mkfunval', fun_l),
+                ('mkind', 'F'),
+                ('jump', after_l),
+                ('label', fun_l),
+                *code_v(body, env2, 0),
+                ('return', 0),
+                ('label', after_l),
+            ]
+
+        case CallExpression(_, f, arg_exprs):
+            ret_l = make_unique_label('ret')
+            m = len(arg_exprs)
+            args = []
+
+            for i in range(m):
+                args += code_v(arg_exprs[i], env, kp + 1 + i)
+
+            return [
+                *code_v(f, env, kp),
+                *args,
+                ('mkvec', m),
+                ('loadc', ret_l),
+                ('mkvec', 1),
+                ('call',),
+                ('label', ret_l),
+            ]
+
+        case _:
+            raise NotImplementedError(expr)
 
 
 def code_c(expr, env, kp, code_x):

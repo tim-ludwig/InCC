@@ -118,7 +118,7 @@ def asm_gen(ir):
                 push rdx""" * n
 
         case ('mkvec', n):
-            asm = malloc(n + 1) + "\n".join([
+            asm = malloc(n + 1) + "\n" + "\n".join([
                 # language=nasm
                 f"pop   qword [rdx + 8*(1 + {n - 1 - i})]" for i in range(n)
             ])
@@ -138,6 +138,12 @@ def asm_gen(ir):
             # language=nasm
             asm = f"""
                 push  qword [r12 + 8*(1 + {addr})]
+            """
+
+        case ('pushform', addr):
+            # language=nasm
+            asm = f"""
+                push  qword [r13 + 8*(1 + {addr})]
             """
 
         case ('pushloc', addr):
@@ -190,18 +196,58 @@ def asm_gen(ir):
                 mov   [rcx + 8*1], rax
             """
 
-        case ('jump', label):
+        case ('jump', lbl):
             # language=nasm
             asm = f"""
-                jmp   {label}
+                jmp   {lbl}
             """
 
-        case ('jumpz', label):
+        case ('jumpz', lbl):
             # language=nasm
             asm = f"""
                 pop   rax
                 test  rax, rax
-                je    {label}
+                je    {lbl}
+            """
+
+        case ('mkfunval', lbl):
+            # language=nasm
+            asm = f"""
+                {malloc(2)}
+                mov   qword [rdx], {lbl}
+                pop   qword [rdx + 8*1]
+                push  rdx
+            """
+
+        case ('return', i):
+            # language=nasm
+            asm = f"""
+                pop   qword [rbp + 8*4]              ; save result, overwriting F-Object indcell
+                mov   rsp, rbp                       ; discard local stack
+                pop   rbp                            ; restore rbp
+                pop   r12                            ; restore GP
+                mov   rax, qword [r14 + 8*(1 + {i})] ; save return address i
+                pop   r14                            ; restore RP
+                pop   r13                            ; restore FP
+                jmp   rax                            ; jump to saved return address
+            """
+
+        case ('call',):
+            # language=nasm
+            asm = """
+                mov   rdx, qword [rsp + 8*2] ; get reference to F-Object indcell
+                mov   rdx, qword [rdx]       ; get F-Object
+                push  r12                    ; save old globals
+                mov   r12, qword [rdx + 8*1] ; get new globals from F-Object
+                push  rbp                    ; save rbp
+                mov   rbp, rsp               ; set rbp to rsp
+                mov   rax, r14               ; swap old RP with RP on stack
+                mov   r14, qword [rbp + 8*2] ; "
+                mov   qword [rbp + 8*2], rax ; "
+                mov   rax, r13               ; swap old FP with FP on stack
+                mov   r13, qword [rbp + 8*3] ; "
+                mov   qword [rbp + 8*3], rax ; "
+                jmp   [rdx]                  ; jump to F-Objects entry point
             """
 
         case _:
