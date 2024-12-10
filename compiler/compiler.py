@@ -17,21 +17,22 @@ def ast_to_ir(ast, vm):
     env = Environment()
     match vm:
         case 'cma':
-            return cma_code_r(ast, env), env
+            return cma_code_r(ast, env), env, None
         case 'mama':
-            return mama_code_b(ast, env, 0), env
+            return mama_code_b(ast, env, 0), env, None
         case 'ima24':
-            return ima24_code_b(ast, env, 0), env
+            lb = dict()
+            return ima24_code_b(ast, env, 0, lb), env, lb
 
 
-def ir_to_asm(ir, env, vm):
+def ir_to_asm(ir, env, lb, vm):
     match vm:
         case 'cma':
             return cma_x86_program(cma_asm_gen(ir), env)
         case 'mama':
             return mama_x86_program(mama_asm_gen(ir), env)
         case 'ima24':
-            return ima24_x86_program(ima24_asm_gen(ir), env)
+            return ima24_x86_program(ima24_asm_gen(ir), env, lb)
 
 
 def asm_to_obj(asm_file, obj_file):
@@ -104,7 +105,7 @@ def main(args):
             ast = parse_expr(f.read())
 
         # convert source to intermediate representation
-        ir, env = ast_to_ir(ast, args.vm)
+        ir, env, lb = ast_to_ir(ast, args.vm)
 
     if to_stage == 'ir':
         output_text(args, ir_to_text(ir))
@@ -115,7 +116,7 @@ def main(args):
         asm_file = args.file
     elif ir is not None:
         # convert intermediate representation to assembly
-        asm = ir_to_asm(ir, env, args.vm)
+        asm = ir_to_asm(ir, env, lb, args.vm)
 
         if to_stage == 'asm':
             output_text(args, asm)

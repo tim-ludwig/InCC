@@ -24,14 +24,14 @@ binop_inst = {
 }
 
 
-def code_b(expr, env, kp):
+def code_b(expr, env, kp, lb):
     match expr:
         case SequenceExpression() | IfExpression() | WhileExpression() | DoWhileExpression() | LoopExpression() | LocalExpression():
-            return code_c(expr, env, kp, code_b)
+            return code_c(expr, env, kp, lb, code_b)
 
         case VariableExpression() | AssignExpression() | CallExpression():
             return [
-                *code_v(expr, env, kp),
+                *code_v(expr, env, kp, lb),
                 ('getbasic',),
             ]
 
@@ -46,7 +46,7 @@ def code_b(expr, env, kp):
                 ('alloc', n),
                 ('mkvec', n),
                 ('setgp',),
-                *code_b(expr, env, kp)
+                *code_b(expr, env, kp, lb)
             ]
 
         case NumberLiteral(_, value):
@@ -56,14 +56,14 @@ def code_b(expr, env, kp):
 
         case UnaryOperatorExpression(_, operator, operand):
             return [
-                *code_b(operand, env, kp),
+                *code_b(operand, env, kp, lb),
                 unop_inst[operator],
             ]
 
         case BinaryOperatorExpression(_, operator, operands):
             return [
-                *code_b(operands[0], env, kp),
-                *code_b(operands[1], env, kp + 1),
+                *code_b(operands[0], env, kp, lb),
+                *code_b(operands[1], env, kp + 1, lb),
                 binop_inst[operator],
             ]
 
@@ -71,20 +71,20 @@ def code_b(expr, env, kp):
             raise NotImplementedError(expr)
 
 
-def code_v(expr, env, kp):
+def code_v(expr, env, kp, lb):
     match expr:
         case SequenceExpression() | IfExpression() | WhileExpression() | DoWhileExpression() | LoopExpression() | LocalExpression():
-            return code_c(expr, env, kp, code_v)
+            return code_c(expr, env, kp, lb, code_v)
 
         case AssignExpression(_, var, expr):
             return [
-                *code_v(var, env, kp),
-                *code_v(expr, env, kp + 1),
+                *code_v(var, env, kp, lb),
+                *code_v(expr, env, kp + 1, lb),
                 ('store',),
             ]
 
         case NumberLiteral() | UnaryOperatorExpression() | BinaryOperatorExpression():
-            return [*code_b(expr, env, kp), ('mkbasic',), ('mkind', 'B'),]
+            return [*code_b(expr, env, kp, lb), ('mkbasic',), ('mkind', 'B'),]
 
         case VariableExpression(_, name) if name in env and env[name]['scope'] == 'local':
             return [('pushloc', env[name]['address'])]
@@ -99,29 +99,31 @@ def code_v(expr, env, kp):
             raise KeyError(f'unknown variable {name}')
 
         case LambdaExpression(_, arg_names, body, _):
-            fun_l, after_l = make_unique_label('fun', 'after')
+            fun_l = make_unique_label('fun')
             free_v = list(free_vars(expr))
             free_v_code = []
             m = len(free_v)
 
             env2 = env.push(*arg_names, *free_v)
             for i in range(m):
-                free_v_code += code_v(VariableExpression(None, free_v[i]), env, kp + i)
+                free_v_code += code_v(VariableExpression(None, free_v[i]), env, kp + i, lb)
                 env2[free_v[i]] = {'scope': 'global', 'address': i}
 
             for i in range(len(arg_names)):
                 env2[arg_names[i]] = {'scope': 'formal', 'address': i}
+
+            body_inst = [
+                *code_v(body, env2, 0, lb),
+                ('return', 0),
+            ]
+
+            lb[fun_l] = body_inst
 
             return [
                 *free_v_code,
                 ('mkvec', m),
                 ('mkfunval', fun_l),
                 ('mkind', 'F'),
-                ('jump', after_l),
-                ('label', fun_l),
-                *code_v(body, env2, 0),
-                ('return', 0),
-                ('label', after_l),
             ]
 
         case CallExpression(_, f, arg_exprs):
@@ -130,10 +132,10 @@ def code_v(expr, env, kp):
             args = []
 
             for i in range(m):
-                args += code_v(arg_exprs[i], env, kp + 1 + i)
+                args += code_v(arg_exprs[i], env, kp + 1 + i, lb)
 
             return [
-                *code_v(f, env, kp),
+                *code_v(f, env, kp, lb),
                 *args,
                 ('mkvec', m),
                 ('loadc', ret_l),
@@ -146,7 +148,7 @@ def code_v(expr, env, kp):
             raise NotImplementedError(expr)
 
 
-def code_c(expr, env, kp, code_x):
+def code_c(expr, env, kp, lb, code_x):
     match expr:
         case SequenceExpression(_, exprs):
             instructions = []
@@ -162,13 +164,13 @@ def code_c(expr, env, kp, code_x):
             if_l, then_l, else_l, endif_l = make_unique_label('if', 'then', 'else', 'endif')
             return [
                 ('label', if_l),
-                *code_b(condition, env, kp),
+                *code_b(condition, env, kp, lb),
                 ('jumpz', else_l),
                 ('label', then_l),
-                *code_x(then_expr, env, kp),
+                *code_x(then_expr, env, kp, lb),
                 ('jump', endif_l),
                 ('label', else_l),
-                *code_x(else_expr, env, kp),
+                *code_x(else_expr, env, kp, lb),
                 ('label', endif_l),
             ]
 
@@ -177,10 +179,10 @@ def code_c(expr, env, kp, code_x):
             return [
                 ('loadc', 0),
                 ('label', while_l),
-                *code_b(condition, env, kp + 1),
+                *code_b(condition, env, kp + 1, lb),
                 ('jumpz', endwhile_l),
                 ('pop',),
-                code_x(body, env, kp),
+                code_x(body, env, kp, lb),
                 ('jump', while_l),
                 ('label', endwhile_l),
             ]
@@ -189,14 +191,14 @@ def code_c(expr, env, kp, code_x):
             loop_l, endloop_l = make_unique_label('loop', 'endloop')
             return [
                 ('loadc', 0),
-                *code_b(count, env, kp + 1),
+                *code_b(count, env, kp + 1, lb),
                 ('label', loop_l),
                 ('dup',),
                 ('jumpz', endloop_l),
                 ('dec',),
                 ('swap',),
                 ('pop',),
-                *code_x(body, env, kp + 1),
+                *code_x(body, env, kp + 1, lb),
                 ('swap',),
                 ('jump', loop_l),
                 ('label', endloop_l),
@@ -207,8 +209,8 @@ def code_c(expr, env, kp, code_x):
             dowhile_l, enddowhile_l = make_unique_label('dowhile', 'enddowhile')
             return [
                 ('label', dowhile_l),
-                *code_x(body, env, kp),
-                *code_b(condition, env, kp + 1),
+                *code_x(body, env, kp, lb),
+                *code_b(condition, env, kp + 1, lb),
                 ('jumpz', enddowhile_l),
                 ('pop',),
                 ('jump', dowhile_l),
@@ -227,13 +229,13 @@ def code_c(expr, env, kp, code_x):
             for i in range(N):
                 assignment = assignments[i]
                 variables += [
-                    *code_v(assignment, env2, kp + N),
+                    *code_v(assignment, env2, kp + N, lb),
                     ('pop',),
                 ]
 
             return [
                 *variables,
-                *code_x(body, env2, kp + N),
+                *code_x(body, env2, kp + N, lb),
                 ('slide', N),
             ]
 

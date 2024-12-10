@@ -259,7 +259,17 @@ def asm_gen(ir):
     return f';;; {ir}\n' + asm.strip() + '\n'
 
 
-def x86_program(x86_code, env):
+def lambda_bodies(lb):
+    return "".join([
+f"""
+global {l}
+{l}:
+{asm_gen(b)}"""
+        for l, b in lb.items()
+    ])
+
+
+def x86_program(x86_code, env, lb):
     # language=nasm
     return f"""
     extern  printf, malloc
@@ -267,6 +277,7 @@ SECTION .data               ; Data section, initialized variables
 i64_fmt:db  "%lld", 10, 0 ; printf format for printing an int64
 
 SECTION  .text
+{format_code(lambda_bodies(lb))}
 global main
 main:
         enter 0, 0
