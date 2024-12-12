@@ -152,14 +152,6 @@ def asm_gen(ir):
                 push  qword [rbp - 8*{addr}]
             """
 
-        case ('slide', n):
-            # language=nasm
-            asm = f"""
-                pop   rax
-                add   rsp, 8*{n}
-                push  rax
-            """
-
         case ('mkind', t):
             # language=nasm
             asm = f"""
@@ -250,14 +242,13 @@ def asm_gen(ir):
                 jmp   [rdx]                  ; jump to F-Objects entry point
             """
 
-        case ('cleansp', kp):
+        case ('slideto', kp):
             # language=nasm
             asm = f"""
-                pop   rax
-                mov   rbx, rbp
-                sub   rbx, qword 8*{kp}
-                mov   rsp, rbx
-                push  rax
+                pop   rax               ; save top element
+                mov   rsp, rbp          ; drop stack to rbp
+                sub   rsp, qword 8*{kp} ; raise stack to supplied kp
+                push  rax               ; push save element
             """
 
         case _:

@@ -166,7 +166,7 @@ def code_v(expr, env, kp, info):
                 *code_v(body, env, kp, info2),
                 ('jump', repeat_l),
                 ('label', quitrepeat_l),
-                ('cleansp', kp)
+                ('slideto', kp)
             ]
 
         case ReturnExpression(_, val):
@@ -276,7 +276,7 @@ def code_c(expr, env, kp, info, code_x):
             return [
                 *variables,
                 *code_x(body, env2, kp + N, info),
-                ('slide', N),
+                ('slideto', kp),
             ]
 
         case _:
