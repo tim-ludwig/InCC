@@ -36,7 +36,7 @@ class Closure:
             for i in range(len(self.arg_names) - 1):
                 env[self.arg_names[i]] = arg_values[i]
 
-            env[self.arg_names[-1]] = np.array(arg_values[len(self.arg_names) - 1:])
+            env[self.arg_names[-1]] = make_array(*arg_values[len(self.arg_names) - 1:])
         else:
             for arg_name, arg_value in zip(self.arg_names, arg_values):
                 env[arg_name] = arg_value
@@ -50,6 +50,39 @@ class Closure:
         return str(self)
 
 
+class Set(Environment):
+    elements: set
+
+    def __init__(self, elements: set):
+        super().__init__()
+        self.elements = elements
+        self.vars = {
+            'for_each': lambda f: self.for_each(f)
+        }
+
+    def for_each(self, f):
+        for val in self.elements:
+            f(val)
+
+
+class Array(Environment):
+    elements: list
+
+    def __init__(self, elements: list):
+        super().__init__()
+        self.elements = elements
+        self.vars = {
+            'for_each': lambda f: self.for_each(f)
+        }
+
+    def for_each(self, f):
+        for val in self.elements:
+            f(val)
+
+    def get_element(self, i):
+        return self.elements[i]
+
+
 class Dictionary(Environment):
     dictionary: dict
 
@@ -57,14 +90,33 @@ class Dictionary(Environment):
         super().__init__()
         self.dictionary = dictionary
         self.vars = {
-            'keys': lambda: self.dictionary.keys(),
+            'update': lambda k, v: self.update(k, v),
+            'keys': lambda: Set(set(self.dictionary.keys())),
             'contains_key': lambda x: x in self.dictionary,
+            'update_or_insert': lambda k, p, a: self.update_or_insert(k, p, a),
         }
+
+    def update(self, key, val):
+        self.dictionary[key] = val
+        return self.dictionary[key]
+
+    def update_or_insert(self, key, on_present, on_absent):
+        if key in self.dictionary:
+            self.dictionary[key] = on_present(key, self.dictionary[key])
+        else:
+            self.dictionary[key] = on_absent(key)
+
 
     def get_element(self, key):
         if key not in self.dictionary:
             raise KeyError(key)
         return self.dictionary[key]
+
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        return repr(self.dictionary)
 
 
 def eval(expr: Expression, env: Environment):
@@ -112,9 +164,13 @@ def eval(expr: Expression, env: Environment):
                 case 'NOR': return not (val0 or val1)
                 case 'IMP': return not val0 or val1
                 case '[]':
-                    if type(val0) == Dictionary:
-                        return val0.get_element(val1)
-                    return val0[int(val1)]
+                    match val0:
+                        case Dictionary():
+                            return val0.get_element(val1)
+                        case Array():
+                            return val0.get_element(int(val1))
+                        case _:
+                            return val0[int(val1)]
 
         case AssignExpression(_, var, expression):
             res = eval(expression, env)
@@ -302,7 +358,7 @@ def list_map(f, l):
 
 
 def make_array(*elem):
-    return np.array(elem)
+    return Array(list(elem))
 
 
 def define(env, name, val):
@@ -354,7 +410,9 @@ def define_built_ins(env):
     define(env, 'reverse', reverse)
     define(env, 'map', list_map)
 
-    define(env, 'array', make_array)
+    define(env, 'array', lambda elements: make_array(*elements))
+
+    define(env, 'dict', lambda: Dictionary(dict()))
 
     define(env, 'print', print)
 
