@@ -37,7 +37,7 @@ t_COMMA = ','
 
 def t_IDENT(t):
     """
-    [_a-zA-Z][_a-zA-Z0-9]*
+    [_a-zA-Z][_a-zA-Z0-9]*!?
     """
 
     valUp = t.value.upper()
