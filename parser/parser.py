@@ -61,6 +61,7 @@ def parse_file(path: str) -> Expression:
         expr.position = (path, *expr.position)
 
         match expr:
+            case Program(_, expr): annotate_file(expr, path)
             case NumberLiteral(_, value): pass
             case BoolLiteral(_, value): pass
             case StringLiteral(_, value): pass

@@ -14,7 +14,7 @@ from syntaxtree.operators import BinaryOperatorExpression, UnaryOperatorExpressi
 from syntaxtree.sequences import SequenceExpression
 from syntaxtree.struct import StructExpression, MemberAccessExpression, MemberAssignExpression, ThisExpression
 
-from syntaxtree.syntaxtree import Expression, TrapExpression
+from syntaxtree.syntaxtree import Expression, TrapExpression, Program
 from syntaxtree.variables import AssignExpression, VariableExpression, LockExpression, LocalExpression
 
 
@@ -125,6 +125,8 @@ def eval(expr: Expression, env: Environment):
         dbg.debugger_stop(expr, env)
 
     match expr:
+        case Program(_, expr): return eval(expr, env)
+
         case NumberLiteral(_, value): return float(value)
         case BoolLiteral(_, value): return value == 'TRUE'
         case StringLiteral(_, value): return value
