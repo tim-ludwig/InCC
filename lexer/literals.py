@@ -1,3 +1,5 @@
+import ast
+
 lit_tokens = {
     'NUMBER', 'STRING', 'CHAR', 'LBRACKET', 'RBRACKET', 'COLON'
 }
@@ -12,8 +14,8 @@ t_COLON = r':'
 
 
 def t_STRING(t):
-    r'"([^\n"]|\")*?"'
-    t.value = t.value[1:-1]
+    r'"(?:[^"\\]|\\.)*?"'
+    t.value = ast.literal_eval(t.value)
     return t
 
 
